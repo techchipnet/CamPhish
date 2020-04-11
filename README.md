@@ -16,7 +16,7 @@ Grab cam shots from target's phone front camera or PC webcam just sending a link
 ## This Tool Tested On :
 <ul>
   <li>Kali Linux</li>
-  <li>Turmex</li>
+  <li>Termux</li>
   <li>MacOS</li>
   <li>Ubuntu</li>
   <li>Perrot Sec OS</li>
