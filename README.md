@@ -36,6 +36,18 @@ git clone https://github.com/techchipnet/CamPhish
 cd CamPhish
 bash camphish.sh
 ```
+<h2>Fixing Issues on Mobile</h2>
+   <ul type="disk">
+     <li>If you're not getting link Generated in ngrok</p></li>
+        <p><b>Solution:</b> Open Hotspot while running ngrok</p>
+      <li>If you're getting issue or stuck at downloding ngrok</p></li>
+        <p><b>Solution:</b> you can manually download ngrok via using following command in the same Camphish Folder:
+
+``` 
+        wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+```
+</ul>
+
 ### Video Demo
 [![How to control android camera](https://img.youtube.com/vi/G_nNHrWwCOM/0.jpg)](https://www.youtube.com/watch?v=G_nNHrWwCOM)
 #### For More Video subcribe <a href="http://youtube.com/techchipnet">TechChip YouTube Channel</a>
