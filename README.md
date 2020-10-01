@@ -36,6 +36,11 @@ git clone https://github.com/techchipnet/CamPhish
 cd CamPhish
 bash camphish.sh
 ```
+### How to acces clicked Photos :
+After sending link to victim ,
+1.creat a new session in termux and Type in cd CamPhish/
+2.Copy file name with .png extension .(Eg.:- name.png)
+3. Open your browser type localhost:3333/name.png(File Name),and hit enter 
 ### Video Demo
 [![How to control android camera](https://img.youtube.com/vi/G_nNHrWwCOM/0.jpg)](https://www.youtube.com/watch?v=G_nNHrWwCOM)
 #### For More Video subcribe <a href="http://youtube.com/techchipnet">TechChip YouTube Channel</a>
