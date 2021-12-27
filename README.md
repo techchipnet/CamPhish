@@ -40,9 +40,9 @@ bash camphish.sh
 
 ## Change Log:
 
-<b>Version: 1.5:</b> Add new online meeting template
-<b>Version: 1.4:</b> Ngrok authtoken update
-<b>Version: 1.3:</b> Fix ngrok direct link
+<p><b>Version: 1.5:</b> Add new online meeting template</p>
+<p><b>Version: 1.4:</b> Ngrok authtoken update</p>
+<p><b>Version: 1.3:</b> Fix ngrok direct link</p>
 
 ### Video Demo
 [![How to control android camera](https://img.youtube.com/vi/G_nNHrWwCOM/0.jpg)](https://www.youtube.com/watch?v=G_nNHrWwCOM)
