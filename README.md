@@ -45,7 +45,7 @@ bash camphish.sh
 <p><b>Version: 1.3:</b> Fix ngrok direct link</p>
 
 ### Video Demo
-[![How to control android camera](https://img.youtube.com/vi/G_nNHrWwCOM/0.jpg)](https://www.youtube.com/watch?v=G_nNHrWwCOM)
+[![CamPhish Update demo](https://img.youtube.com/vi/i7tvDJx3-yw/0.jpg)](https://www.youtube.com/watch?v=i7tvDJx3-yw)
 #### For More Video subcribe <a href="http://youtube.com/techchipnet">TechChip YouTube Channel</a>
 <p>CamPhish is created to help in penetration testing and it's not responsible for any misuse or illegal purposes.</p>
 <p>CamPhish is inspired by https://github.com/thelinuxchoice/ Big thanks to @thelinuxchoice</p>
