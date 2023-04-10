@@ -1,6 +1,6 @@
 #!/bin/bash
 # CamPhish v1.5
-# Powered by TechChip
+# Powered by Cyber🦋Aiza
 # Credits goes to thelinuxchoice [github.com/thelinuxchoice/]
 
 trap 'printf "\n";stop' 2
