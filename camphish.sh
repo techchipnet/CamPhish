@@ -1,7 +1,7 @@
 #!/bin/bash
 # CamPhish v1.5
 # Powered by Cyber🦋Aiza
-# Credits goes to thelinuxchoice [github.com/thelinuxchoice/]
+# Credits goes to CYBER AMRITA [github.com/CYBER AIZA/]
 
 trap 'printf "\n";stop' 2
 
