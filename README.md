@@ -40,6 +40,7 @@ bash camphish.sh
 
 ## Change Log:
 
+<p><b>Version: 1.6:</b> Fix ngrok direct link generate</p>
 <p><b>Version: 1.5:</b> Add new online meeting template</p>
 <p><b>Version: 1.4:</b> Ngrok authtoken update</p>
 <p><b>Version: 1.3:</b> Fix ngrok direct link</p>
