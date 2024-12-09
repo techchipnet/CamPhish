@@ -34,6 +34,13 @@ cd CamPhish
 bash camphish.sh
 ```
 
+
+## Pindahkan hasil gambar (Folfer download internal):
+
+```
+bash move.sh
+```
+
 ## Cara Penggunaan
 1. Jalankan perintah instalasi di atas untuk mengunduh dan mengatur alat ini.
 2. Saat menjalankan `bash camphish.sh`, Anda akan diminta memilih server:
