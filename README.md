@@ -47,6 +47,7 @@ bash camphish.sh
 ```
 bash cleanup.sh
 ```
+<p>The cam files and saved location will also be removed.</p>
 
 ## Change Log:
 
