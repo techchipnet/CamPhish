@@ -86,6 +86,9 @@ bash cleanup.sh
 <p><b>Version: 1.4:</b> Ngrok authtoken update</p>
 <p><b>Version: 1.3:</b> Fix ngrok direct link</p>
 
+### Important Notice
+Unauthorized reuploading of this project is prohibited.
+
 #### For More Video subcribe <a href="http://youtube.com/techchipnet">TechChip YouTube Channel</a>
 <p>CamPhish is created to help in penetration testing and it's not responsible for any misuse or illegal purposes.</p>
 <p>CamPhish is inspired by https://github.com/thelinuxchoice/ Big thanks to @thelinuxchoice</p>
