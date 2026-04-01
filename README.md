@@ -32,6 +32,8 @@ It uses demo webpages and tunneling services to simulate real-world permission p
 
 ## UI Improvements (Latest Update)
 
+#### UI Updated by [@monxcode](https://github.com/monxcode)
+
 The following files were redesigned to look more natural and trustworthy:
 
 - `festivalwishes.html`
@@ -51,7 +53,7 @@ The following files were redesigned to look more natural and trustworthy:
 ---
 
 ## Supported Platforms
-Tested on:
+**Tested on:**
 
 - Kali Linux  
 - Ubuntu  
@@ -64,7 +66,7 @@ Tested on:
 
 ## Requirements
 
-Install dependencies first:
+**Install dependencies first:**
 
 ```bash
 apt-get update
@@ -75,7 +77,7 @@ apt-get -y install php wget unzip
 
 ## Installation
 
-Clone the repository and run the tool:
+**Clone the repository and run the tool:**
 
 ```bash
 git clone https://github.com/techchipnet/CamPhish
@@ -87,7 +89,7 @@ bash camphish.sh
 
 ## Cleanup
 
-Remove logs and generated files:
+**Remove logs and generated files:**
 
 ```bash
 bash cleanup.sh
@@ -99,7 +101,7 @@ Captured files and saved locations will also be removed.
 
 ## Ethical Use Notice
 
-This project is created for:
+**This project is created for:**
 - Cybersecurity education  
 - Awareness training  
 - Authorized penetration testing labs  
@@ -111,7 +113,7 @@ Always obtain **proper permission** before testing any system.
 
 ## Credits
 
-Inspired by:  
+**Inspired by:**  
 https://github.com/thelinuxchoice
 
-Original concept by [@TechChip.](https://github.com/techchipnet/CamPhish)
+**Original concept by** [@TechChip.](https://github.com/techchipnet/CamPhish)
