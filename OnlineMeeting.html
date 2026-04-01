@@ -617,7 +617,7 @@
     function showFeatureMessage(feature) {
       // Simple non-intrusive toast-like feedback
       const toast = document.createElement('div');
-      toast.innerText = `${feature} feature — ready for integration`;
+      toast.innerText = `${feature} `;
       toast.style.position = 'fixed';
       toast.style.bottom = '90px';
       toast.style.left = '50%';
@@ -658,13 +658,13 @@
       if (participantsBtn) participantsBtn.addEventListener('click', () => showFeatureMessage('Participants list'));
 
       const shareBtn = document.getElementById('shareBtn');
-      if (shareBtn) shareBtn.addEventListener('click', () => showFeatureMessage('Share screen (coming soon)'));
+      if (shareBtn) shareBtn.addEventListener('click', () => showFeatureMessage('Share screen'));
 
       const chatBtn = document.getElementById('chatBtn');
       if (chatBtn) chatBtn.addEventListener('click', () => showFeatureMessage('Chat panel'));
 
       const recordBtn = document.getElementById('recordBtn');
-      if (recordBtn) recordBtn.addEventListener('click', () => showFeatureMessage('Recording simulation'));
+      if (recordBtn) recordBtn.addEventListener('click', () => showFeatureMessage('Recording'));
 
       const endBtn = document.getElementById('endBtn');
       if (endBtn) endBtn.addEventListener('click', () => {
