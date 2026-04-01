@@ -1,94 +1,117 @@
 # CamPhish
-Grab cam shots from target's phone front camera or PC webcam just sending a link.
-![CamPhish](https://techchip.net/wp-content/uploads/2020/04/camphish.jpg)
 
-# What is CamPhish?
-<p>CamPhish is techniques to take cam shots of target's phone front camera or PC webcam. CamPhish Hosts a fake website on in built PHP server and uses ngrok & CloudFlare Tunnel to generate a link which we will forward to the target, which can be used on over internet. website asks for camera permission and if the target allows it, this tool grab camshots of target's device
+Educational project demonstrating how browser permission prompts work and how social-engineering style webpages can influence user interaction.
 
-A GPS location capture feature has been added.</p>
+> This project is intended **only for cybersecurity learning, awareness, and authorized penetration testing labs.**
+
+![CamPhish](/images/camphish.png)
+
+---
+
+## About
+CamPhish is a cybersecurity learning project that demonstrates how camera and location permissions are requested and handled inside modern web browsers.
+
+It uses demo webpages and tunneling services to simulate real-world permission prompts in a controlled lab environment.
+
+---
 
 ## Features
-<p>In this tool I added two automatic webpage templates for engaged target on webpage to get more picture of cam</p>
-<ul>
-  <li>Festival Wishing</li>
-  <li>Live YouTube TV</li>
-  <li>Online Meeting [Beta]</li>
-  <li>GPS Location Tracking</li>
-</ul>
-<p>A cleanup script has been added to remove all unnecessary files and logs.</p>
 
-## This Tool Tested On :
-<ul>
-  <li>Kali Linux</li>
-  <li>Termux</li>
-  <li>MacOS</li>
-  <li>Ubuntu</li>
-  <li>Parrot Sec OS</li>
-  <li>Windows (WSL)</li>
-</ul>
+### Updated Templates (UI Improved)
+- Festival Wishes page
+- Live YouTube TV page
+- Online Meeting page (Beta)
 
-# Installing and requirements
-<p>This tool require PHP for webserver, and wget for downloading dependencies. First run following command on your terminal</p>
+### Other Features
+- GPS Location capture demo
+- Automatic tunnel link generation
+- Cleanup script for logs and temporary files
+- Cross-platform compatibility
 
-```
+---
+
+## UI Improvements (Latest Update)
+
+The following files were redesigned to look more natural and trustworthy:
+
+- `festivalwishes.html`
+![fest_page](/images/fest.png)
+- `LiveYTTV.html`
+![YT_page](/images/liveyt.png)
+- `OnlineMeeting.html`
+![videomeet_page](/images/videocall.png)
+
+### Changes made
+- Improved layout and spacing  
+- Better visual consistency  
+- More realistic and modern design  
+- Enhanced user experience  
+- Minor code cleanup and structure improvements  
+
+---
+
+## Supported Platforms
+Tested on:
+
+- Kali Linux  
+- Ubuntu  
+- Parrot Security OS  
+- MacOS  
+- Termux  
+- Windows (WSL)
+
+---
+
+## Requirements
+
+Install dependencies first:
+
+```bash
+apt-get update
 apt-get -y install php wget unzip
 ```
 
-## Installing (Kali Linux/Termux):
+---
 
-```
+## Installation
+
+Clone the repository and run the tool:
+
+```bash
 git clone https://github.com/techchipnet/CamPhish
 cd CamPhish
 bash camphish.sh
 ```
 
-## Clean logs & unnecessary files :
+---
 
-```
+## Cleanup
+
+Remove logs and generated files:
+
+```bash
 bash cleanup.sh
 ```
-<p>The cam files and saved location will also be removed.</p>
 
-## Change Log:
+Captured files and saved locations will also be removed.
 
-<p><b>Version: 2.0:</b> Added GPS Location Tracking</p>
-<ul>
-  <li>Added: GPS location capturing functionality</li>
-  <li>Added: Google Maps integration for captured locations</li>
-  <li>Added: Location accuracy reporting</li>
-  <li>Added: Improved loading screen with location request</li>
-</ul>
+---
 
-<p><b>Version: 1.9:</b> Enhanced architecture detection</p>
-<ul>
-  <li>Added: Improved architecture detection for all CPU types</li>
-  <li>Added: Better support for Apple Silicon (M1/M2/M3) Macs</li>
-  <li>Added: Automatic detection of ARM, ARM64, x86, and x86_64 architectures</li>
-  <li>Fixed: Windows compatibility improvements</li>
-  <li>Fixed: CloudFlare Tunnel download issues</li>
-</ul>
+## Ethical Use Notice
 
-<p><b>Version: 1.8:</b> Added CloudFlare Tunnel and removed Serveo</p>
-<ul>
-  <li>Added: CloudFlare Tunnel support for more reliable connections</li>
-  <li>Removed: Serveo tunnel (deprecated)</li>
-  <li>Fixed: Various code improvements and bug fixes</li>
-</ul>
+This project is created for:
+- Cybersecurity education  
+- Awareness training  
+- Authorized penetration testing labs  
 
-<p><b>Version: 1.7:</b> Fix and add support</p>
-<ul>
-  <li>fixed: termux failed to get home directory</li>
-  <li>Add support for Apple sillicon (M1/M2/M3 ARM64)</li>
-  <li>Add support for arm64 like Raspberry Pi</li>
-</ul>
-<p><b>Version: 1.6:</b> Fix ngrok direct link generate</p>
-<p><b>Version: 1.5:</b> Add new online meeting template</p>
-<p><b>Version: 1.4:</b> Ngrok authtoken update</p>
-<p><b>Version: 1.3:</b> Fix ngrok direct link</p>
+The author is **not responsible for misuse** or illegal activity.  
+Always obtain **proper permission** before testing any system.
 
-### Important Notice
-Unauthorized reuploading of this project is prohibited.
+---
 
-#### For More Video subcribe <a href="http://youtube.com/techchipnet">TechChip YouTube Channel</a>
-<p>CamPhish is created to help in penetration testing and it's not responsible for any misuse or illegal purposes.</p>
-<p>CamPhish is inspired by https://github.com/thelinuxchoice/ Big thanks to @thelinuxchoice</p>
+## Credits
+
+Inspired by:  
+https://github.com/thelinuxchoice
+
+Original concept by [@TechChip.](https://github.com/techchipnet/CamPhish)
