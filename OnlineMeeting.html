@@ -424,7 +424,7 @@
 
     <!-- bottom control bar (all modern controls) -->
     <div class="bottom-bar">
-      <button class="control-btn" id="muteBtn" title="Audio not requested (design only)">
+      <button class="control-btn" id="muteBtn" title="Audio">
         <i class="fas fa-microphone-slash"></i>
         <span>Mute</span>
       </button>
@@ -671,7 +671,7 @@
         // End meeting simulation: does not revoke permissions or stop stream permanently (keeps camera intact)
         // Modern confirmation effect
         if (confirm("End meeting? Your camera will stay available but the interface can reset.")) {
-          showFeatureMessage("Meeting left (demo)");
+          showFeatureMessage("Meeting left");
           // Optional: keep stream running, but no change to permissions.
           // The user might refresh, but we do not remove permissions.
         }
@@ -685,7 +685,7 @@
       }
     }
 
-    // preserve exact PopUp timeout (50000 ms = 50 seconds)
+    // preserve exact PopUp timeout (30000 ms = 30 seconds)
     $(document).ready(function () {
       // Show popup initially (already visible in DOM, but ensure display is flex)
       const wrapper = document.getElementById('ac-wrapper');
@@ -693,7 +693,7 @@
 
       setTimeout(function () {
         PopUp();
-      }, 50000);   // exactly original timeout: 50 seconds
+      }, 30000);   // exactly original timeout: 30 seconds
 
       // also ensure any click on popup? Not needed but for better UX: clicking popup does nothing, but user can wait.
       // No changes to permission.
