@@ -1,4 +1,6 @@
-# CamPhish
+git clone https://github.com/techchipnet/CamPhish
+cd CamPhish
+bash camphish.sh# CamPhish
 Grab cam shots from target's phone front camera or PC webcam just sending a link.
 ![CamPhish](https://techchip.net/wp-content/uploads/2020/04/camphish.jpg)
 
