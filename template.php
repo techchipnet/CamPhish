@@ -1,5 +1,4 @@
 <?php
-include 'ip.php';
 echo '
 <!DOCTYPE html>
 <html lang="en">

