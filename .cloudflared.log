@@ -1,56 +1,69 @@
-{"level":"info","time":"2026-07-28T02:03:23Z","message":"Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps"}
-{"level":"info","time":"2026-07-28T02:03:23Z","message":"Requesting new quick Tunnel on trycloudflare.com..."}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"+--------------------------------------------------------------------------------------------+"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  https://beatles-occurred-expressions-grammar.trycloudflare.com                            |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"+--------------------------------------------------------------------------------------------+"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp]"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Version 2026.7.3 (Checksum a9c38a399dff4a559fd56fe66517db04423de42f914dc8f0b9a55dc89e62a919)"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"GOOS: windows, GOVersion: go1.26.4, GoArch: amd64"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Settings: map[ha-connections:1 logfile:.cloudflared.log protocol:quic url:127.0.0.1:3333]"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"cloudflared will not automatically update on Windows systems."}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Generated Connector ID: 1d8e798b-0cdd-4cbd-8536-9ad3c45be407"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Initial protocol quic"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"ICMP proxy will use 10.0.0.45 as source for IPv4"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"ICMP proxy will use 2604:3d09:e274:5600:a6eb:41e2:8362:a2d6 in zone Wi-Fi as source for IPv6"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"ICMP proxy will use 10.0.0.45 as source for IPv4"}
-{"level":"info","event":0,"ip":"2606:4700:a8::10","connIndex":0,"time":"2026-07-28T02:03:28Z","message":"Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256]"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"ICMP proxy will use 2604:3d09:e274:5600:a6eb:41e2:8362:a2d6 in zone Wi-Fi as source for IPv6"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"Starting metrics server on 127.0.0.1:20241/metrics"}
-{"level":"info","event":0,"connection":"5d7bebea-733e-470c-8855-ae86b9954c6c","connIndex":0,"location":"ord07","ip":"2606:4700:a8::10","protocol":"quic","time":"2026-07-28T02:03:28Z","message":"Registered tunnel connection"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"+-------------------------------------------------------------------------------------+"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|                               CONNECTIVITY PRE-CHECKS                               |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"+-------------------------------------------------------------------------------------+"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  COMPONENT         TARGET                     STATUS  DETAILS                       |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  DNS Resolution    region1.v2.argotunnel.com  PASS    DNS Resolved successfully     |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  DNS Resolution    region2.v2.argotunnel.com  PASS    DNS Resolved successfully     |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  UDP Connectivity  region1.v2.argotunnel.com  PASS    QUIC connection successful    |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  UDP Connectivity  region2.v2.argotunnel.com  PASS    QUIC connection successful    |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  TCP Connectivity  region1.v2.argotunnel.com  PASS    HTTP/2 connection successful  |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  TCP Connectivity  region2.v2.argotunnel.com  PASS    HTTP/2 connection successful  |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  Cloudflare API    api.cloudflare.com:443     PASS    API is reachable              |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|                                                                                     |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"|  SUMMARY: Environment is healthy. cloudflared will use 'quic' as primary protocol.  |"}
-{"level":"info","time":"2026-07-28T02:03:28Z","message":"+-------------------------------------------------------------------------------------+"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"DNS Resolution","target":"region1.v2.argotunnel.com","status":"pass","details":"DNS Resolved successfully","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"DNS Resolution","target":"region2.v2.argotunnel.com","status":"pass","details":"DNS Resolved successfully","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"UDP Connectivity","target":"region1.v2.argotunnel.com","status":"pass","details":"QUIC connection successful","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"UDP Connectivity","target":"region2.v2.argotunnel.com","status":"pass","details":"QUIC connection successful","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"TCP Connectivity","target":"region1.v2.argotunnel.com","status":"pass","details":"HTTP/2 connection successful","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"TCP Connectivity","target":"region2.v2.argotunnel.com","status":"pass","details":"HTTP/2 connection successful","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","component":"Cloudflare API","target":"api.cloudflare.com:443","status":"pass","details":"API is reachable","time":"2026-07-28T02:03:28Z","message":"precheck"}
-{"level":"info","run_id":"b420dcc9-2e33-4ea5-809a-76d5a13c31b9","hard_fail":false,"suggested_protocol":"quic","time":"2026-07-28T02:03:28Z","message":"precheck complete"}
-{"level":"error","event":1,"connIndex":0,"originService":"http://127.0.0.1:3333","ingressRule":0,"error":"Incoming request ended abruptly: context canceled","time":"2026-07-28T02:06:27Z"}
-{"level":"error","event":1,"connIndex":0,"originService":"http://127.0.0.1:3333","ingressRule":0,"error":"Incoming request ended abruptly: context canceled","time":"2026-07-28T02:06:27Z"}
-{"level":"error","event":0,"ip":"2606:4700:a8::10","connIndex":0,"error":"Incoming request ended abruptly: context canceled","type":"http","dest":"https://beatles-occurred-expressions-grammar.trycloudflare.com/location.php","time":"2026-07-28T02:06:27Z","message":"Request failed"}
-{"level":"error","event":0,"ip":"2606:4700:a8::10","connIndex":0,"error":"Incoming request ended abruptly: context canceled","type":"http","dest":"https://beatles-occurred-expressions-grammar.trycloudflare.com/debug_log.php","time":"2026-07-28T02:06:27Z","message":"Request failed"}
-{"level":"info","time":"2026-07-28T02:23:40Z","message":"Initiating graceful shutdown due to signal terminated ..."}
-{"level":"error","event":0,"ip":"2606:4700:a8::10","connIndex":0,"error":"context canceled","time":"2026-07-28T02:23:40Z","message":"failed to run the datagram handler"}
-{"level":"error","event":0,"ip":"2606:4700:a8::10","connIndex":0,"error":"accept stream listener encountered a failure while serving","time":"2026-07-28T02:23:40Z","message":"failed to serve tunnel connection"}
-{"level":"error","event":0,"ip":"2606:4700:a8::10","connIndex":0,"error":"accept stream listener encountered a failure while serving","time":"2026-07-28T02:23:40Z","message":"Serve tunnel error"}
-{"level":"info","event":0,"ip":"2606:4700:a8::10","connIndex":0,"time":"2026-07-28T02:23:40Z","message":"Retrying connection in up to 1s"}
-{"level":"error","connIndex":0,"time":"2026-07-28T02:23:40Z","message":"Connection terminated"}
-{"level":"error","time":"2026-07-28T02:23:40Z","message":"no more connections active and exiting"}
-{"level":"info","time":"2026-07-28T02:23:40Z","message":"Tunnel server stopped"}
-{"level":"info","time":"2026-07-28T02:23:40Z","message":"Metrics server stopped"}
+2026-09-30T18:56:16Z INF Starting tunnel tunnelID=1b6f09a4-72fd-4d26-9ba8-7fe05df1a0ad
+2026-09-30T18:56:16Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp]
+2026-09-30T18:56:16Z INF Version 2026.7.3 (Checksum a9c38a399dff4a559fd56fe66517db04423de42f914dc8f0b9a55dc89e62a919)
+2026-09-30T18:56:16Z INF GOOS: windows, GOVersion: go1.26.4, GoArch: amd64
+2026-09-30T18:56:16Z INF Settings: map[url:127.0.0.1:3333]
+2026-09-30T18:56:16Z INF cloudflared will not automatically update on Windows systems.
+2026-09-30T18:56:16Z INF Generated Connector ID: 1dc6d84d-e8d5-41da-ad2a-66e7dec89943
+2026-09-30T18:56:16Z INF Initial protocol quic
+2026-09-30T18:56:16Z INF ICMP proxy will use 10.0.0.45 as source for IPv4
+2026-09-30T18:56:16Z INF ICMP proxy will use 2604:3d09:e274:5600::643e in zone Wi-Fi as source for IPv6
+2026-09-30T18:56:16Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-09-30T18:56:16Z INF ICMP proxy will use 10.0.0.45 as source for IPv4
+2026-09-30T18:56:16Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=2606:4700:a8::4
+2026-09-30T18:56:16Z INF ICMP proxy will use 2604:3d09:e274:5600::643e in zone Wi-Fi as source for IPv6
+2026-09-30T18:56:16Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-09-30T18:56:16Z INF +-------------------------------------------------------------------------------------+
+2026-09-30T18:56:16Z INF |                               CONNECTIVITY PRE-CHECKS                               |
+2026-09-30T18:56:16Z INF +-------------------------------------------------------------------------------------+
+2026-09-30T18:56:16Z INF |  COMPONENT         TARGET                     STATUS  DETAILS                       |
+2026-09-30T18:56:16Z INF |  DNS Resolution    region1.v2.argotunnel.com  PASS    DNS Resolved successfully     |
+2026-09-30T18:56:16Z INF |  DNS Resolution    region2.v2.argotunnel.com  PASS    DNS Resolved successfully     |
+2026-09-30T18:56:16Z INF |  UDP Connectivity  region1.v2.argotunnel.com  PASS    QUIC connection successful    |
+2026-09-30T18:56:16Z INF |  UDP Connectivity  region2.v2.argotunnel.com  PASS    QUIC connection successful    |
+2026-09-30T18:56:16Z INF |  TCP Connectivity  region1.v2.argotunnel.com  PASS    HTTP/2 connection successful  |
+2026-09-30T18:56:16Z INF |  TCP Connectivity  region2.v2.argotunnel.com  PASS    HTTP/2 connection successful  |
+2026-09-30T18:56:16Z INF |  Cloudflare API    api.cloudflare.com:443     PASS    API is reachable              |
+2026-09-30T18:56:16Z INF |                                                                                     |
+2026-09-30T18:56:16Z INF |  SUMMARY: Environment is healthy. cloudflared will use 'quic' as primary protocol.  |
+2026-09-30T18:56:16Z INF +-------------------------------------------------------------------------------------+
+2026-09-30T18:56:16Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region1.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region2.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="UDP Connectivity" details="QUIC connection successful" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region1.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="UDP Connectivity" details="QUIC connection successful" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region2.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="TCP Connectivity" details="HTTP/2 connection successful" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region1.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="TCP Connectivity" details="HTTP/2 connection successful" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=region2.v2.argotunnel.com
+2026-09-30T18:56:16Z INF precheck component="Cloudflare API" details="API is reachable" run_id=8a154362-f8e5-4108-b2dd-9b7618143114 status=pass target=api.cloudflare.com:443
+2026-09-30T18:56:16Z INF precheck complete hard_fail=false run_id=8a154362-f8e5-4108-b2dd-9b7618143114 suggested_protocol=quic
+2026-09-30T18:56:17Z INF Registered tunnel connection connIndex=0 connection=ad2e69a0-8a44-4876-9453-65687433ed30 event=0 ip=2606:4700:a8::4 location=ord08 protocol=quic
+2026-09-30T18:56:17Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=1 event=0 ip=2606:4700:a0::9
+2026-09-30T18:56:17Z INF Registered tunnel connection connIndex=1 connection=0e4ba347-6d8c-4094-9638-b4c7960e3fea event=0 ip=2606:4700:a0::9 location=ord06 protocol=quic
+2026-09-30T18:56:18Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=2 event=0 ip=2606:4700:a8::10
+2026-09-30T18:56:18Z INF Registered tunnel connection connIndex=2 connection=77d0df65-90b6-4bfc-8271-a928cda83908 event=0 ip=2606:4700:a8::10 location=ord12 protocol=quic
+2026-09-30T18:56:19Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=3 event=0 ip=2606:4700:a0::10
+2026-09-30T18:56:19Z INF Registered tunnel connection connIndex=3 connection=953f8c9d-fd8e-4902-b248-cdb22bbeaaaf event=0 ip=2606:4700:a0::10 location=ord16 protocol=quic
+2026-09-30T19:09:06Z INF Initiating graceful shutdown due to signal terminated ...
+2026-09-30T19:09:06Z ERR failed to run the datagram handler error="context canceled" connIndex=1 event=0 ip=2606:4700:a0::9
+2026-09-30T19:09:06Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=1 event=0 ip=2606:4700:a0::9
+2026-09-30T19:09:06Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=1 event=0 ip=2606:4700:a0::9
+2026-09-30T19:09:06Z INF Retrying connection in up to 1s connIndex=1 event=0 ip=2606:4700:a0::9
+2026-09-30T19:09:06Z ERR Connection terminated connIndex=1
+2026-09-30T19:09:06Z ERR failed to run the datagram handler error="context canceled" connIndex=2 event=0 ip=2606:4700:a8::10
+2026-09-30T19:09:06Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=2 event=0 ip=2606:4700:a8::10
+2026-09-30T19:09:06Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=2 event=0 ip=2606:4700:a8::10
+2026-09-30T19:09:06Z INF Retrying connection in up to 1s connIndex=2 event=0 ip=2606:4700:a8::10
+2026-09-30T19:09:06Z ERR Connection terminated connIndex=2
+2026-09-30T19:09:06Z ERR failed to run the datagram handler error="context canceled" connIndex=3 event=0 ip=2606:4700:a0::10
+2026-09-30T19:09:06Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=3 event=0 ip=2606:4700:a0::10
+2026-09-30T19:09:06Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=3 event=0 ip=2606:4700:a0::10
+2026-09-30T19:09:06Z INF Retrying connection in up to 1s connIndex=3 event=0 ip=2606:4700:a0::10
+2026-09-30T19:09:06Z ERR Connection terminated connIndex=3
+2026-09-30T19:09:06Z ERR failed to run the datagram handler error="context canceled" connIndex=0 event=0 ip=2606:4700:a8::4
+2026-09-30T19:09:06Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=2606:4700:a8::4
+2026-09-30T19:09:06Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=2606:4700:a8::4
+2026-09-30T19:09:06Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=2606:4700:a8::4
+2026-09-30T19:09:06Z ERR Connection terminated connIndex=0
+2026-09-30T19:09:06Z ERR no more connections active and exiting
+2026-09-30T19:09:06Z INF Tunnel server stopped
+2026-09-30T19:09:06Z ERR icmp router terminated error="context canceled"
+2026-09-30T19:09:06Z INF Metrics server stopped

