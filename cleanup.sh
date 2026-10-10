@@ -1,39 +1,55 @@
 #!/bin/bash
-# Cleanup script for CamPhish
-# Removes all unnecessary files and logs
+# cleanup.sh — Remove all CamPhish logs, captures, and temp files
 
-echo "Starting cleanup of unnecessary files and logs..."
+echo ""
+echo "╔══════════════════════════════════════╗"
+echo "║      CamPhish — Cleanup Script       ║"
+echo "╚══════════════════════════════════════╝"
+echo ""
 
-# Remove log files
-echo "Removing log files..."
-rm -f *.log
-rm -f .cloudflared.log
-
-# Remove temporary location files
-echo "Removing temporary location files..."
-rm -f location_*.txt
-rm -f current_location.bak
-
-# Remove captured images
-echo "Removing captured images..."
-rm -f cam*.png
-
-# Remove temporary HTML files
-echo "Removing temporary HTML files..."
-rm -f index.php
-rm -f index2.html
-rm -f index3.html
-
-# Clean saved locations directory but keep the directory itself
-echo "Cleaning saved locations directory..."
-if [ -d "saved_locations" ]; then
-    rm -f saved_locations/*
+read -p "⚠  This will DELETE all logs, photos, audio, and sessions. Continue? [y/N] " confirm
+if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+  echo "Aborted."
+  exit 0
 fi
 
-# Remove any other temporary files
-echo "Removing other temporary files..."
-rm -f LocationLog.log
-rm -f LocationError.log
-rm -f Log.log
+DIRS=(
+  "logs/snapshots"
+  "logs/audio"
+  "logs/location"
+  "logs/device"
+  "logs/ip"
+  "logs/screens"
+  "logs/sessions"
+  "saved_locations"
+)
 
-echo "Cleanup completed successfully!" 
+FILES=(
+  "logs/Log.log"
+  "logs/AudioLog.log"
+  "logs/link_meta.json"
+  "logs/AUTOKILL.signal"
+  ".cloudflared.log"
+  "qrcode.png"
+)
+
+for dir in "${DIRS[@]}"; do
+  if [ -d "$dir" ]; then
+    rm -rf "$dir"
+    echo "  ✓ Removed $dir"
+  fi
+done
+
+for file in "${FILES[@]}"; do
+  if [ -f "$file" ]; then
+    rm -f "$file"
+    echo "  ✓ Removed $file"
+  fi
+done
+
+# Re-create empty log structure
+mkdir -p logs/snapshots logs/audio logs/location logs/device logs/ip logs/screens logs/sessions
+
+echo ""
+echo "✅ Cleanup complete. All captures removed."
+echo ""

